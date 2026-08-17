@@ -1,16 +1,16 @@
 import Stripe from "stripe";
 
 /**
- * Montant de l'acompte, en centimes. Défini ici et jamais reçu du client :
+ * Montant de la caution, en centimes. Défini ici et jamais reçu du client :
  * un montant transmis par le navigateur serait modifiable par l'utilisateur.
- * Correspond aux « 500 € entièrement remboursables » de la section Offres.
  */
 const DEPOSIT_AMOUNT = 50_000;
 
-const PLAN_LABELS: Record<string, string> = {
-  achat: "Achat",
-  leasing: "Leasing",
-};
+/**
+ * Seule la location passe par ce parcours ; l'achat se traite par contact
+ * direct. Toute autre valeur est refusée.
+ */
+const ACCEPTED_PLAN = "leasing";
 
 /** Longueur maximale acceptée par champ (les métadonnées Stripe plafonnent à 500). */
 const MAX_FIELD_LENGTH = 300;
@@ -31,7 +31,9 @@ function readString(value: unknown) {
 
 /** Renvoie le premier message d'erreur rencontré, ou `null` si tout est valide. */
 function validate(payload: Payload) {
-  if (!PLAN_LABELS[payload.plan]) return "Formule inconnue.";
+  if (payload.plan !== ACCEPTED_PLAN) {
+    return "Cette formule ne se réserve pas en ligne.";
+  }
 
   for (const [field, value] of Object.entries(payload)) {
     if (!value) return "Tous les champs sont requis.";
@@ -91,7 +93,6 @@ export async function POST(request: Request) {
 
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
-  const planLabel = PLAN_LABELS[payload.plan];
 
   try {
     const stripe = new Stripe(secretKey);
@@ -105,8 +106,8 @@ export async function POST(request: Request) {
             currency: "eur",
             unit_amount: DEPOSIT_AMOUNT,
             product_data: {
-              name: `ATMOS ONE — acompte de réservation (${planLabel})`,
-              description: `Période du ${payload.startDate} au ${payload.endDate}. Acompte remboursable, déduit du montant final.`,
+              name: "ATMOS ONE — caution de location",
+              description: `Location du ${payload.startDate} au ${payload.endDate}. Caution intégralement remboursable en fin de location.`,
             },
           },
         },

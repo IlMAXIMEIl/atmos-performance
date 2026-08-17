@@ -17,7 +17,7 @@ Toutes les sections sont construites. Une section = un composant dans `component
 3. Section Produit : photo du générateur (`public/generator.png`) et pilules interactives. — `product-section.tsx`
 4. Section Protocoles d'Altitude : Mode Sommeil / tente d'altitude (Live High, 2 000–3 500 m) et Mode Entraînement sous masque (Train High / IHT, 4 000–6 000 m), situés sur un axe d'altitude 0–6 500 m. Ces deux plages sont des recommandations de protocole, pas des limites de l'appareil. — `protocols-section.tsx`
 5. Section Science : Chiffres clés et réassurance (études, fer, adaptation). — `science-section.tsx`
-6. Section Offres : Toggle interactif Achat vs Leasing, puis teaser ATMOS Chamber. — `offers-section.tsx`. Le CTA ouvre une modale de réservation en 3 étapes (dates, coordonnées, paiement) — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`.
+6. Section Offres : Toggle interactif Achat vs Leasing, puis teaser ATMOS Chamber. — `offers-section.tsx`. **Seule la location se réserve en ligne** : son CTA ouvre une modale en 3 étapes (dates, coordonnées, caution) — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`. Le CTA Achat ouvre un simple mail de contact ; la route refuse d'ailleurs toute formule autre que `leasing`.
 7. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
 
 Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.

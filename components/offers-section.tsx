@@ -87,7 +87,7 @@ const PLANS: Plan[] = [
         detail: "Résiliation possible après un an, avec 60 jours de préavis.",
       },
     ],
-    cta: "Demander un leasing",
+    cta: "Louer ATMOS ONE",
   },
 ];
 
@@ -100,11 +100,19 @@ const INCLUDED = [
   "Accompagnement au démarrage",
 ];
 
+/** Le premier élément dépend de la formule : caution en location, acompte à l'achat. */
 const ASSURANCES = [
-  { icon: PackageCheck, text: "Acompte de 500 € entièrement remboursable" },
   { icon: Truck, text: "Livraison estimée au premier trimestre 2027" },
   { icon: CalendarClock, text: "Vague #1 limitée à 100 unités" },
 ];
+
+/** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
+const CTA_CLASS =
+  "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none";
+
+const PURCHASE_MAILTO = `mailto:contact@atmos-performance.com?subject=${encodeURIComponent(
+  "Commande ATMOS ONE — formule Achat",
+)}`;
 
 const swap = {
   initial: { opacity: 0, y: 12, filter: "blur(6px)" },
@@ -303,19 +311,32 @@ export function OffersSection() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none"
-            >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-              <span className="relative">{plan.cta}</span>
-              <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+            {/*
+              Seule la location se réserve en ligne. L'achat n'a pas de parcours
+              de paiement : il passe par un échange direct.
+            */}
+            {plan.id === "leasing" ? (
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className={CTA_CLASS}
+              >
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+                <span className="relative">{plan.cta}</span>
+                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+            ) : (
+              <a href={PURCHASE_MAILTO} className={CTA_CLASS}>
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+                <span className="relative">{plan.cta}</span>
+                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+            )}
 
             <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
-              Sans engagement à cette étape : la réservation fixe votre rang dans
-              la vague #1.
+              {plan.id === "leasing"
+                ? "La caution fixe votre rang dans la vague #1 et reste remboursable."
+                : "Nous revenons vers vous sous 48 h pour finaliser la commande."}
             </p>
           </div>
         </div>
@@ -329,7 +350,16 @@ export function OffersSection() {
         viewport={{ once: true, amount: 0.4 }}
         className="mt-10 grid gap-4 sm:grid-cols-3"
       >
-        {ASSURANCES.map(({ icon: Icon, text }) => (
+        {[
+          {
+            icon: PackageCheck,
+            text:
+              plan.id === "leasing"
+                ? "Caution de 500 € entièrement remboursable"
+                : "Acompte de 500 € entièrement remboursable",
+          },
+          ...ASSURANCES,
+        ].map(({ icon: Icon, text }) => (
           <motion.li
             key={text}
             variants={rise}
@@ -376,12 +406,7 @@ export function OffersSection() {
         </div>
       </motion.aside>
 
-      <ReservationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        planId={plan.id}
-        planLabel={plan.label}
-      />
+      <ReservationModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   );
 }

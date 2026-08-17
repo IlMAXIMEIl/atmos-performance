@@ -23,13 +23,9 @@ import {
 
 import { EASE } from "@/lib/motion";
 
-export type PlanId = "achat" | "leasing";
-
 type Props = {
   open: boolean;
   onClose: () => void;
-  planId: PlanId;
-  planLabel: string;
 };
 
 const STEPS = [
@@ -52,6 +48,9 @@ type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 /** Affichage seul : le serveur reste seul maître du montant réellement débité. */
 const DEPOSIT_LABEL = "500 €";
+
+/** Ce parcours ne couvre que la location ; l'achat passe par le contact direct. */
+const PLAN = "leasing";
 
 const FIELD_CLASS =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[0.95rem] font-light text-white placeholder:text-white/25 transition-colors duration-300 [color-scheme:dark] focus:border-cyan-300/50 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-300/20";
@@ -136,7 +135,7 @@ function Field({
   );
 }
 
-export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
+export function ReservationModal({ open, onClose }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -230,7 +229,7 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId, ...form }),
+        body: JSON.stringify({ plan: PLAN, ...form }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
 
@@ -297,13 +296,13 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
               <div className="flex items-start justify-between gap-6">
                 <div>
                   <span className="text-[0.62rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
-                    {planLabel} · Vague #1
+                    Location · Vague #1
                   </span>
                   <h2
                     id="reservation-titre"
                     className="mt-2.5 text-xl font-medium tracking-[-0.02em] text-white sm:text-2xl"
                   >
-                    Réserver ATMOS ONE
+                    Louer ATMOS ONE
                   </h2>
                 </div>
 
@@ -372,9 +371,8 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
                       {step === 0 && (
                         <div className="flex flex-col gap-5">
                           <p className="text-[0.88rem] leading-relaxed font-light text-white/50">
-                            {planId === "leasing"
-                              ? "Indiquez la période de location souhaitée."
-                              : "Indiquez la période sur laquelle vous souhaitez recevoir et mettre en service l'appareil."}
+                            Indiquez la période de location souhaitée. Elle reste
+                            ajustable avec notre équipe après la réservation.
                           </p>
 
                           <Field
@@ -503,9 +501,9 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
                         <div className="flex flex-col gap-6">
                           <dl className="flex flex-col gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
                             {[
-                              { label: "Formule", value: planLabel },
+                              { label: "Formule", value: "Location" },
                               {
-                                label: "Période",
+                                label: "Période de location",
                                 value: `${formatDate(form.startDate)} → ${formatDate(form.endDate)}`,
                               },
                               { label: "Nom", value: form.name },
@@ -529,7 +527,7 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
 
                           <div className="flex items-baseline justify-between border-t border-white/[0.07] pt-5">
                             <span className="text-[0.88rem] font-light text-white/60">
-                              Acompte à régler maintenant
+                              Caution à régler maintenant
                             </span>
                             <span className="text-xl font-medium tracking-tight text-white">
                               {DEPOSIT_LABEL}
@@ -537,7 +535,7 @@ export function ReservationModal({ open, onClose, planId, planLabel }: Props) {
                           </div>
 
                           <p className="text-[0.78rem] leading-relaxed font-light text-white/35">
-                            Entièrement remboursable et déduit du montant final. Le
+                            Entièrement remboursable en fin de location. Le
                             paiement est traité par Stripe : aucune coordonnée
                             bancaire ne transite par ce site.
                           </p>
