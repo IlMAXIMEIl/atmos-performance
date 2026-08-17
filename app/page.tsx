@@ -1,69 +1,238 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
+
+const NAV_LINKS = [
+  { label: "Technologie", href: "#technologie" },
+  { label: "Offres", href: "#offres" },
+  { label: "FAQ", href: "#faq" },
+];
+
+const METRICS = [
+  { icon: Mountain, value: "Jusqu'à 6 000 m", label: "d'altitude simulée" },
+  { icon: Wind, value: "Hypoxie & Hyperoxie", label: "en un seul système" },
+  { icon: RefreshCw, value: "Option Location", label: "disponible dès la vague #1" },
+];
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const container: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.15 },
+  },
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.9, ease: EASE },
+  },
+};
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+      {/* ── Atmosphère lumineuse ─────────────────────────────────────── */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {/* Halo principal cyan, très diffus */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 2.2, ease: EASE }}
+          className="absolute left-1/2 top-[-30%] h-[70rem] w-[70rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.16),rgba(37,99,235,0.06)_38%,transparent_68%)] blur-[2px]"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+        {/* Respiration lente : rappel du cycle hypoxie / récupération */}
+        <motion.div
+          animate={{ opacity: [0.35, 0.6, 0.35], scale: [1, 1.06, 1] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-[-10%] h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(103,232,249,0.14),transparent_65%)]"
+        />
+        {/* Voile bleu froid en bas de page */}
+        <div className="absolute inset-x-0 bottom-0 h-[26rem] bg-[radial-gradient(ellipse_at_bottom,rgba(30,64,175,0.18),transparent_70%)]" />
+        {/* Grille technique */}
+        <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.14)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.14)_1px,transparent_1px)] [background-size:88px_88px] [mask-image:radial-gradient(ellipse_75%_60%_at_50%_35%,black,transparent)]" />
+        {/* Vignettage */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(9,10,15,0.85)_100%)]" />
+      </div>
+
+      {/* ── Header ───────────────────────────────────────────────────── */}
+      <motion.header
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: EASE }}
+        className="relative z-30 mx-auto w-full max-w-7xl px-6 py-6 lg:px-10"
+      >
+        <nav className="flex items-center justify-between">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="text-[1.05rem] font-medium tracking-[0.42em] text-white/95 transition-colors hover:text-white"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
+            ATMOS
           </a>
+
+          <div className="hidden items-center gap-10 md:flex">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="group relative text-[0.8rem] font-light tracking-[0.16em] text-white/55 uppercase transition-colors duration-300 hover:text-white"
+              >
+                {link.label}
+                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-to-r from-cyan-300 to-transparent transition-all duration-300 group-hover:w-full" />
+              </a>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a
+              href="#offres"
+              className="hidden rounded-full border border-white/15 bg-white/[0.04] px-5 py-2.5 text-[0.78rem] font-medium tracking-[0.14em] text-white/90 uppercase backdrop-blur-md transition-all duration-300 hover:border-cyan-300/40 hover:bg-white/[0.08] hover:text-white sm:inline-block"
+            >
+              Précommander
+            </a>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={menuOpen}
+              className="rounded-full border border-white/10 p-2.5 text-white/70 transition-colors hover:text-white md:hidden"
+            >
+              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
+        </nav>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="overflow-hidden md:hidden"
+            >
+              <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-sm font-light tracking-[0.16em] text-white/65 uppercase"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <a
+                  href="#offres"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-1 text-sm font-medium tracking-[0.16em] text-cyan-200 uppercase sm:hidden"
+                >
+                  Précommander
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.header>
+
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <motion.main
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="relative z-20 mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-16 pb-20 text-center sm:pt-24 lg:pt-28"
+      >
+        {/* Badge de lancement */}
+        <motion.div variants={rise}>
+          <div className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full border border-cyan-300/25 bg-cyan-400/[0.06] px-4 py-1.5 backdrop-blur-md">
+            <span className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.22),transparent_70%)] opacity-70" />
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_2px_rgba(34,211,238,0.8)]" />
+            </span>
+            <span className="text-[0.68rem] font-medium tracking-[0.2em] text-cyan-100/90 uppercase">
+              Série de Lancement • Vague #1 Ouverte
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Titre principal */}
+        <motion.h1
+          variants={rise}
+          className="mt-9 text-[2.1rem] leading-[1.05] font-medium tracking-[-0.035em] text-balance sm:text-6xl sm:leading-[1.02] lg:text-[5.1rem]"
+        >
+          <span className="block bg-gradient-to-b from-white via-white to-white/70 bg-clip-text text-transparent">
+            {"Dominez l'Altitude."}
+          </span>
+          <span className="mt-1.5 block bg-gradient-to-r from-cyan-200 via-sky-300 to-blue-400 bg-clip-text text-transparent">
+            Maîtrisez la Récupération.
+          </span>
+        </motion.h1>
+
+        {/* Sous-titre */}
+        <motion.p
+          variants={rise}
+          className="mt-8 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg"
+        >
+          {
+            "La technologie de simulation atmosphérique d'élite. Optimisez votre VO2max et accélérez votre régénération cellulaire à domicile."
+          }
+        </motion.p>
+
+        {/* CTA */}
+        <motion.div
+          variants={rise}
+          className="mt-11 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row"
+        >
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#offres"
+            className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] sm:w-auto"
           >
-            Documentation
+            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+            <span className="relative">Rejoindre la pré-vente</span>
+            <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </a>
-        </div>
-      </main>
+
+          <a
+            href="#technologie"
+            className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
+          >
+            <Gauge className="h-4 w-4 text-cyan-300/80" />
+            Découvrir la technologie
+          </a>
+        </motion.div>
+
+        {/* Réassurance */}
+        <motion.div
+          variants={rise}
+          className="mt-20 w-full max-w-3xl border-t border-white/[0.07] pt-8"
+        >
+          <dl className="grid grid-cols-1 divide-y divide-white/[0.07] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {METRICS.map(({ icon: Icon, value, label }) => (
+              <div
+                key={value}
+                className="flex flex-col items-center gap-1.5 px-4 py-5 sm:py-2"
+              >
+                <Icon className="mb-1 h-4 w-4 text-cyan-300/70" strokeWidth={1.5} />
+                <dt className="text-sm font-medium tracking-tight text-white/90">
+                  {value}
+                </dt>
+                <dd className="text-[0.7rem] font-light tracking-[0.12em] text-white/40 uppercase">
+                  {label}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </motion.div>
+      </motion.main>
     </div>
   );
 }
