@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { ReservationModal } from "@/components/reservation-modal";
 import { EASE, container, rise } from "@/lib/motion";
 
 type PlanId = "achat" | "leasing";
@@ -114,14 +115,10 @@ const swap = {
 
 export function OffersSection() {
   const [planId, setPlanId] = useState<PlanId>("achat");
+  const [modalOpen, setModalOpen] = useState(false);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const plan = PLANS.find((item) => item.id === planId) ?? PLANS[0];
-
-  // Destination provisoire, en attendant le formulaire de pré-réservation.
-  const ctaHref = `mailto:contact@atmos-performance.com?subject=${encodeURIComponent(
-    `Pré-réservation ATMOS ONE — formule ${plan.label}`,
-  )}`;
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const step =
@@ -306,14 +303,15 @@ export function OffersSection() {
               ))}
             </ul>
 
-            <a
-              href={ctaHref}
-              className="group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)]"
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
               <span className="relative">{plan.cta}</span>
               <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
+            </button>
 
             <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
               Sans engagement à cette étape : la réservation fixe votre rang dans
@@ -377,6 +375,13 @@ export function OffersSection() {
           </p>
         </div>
       </motion.aside>
+
+      <ReservationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        planId={plan.id}
+        planLabel={plan.label}
+      />
     </section>
   );
 }

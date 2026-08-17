@@ -17,7 +17,7 @@ Toutes les sections sont construites. Une section = un composant dans `component
 3. Section Produit : photo du générateur (`public/generator.png`) et pilules interactives. — `product-section.tsx`
 4. Section Protocoles d'Altitude : Mode Sommeil / tente d'altitude (Live High, 2 000–3 500 m) et Mode Entraînement sous masque (Train High / IHT, 4 000–6 000 m), situés sur un axe d'altitude 0–6 500 m. Ces deux plages sont des recommandations de protocole, pas des limites de l'appareil. — `protocols-section.tsx`
 5. Section Science : Chiffres clés et réassurance (études, fer, adaptation). — `science-section.tsx`
-6. Section Offres : Toggle interactif Achat vs Leasing, puis teaser ATMOS Chamber. — `offers-section.tsx`
+6. Section Offres : Toggle interactif Achat vs Leasing, puis teaser ATMOS Chamber. — `offers-section.tsx`. Le CTA ouvre une modale de réservation en 3 étapes (dates, coordonnées, paiement) — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`.
 7. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
 
 Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.
@@ -25,7 +25,8 @@ Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.
 ## À compléter avant publication
 - Les specs du générateur sont désormais les valeurs constructeur réelles. Restent des valeurs de remplissage : prix Achat et Leasing, chiffres de la section Science, date de livraison, taille de la vague #1.
 - Champs `[À COMPLÉTER]` de la page mentions légales (identité de l'éditeur, hébergeur).
-- CTA de la section Offres : pointe sur un `mailto:` en attendant un vrai formulaire de pré-réservation.
+- Clés Stripe : copier `.env.example` en `.env.local` et renseigner `STRIPE_SECRET_KEY`. Sans elle, la modale affiche « Le paiement n'est pas encore configuré sur ce site ». Le montant de l'acompte (500 €) est fixé dans `app/api/checkout/route.ts`, jamais transmis par le client.
+- Aucun webhook Stripe n'est branché : rien n'enregistre la réservation après paiement.
 - Icônes de marque du footer (Instagram, YouTube, TikTok) : redessinées à la main, à remplacer par les marques officielles.
 
 ## Instructions pour l'IA
