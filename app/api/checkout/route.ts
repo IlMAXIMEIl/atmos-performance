@@ -252,6 +252,21 @@ export async function POST(request: Request) {
 
     return Response.json({ url: session.url });
   } catch (error) {
+    // Une clé refusée est une erreur de configuration, pas un incident de
+    // paiement : on la distingue pour ne pas la faire passer pour une panne
+    // passagère côté visiteur, et pour la rendre lisible dans les journaux.
+    if (error instanceof Stripe.errors.StripeAuthenticationError) {
+      console.error(
+        "Stripe refuse la clé (401). Vérifier STRIPE_SECRET_KEY : elle doit " +
+          "commencer par sk_test_ ou sk_live_ et ne comporter aucun autre " +
+          "tiret bas. Tableau de bord > Développeurs > Clés API.",
+      );
+      return Response.json(
+        { error: "Le paiement n'est pas encore configuré sur ce site." },
+        { status: 503 },
+      );
+    }
+
     console.error("Création de la session Stripe impossible", error);
     return Response.json(
       { error: "La session de paiement n'a pas pu être créée." },
