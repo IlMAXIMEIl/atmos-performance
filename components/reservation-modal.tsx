@@ -15,8 +15,12 @@ import {
   ArrowRight,
   CalendarDays,
   Check,
+  CreditCard,
   LoaderCircle,
   Lock,
+  Minus,
+  Plus,
+  SlidersHorizontal,
   User,
   X,
   type LucideIcon,
@@ -32,57 +36,60 @@ type Props = {
   plan: PlanId;
 };
 
-type StepId = "dates" | "contact" | "paiement";
+type StepId = "dates" | "config" | "contact" | "paiement";
 
 const STEP_META: Record<StepId, { label: string; icon: LucideIcon }> = {
   dates: { label: "Dates", icon: CalendarDays },
+  config: { label: "Configuration", icon: SlidersHorizontal },
   contact: { label: "Coordonnées", icon: User },
   paiement: { label: "Paiement", icon: Lock },
 };
 
+/** Durée verrouillée de la première période ; le serveur recalcule la fin. */
+const RENTAL_DAYS = 30;
+const MAX_QUANTITY = 5;
+
+/** Chiffrées séparément : elles ne modifient pas le montant encaissé ici. */
+const OPTIONS = [
+  { id: "oxymetre", label: "Oxymètre de pouls" },
+  { id: "monitoring", label: "Système de monitoring" },
+];
+
 /**
- * L'étape de dates n'existe qu'en location : une plage de dates n'a pas de
- * sens pour un achat ferme.
+ * Montants affichés, en euros. Le serveur reste seul maître des sommes
+ * réellement débitées : ces valeurs ne servent qu'au récapitulatif.
  */
+const PRICES = {
+  purchaseUnit: 1890,
+  purchaseDeposit: 300,
+  monthlyRent: 350,
+  shipping: 39,
+};
+
 const PLAN_CONFIG: Record<
   PlanId,
-  {
-    eyebrow: string;
-    title: string;
-    steps: StepId[];
-    recapPlan: string;
-    amountLabel: string;
-    amount: string;
-    submitLabel: string;
-    note: string;
-  }
+  { eyebrow: string; title: string; steps: StepId[]; submitLabel: string }
 > = {
   leasing: {
     eyebrow: "Location · Vague #1",
     title: "Louer ATMOS ONE",
     steps: ["dates", "contact", "paiement"],
-    recapPlan: "Location",
-    amountLabel: "Caution à régler maintenant",
-    amount: "500 €",
-    submitLabel: "Régler la caution",
-    note: "Entièrement remboursable en fin de location. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.",
+    submitLabel: "Régler le 1er mois",
   },
   achat: {
     eyebrow: "Achat · Vague #1",
     title: "Acheter ATMOS ONE",
-    steps: ["contact", "paiement"],
-    recapPlan: "Achat",
-    amountLabel: "Acompte à régler maintenant",
-    amount: "300 €",
+    steps: ["config", "contact", "paiement"],
     submitLabel: "Régler l'acompte",
-    note: "Acompte déduit du prix de 1 890 €. Le solde de 1 590 € est réglé avant ou à la livraison. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.",
   },
 };
 
 const EMPTY_FORM = {
   startDate: "",
-  endDate: "",
-  name: "",
+  quantity: 1,
+  options: [] as string[],
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
   address: "",
@@ -91,18 +98,20 @@ const EMPTY_FORM = {
 type FormState = typeof EMPTY_FORM;
 type FieldErrors = Partial<Record<keyof FormState, string>>;
 
-// Les montants affichés ci-dessus le sont à titre indicatif : le serveur reste
-// seul maître de la somme réellement débitée.
-
 const FIELD_CLASS =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[0.95rem] font-light text-white placeholder:text-white/25 transition-colors duration-300 [color-scheme:dark] focus:border-cyan-300/50 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-300/20";
 
-/** Date du jour au format `YYYY-MM-DD`, dans le fuseau du visiteur. */
 function todayISO() {
   const now = new Date();
   return new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
     .toISOString()
     .slice(0, 10);
+}
+
+function addDays(date: string, days: number) {
+  const result = new Date(`${date}T00:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  return result.toISOString().slice(0, 10);
 }
 
 function formatDate(value: string) {
@@ -111,28 +120,23 @@ function formatDate(value: string) {
   return `${day}/${month}/${year}`;
 }
 
-function validateDates(form: FormState, minDate: string): FieldErrors {
-  const errors: FieldErrors = {};
+function euros(amount: number) {
+  return `${amount.toLocaleString("fr-FR")} €`;
+}
 
-  if (!form.startDate) {
-    errors.startDate = "Choisissez une date de début.";
-  } else if (minDate && form.startDate < minDate) {
-    errors.startDate = "La date de début ne peut pas être passée.";
+function validateStart(form: FormState, minDate: string): FieldErrors {
+  if (!form.startDate) return { startDate: "Choisissez une date de début." };
+  if (minDate && form.startDate < minDate) {
+    return { startDate: "La date de début ne peut pas être passée." };
   }
-
-  if (!form.endDate) {
-    errors.endDate = "Choisissez une date de fin.";
-  } else if (form.startDate && form.endDate <= form.startDate) {
-    errors.endDate = "La date de fin doit suivre la date de début.";
-  }
-
-  return errors;
+  return {};
 }
 
 function validateContact(form: FormState): FieldErrors {
   const errors: FieldErrors = {};
 
-  if (!form.name.trim()) errors.name = "Indiquez votre nom.";
+  if (!form.firstName.trim()) errors.firstName = "Indiquez votre prénom.";
+  if (!form.lastName.trim()) errors.lastName = "Indiquez votre nom.";
   if (!form.email.trim()) {
     errors.email = "Indiquez votre email.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) {
@@ -177,6 +181,32 @@ function Field({
   );
 }
 
+/** Ligne du récapitulatif chiffré. */
+function Amount({
+  label,
+  value,
+  muted = false,
+}: {
+  label: string;
+  value: string;
+  muted?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-6">
+      <span
+        className={`text-[0.85rem] font-light ${muted ? "text-white/35" : "text-white/60"}`}
+      >
+        {label}
+      </span>
+      <span
+        className={`text-[0.9rem] ${muted ? "font-light text-white/35" : "font-medium text-white/85"}`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export function ReservationModal({ open, onClose, plan }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -191,20 +221,23 @@ export function ReservationModal({ open, onClose, plan }: Props) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Le contenu de la modale n'est monté que lorsqu'elle est ouverte, donc
-  // jamais présent dans le HTML rendu côté serveur : `new Date()` ne peut pas
+  // Le contenu n'est monté que lorsque la modale est ouverte, donc jamais
+  // présent dans le HTML rendu côté serveur : `new Date()` ne peut pas
   // provoquer d'écart d'hydratation ici.
   const minDate = open ? todayISO() : "";
+  const currentStep = steps[step];
 
-  // `showModal` place la boîte dans la couche supérieure et prend en charge le
-  // piège à focus et la touche Échap.
+  const rentalTotal = PRICES.monthlyRent + PRICES.shipping;
+  const depositTotal = PRICES.purchaseDeposit * form.quantity;
+  const balanceTotal =
+    (PRICES.purchaseUnit - PRICES.purchaseDeposit) * form.quantity;
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (open && !dialog.open) dialog.showModal();
   }, [open]);
 
-  // Échap : on annule la fermeture native pour laisser jouer l'animation.
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -218,7 +251,6 @@ export function ReservationModal({ open, onClose, plan }: Props) {
     return () => dialog.removeEventListener("cancel", handleCancel);
   }, [onClose]);
 
-  // La page derrière ne doit pas défiler pendant que la modale est ouverte.
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -228,7 +260,6 @@ export function ReservationModal({ open, onClose, plan }: Props) {
     };
   }, [open]);
 
-  // Le focus suit l'étape affichée.
   useEffect(() => {
     if (!open) return;
     const target = panelRef.current?.querySelector<HTMLElement>(
@@ -237,10 +268,22 @@ export function ReservationModal({ open, onClose, plan }: Props) {
     target?.focus();
   }, [open, step]);
 
-  const update = useCallback((field: keyof FormState, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined }));
-  }, []);
+  const update = useCallback(
+    <K extends keyof FormState>(field: K, value: FormState[K]) => {
+      setForm((current) => ({ ...current, [field]: value }));
+      setErrors((current) => ({ ...current, [field]: undefined }));
+    },
+    [],
+  );
+
+  function toggleOption(id: string) {
+    setForm((current) => ({
+      ...current,
+      options: current.options.includes(id)
+        ? current.options.filter((option) => option !== id)
+        : [...current.options, id],
+    }));
+  }
 
   function goBack() {
     setDirection(-1);
@@ -250,13 +293,14 @@ export function ReservationModal({ open, onClose, plan }: Props) {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    const currentStep = steps[step];
 
     if (currentStep !== "paiement") {
       const found =
         currentStep === "dates"
-          ? validateDates(form, minDate)
-          : validateContact(form);
+          ? validateStart(form, minDate)
+          : currentStep === "contact"
+            ? validateContact(form)
+            : {};
       if (Object.keys(found).length > 0) return setErrors(found);
       setErrors({});
       setDirection(1);
@@ -308,9 +352,6 @@ export function ReservationModal({ open, onClose, plan }: Props) {
       <AnimatePresence
         onExitComplete={() => {
           dialogRef.current?.close();
-          // Réinitialisation une fois la sortie jouée : la prochaine ouverture
-          // repart d'un formulaire vierge, sans vider les champs sous les yeux
-          // de l'utilisateur pendant l'animation.
           setStep(0);
           setDirection(1);
           setForm(EMPTY_FORM);
@@ -325,9 +366,8 @@ export function ReservationModal({ open, onClose, plan }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.45, ease: EASE }}
-            className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#0B0C10] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)]"
+            className="relative max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain rounded-[2rem] border border-white/10 bg-[#0B0C10] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)]"
           >
-            {/* Halo d'accent en tête de modale */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
@@ -361,8 +401,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
               <div className="mt-8">
                 <div className="flex items-center justify-between">
                   {steps.map((stepId, index) => {
-                    const item = STEP_META[stepId];
-                    const Icon = item.icon;
+                    const Icon = STEP_META[stepId].icon;
                     const done = index < step;
                     const current = index === step;
 
@@ -388,7 +427,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             current ? "text-white/85" : "text-white/35"
                           }`}
                         >
-                          {item.label}
+                          {STEP_META[stepId].label}
                         </span>
                       </div>
                     );
@@ -405,16 +444,17 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                 </div>
               </div>
 
-              {/* Étapes */}
               <form onSubmit={handleSubmit} noValidate className="mt-8">
-                <div ref={panelRef} className="min-h-[17rem]">
+                <div ref={panelRef} className="min-h-[18rem]">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div key={step} {...slide}>
-                      {steps[step] === "dates" && (
+                      {/* ── Étape Dates (location) ──────────────────── */}
+                      {currentStep === "dates" && (
                         <div className="flex flex-col gap-5">
                           <p className="text-[0.88rem] leading-relaxed font-light text-white/50">
-                            Indiquez la période de location souhaitée. Elle reste
-                            ajustable avec notre équipe après la réservation.
+                            La location démarre à la date de votre choix, pour une
+                            première période de {RENTAL_DAYS} jours. Elle se
+                            prolonge ensuite mois par mois.
                           </p>
 
                           <Field
@@ -438,44 +478,152 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             />
                           </Field>
 
-                          <Field
-                            id="endDate"
-                            label="Date de fin"
-                            error={errors.endDate}
-                          >
-                            <input
-                              id="endDate"
-                              type="date"
-                              value={form.endDate}
-                              min={form.startDate || minDate}
-                              onChange={(event) =>
-                                update("endDate", event.target.value)
-                              }
-                              aria-invalid={Boolean(errors.endDate)}
-                              aria-describedby={
-                                errors.endDate ? "endDate-erreur" : undefined
-                              }
-                              className={FIELD_CLASS}
-                            />
-                          </Field>
+                          <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3.5">
+                            <div className="text-[0.68rem] font-medium tracking-[0.16em] text-white/40 uppercase">
+                              Fin de la première période
+                            </div>
+                            <div className="mt-1.5 text-[0.95rem] font-light text-white/80">
+                              {form.startDate
+                                ? formatDate(addDays(form.startDate, RENTAL_DAYS))
+                                : `${RENTAL_DAYS} jours après la date de début`}
+                            </div>
+                            <div className="mt-1 text-[0.78rem] font-light text-white/35">
+                              Durée minimale d&apos;un mois, non modifiable.
+                            </div>
+                          </div>
                         </div>
                       )}
 
-                      {steps[step] === "contact" && (
+                      {/* ── Étape Configuration (achat) ─────────────── */}
+                      {currentStep === "config" && (
+                        <div className="flex flex-col gap-6">
+                          <div>
+                            <span className="block text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase">
+                              Quantité
+                            </span>
+                            <div className="mt-3 flex items-center gap-4">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  update("quantity", Math.max(1, form.quantity - 1))
+                                }
+                                disabled={form.quantity <= 1}
+                                aria-label="Retirer une unité"
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white/70 transition-colors hover:border-white/30 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none disabled:opacity-30"
+                              >
+                                <Minus className="h-4 w-4" />
+                              </button>
+
+                              <span
+                                aria-live="polite"
+                                className="min-w-[3ch] text-center text-2xl font-medium tracking-tight text-white"
+                              >
+                                {form.quantity}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  update(
+                                    "quantity",
+                                    Math.min(MAX_QUANTITY, form.quantity + 1),
+                                  )
+                                }
+                                disabled={form.quantity >= MAX_QUANTITY}
+                                aria-label="Ajouter une unité"
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white/70 transition-colors hover:border-white/30 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none disabled:opacity-30"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </button>
+
+                              <span className="ml-1 text-[0.85rem] font-light text-white/40">
+                                × {euros(PRICES.purchaseUnit)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <fieldset>
+                            <legend className="text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase">
+                              Options
+                            </legend>
+                            <div className="mt-3 flex flex-col gap-2.5">
+                              {OPTIONS.map((option) => {
+                                const checked = form.options.includes(option.id);
+                                return (
+                                  <label
+                                    key={option.id}
+                                    className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors duration-300 ${
+                                      checked
+                                        ? "border-cyan-300/40 bg-cyan-400/[0.07]"
+                                        : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                                    }`}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={() => toggleOption(option.id)}
+                                      className="h-4 w-4 accent-cyan-400"
+                                    />
+                                    <span className="text-[0.9rem] font-light text-white/80">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                            <p className="mt-3 text-[0.78rem] font-light text-white/35">
+                              Les options sont enregistrées avec votre commande et
+                              chiffrées séparément : elles ne modifient pas
+                              l&apos;acompte réglé aujourd&apos;hui.
+                            </p>
+                          </fieldset>
+                        </div>
+                      )}
+
+                      {/* ── Étape Coordonnées ───────────────────────── */}
+                      {currentStep === "contact" && (
                         <div className="flex flex-col gap-5">
-                          <Field id="name" label="Nom complet" error={errors.name}>
-                            <input
-                              id="name"
-                              type="text"
-                              autoComplete="name"
-                              placeholder="Camille Renaud"
-                              value={form.name}
-                              onChange={(event) => update("name", event.target.value)}
-                              aria-invalid={Boolean(errors.name)}
-                              aria-describedby={errors.name ? "name-erreur" : undefined}
-                              className={FIELD_CLASS}
-                            />
-                          </Field>
+                          <div className="grid gap-5 sm:grid-cols-2">
+                            <Field
+                              id="firstName"
+                              label="Prénom"
+                              error={errors.firstName}
+                            >
+                              <input
+                                id="firstName"
+                                type="text"
+                                autoComplete="given-name"
+                                placeholder="Camille"
+                                value={form.firstName}
+                                onChange={(event) =>
+                                  update("firstName", event.target.value)
+                                }
+                                aria-invalid={Boolean(errors.firstName)}
+                                aria-describedby={
+                                  errors.firstName ? "firstName-erreur" : undefined
+                                }
+                                className={FIELD_CLASS}
+                              />
+                            </Field>
+
+                            <Field id="lastName" label="Nom" error={errors.lastName}>
+                              <input
+                                id="lastName"
+                                type="text"
+                                autoComplete="family-name"
+                                placeholder="Renaud"
+                                value={form.lastName}
+                                onChange={(event) =>
+                                  update("lastName", event.target.value)
+                                }
+                                aria-invalid={Boolean(errors.lastName)}
+                                aria-describedby={
+                                  errors.lastName ? "lastName-erreur" : undefined
+                                }
+                                className={FIELD_CLASS}
+                              />
+                            </Field>
+                          </div>
 
                           <div className="grid gap-5 sm:grid-cols-2">
                             <Field id="email" label="Email" error={errors.email}>
@@ -539,23 +687,39 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                         </div>
                       )}
 
-                      {steps[step] === "paiement" && (
+                      {/* ── Étape Paiement ──────────────────────────── */}
+                      {currentStep === "paiement" && (
                         <div className="flex flex-col gap-6">
                           <dl className="flex flex-col gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
                             {[
-                              { label: "Formule", value: config.recapPlan },
-                              ...(plan === "leasing"
-                                ? [
-                                    {
-                                      label: "Période de location",
-                                      value: `${formatDate(form.startDate)} → ${formatDate(form.endDate)}`,
-                                    },
-                                  ]
-                                : []),
-                              { label: "Nom", value: form.name },
+                              plan === "leasing"
+                                ? {
+                                    label: "Période",
+                                    value: `${formatDate(form.startDate)} → ${formatDate(addDays(form.startDate, RENTAL_DAYS))}`,
+                                  }
+                                : {
+                                    label: "Quantité",
+                                    value: `${form.quantity} unité${form.quantity > 1 ? "s" : ""}`,
+                                  },
+                              {
+                                label: "Client",
+                                value: `${form.firstName} ${form.lastName}`,
+                              },
                               { label: "Email", value: form.email },
                               { label: "Téléphone", value: form.phone },
                               { label: "Adresse", value: form.address },
+                              ...(plan === "achat" && form.options.length > 0
+                                ? [
+                                    {
+                                      label: "Options",
+                                      value: OPTIONS.filter((option) =>
+                                        form.options.includes(option.id),
+                                      )
+                                        .map((option) => option.label)
+                                        .join(", "),
+                                    },
+                                  ]
+                                : []),
                             ].map((row) => (
                               <div
                                 key={row.label}
@@ -571,17 +735,59 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             ))}
                           </dl>
 
-                          <div className="flex items-baseline justify-between border-t border-white/[0.07] pt-5">
-                            <span className="text-[0.88rem] font-light text-white/60">
-                              {config.amountLabel}
-                            </span>
-                            <span className="text-xl font-medium tracking-tight text-white">
-                              {config.amount}
-                            </span>
+                          <div className="flex flex-col gap-3 border-t border-white/[0.07] pt-5">
+                            {plan === "leasing" ? (
+                              <>
+                                <Amount
+                                  label="Loyer du 1er mois"
+                                  value={euros(PRICES.monthlyRent)}
+                                />
+                                <Amount
+                                  label="Expédition sécurisée"
+                                  value={euros(PRICES.shipping)}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Amount
+                                  label={`Acompte (${form.quantity} × ${euros(PRICES.purchaseDeposit)})`}
+                                  value={euros(depositTotal)}
+                                />
+                                <Amount
+                                  label="Solde avant expédition"
+                                  value={euros(balanceTotal)}
+                                  muted
+                                />
+                              </>
+                            )}
+
+                            <div className="mt-1 flex items-baseline justify-between border-t border-white/[0.07] pt-4">
+                              <span className="text-[0.88rem] font-light text-white/60">
+                                À régler maintenant
+                              </span>
+                              <span className="text-xl font-medium tracking-tight text-white">
+                                {euros(plan === "leasing" ? rentalTotal : depositTotal)}
+                              </span>
+                            </div>
                           </div>
 
+                          {plan === "leasing" && (
+                            <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3.5">
+                              <CreditCard
+                                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/70"
+                                strokeWidth={1.5}
+                              />
+                              <p className="text-[0.8rem] leading-relaxed font-light text-white/45">
+                                Une empreinte de votre carte est conservée pour la
+                                caution de garantie. Aucun montant n&apos;est
+                                débité à ce titre aujourd&apos;hui.
+                              </p>
+                            </div>
+                          )}
+
                           <p className="text-[0.78rem] leading-relaxed font-light text-white/35">
-                            {config.note}
+                            Le paiement est traité par Stripe : aucune coordonnée
+                            bancaire ne transite par ce site.
                           </p>
                         </div>
                       )}
@@ -598,7 +804,6 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                   </p>
                 )}
 
-                {/* Navigation */}
                 <div className="mt-8 flex items-center justify-between gap-4">
                   {step > 0 ? (
                     <button
@@ -616,7 +821,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    data-autofocus={steps[step] === "paiement" ? "" : undefined}
+                    data-autofocus={currentStep === "paiement" ? "" : undefined}
                     className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-[#04070D] shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? (
@@ -626,7 +831,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                       </>
                     ) : (
                       <>
-                        {steps[step] === "paiement"
+                        {currentStep === "paiement"
                           ? config.submitLabel
                           : "Continuer"}
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -634,6 +839,15 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                     )}
                   </button>
                 </div>
+
+                {/* Option d'achat : mention exigée sous le bouton de paiement. */}
+                {plan === "leasing" && currentStep === "paiement" && (
+                  <p className="mt-5 text-center text-[0.8rem] leading-relaxed font-light text-cyan-100/60">
+                    Option d&apos;achat : 100 % de vos loyers versés sont déduits
+                    si vous décidez d&apos;acheter ATMOS ONE (
+                    {euros(PRICES.purchaseUnit)}).
+                  </p>
+                )}
               </form>
             </div>
           </motion.div>

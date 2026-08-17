@@ -1,66 +1,88 @@
 import Stripe from "stripe";
 
 /**
- * Montants en centimes, définis ici et jamais reçus du client : un montant
+ * Barème, en centimes. Défini ici et jamais reçu du client : un montant
  * transmis par le navigateur serait modifiable par l'utilisateur.
- *
- * - Location : caution remboursable en fin de location.
- * - Achat : acompte de réservation, déduit du prix ; le solde est réglé avant
- *   ou à la livraison, hors de ce parcours.
  */
-const PURCHASE_PRICE = 189_000;
-const PLANS = {
-  leasing: {
-    amount: 50_000,
-    productName: "ATMOS ONE — caution de location",
-    /** La période de location est obligatoire pour cette formule. */
-    requiresDates: true,
-  },
-  achat: {
-    amount: 30_000,
-    productName: "ATMOS ONE — acompte de réservation",
-    requiresDates: false,
-  },
-} as const;
+const PRICES = {
+  /** Prix d'achat d'une unité. */
+  purchaseUnit: 189_000,
+  /** Acompte encaissé par unité réservée ; le solde est réglé avant expédition. */
+  purchaseDeposit: 30_000,
+  /** Loyer mensuel. */
+  monthlyRent: 35_000,
+  /** Expédition sécurisée, facturée une fois au départ de la location. */
+  shipping: 3_900,
+};
 
-type PlanId = keyof typeof PLANS;
+/** Durée verrouillée de la première période de location. */
+const RENTAL_DAYS = 30;
 
-function isPlanId(value: string): value is PlanId {
-  return Object.hasOwn(PLANS, value);
-}
+const MAX_QUANTITY = 5;
 
 /** Longueur maximale acceptée par champ (les métadonnées Stripe plafonnent à 500). */
 const MAX_FIELD_LENGTH = 300;
 
+/** Options d'équipement : enregistrées à la commande, chiffrées ensuite. */
+const OPTION_LABELS: Record<string, string> = {
+  oxymetre: "Oxymètre de pouls",
+  monitoring: "Système de monitoring",
+};
+
+const PLAN_IDS = ["achat", "leasing"] as const;
+type PlanId = (typeof PLAN_IDS)[number];
+
 type Payload = {
   plan: string;
   startDate: string;
-  endDate: string;
-  name: string;
+  quantity: number;
+  options: string[];
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   address: string;
 };
 
 /** Champs exigés quelle que soit la formule. */
-const REQUIRED_FIELDS = ["name", "email", "phone", "address"] as const;
+const REQUIRED_FIELDS = [
+  "firstName",
+  "lastName",
+  "email",
+  "phone",
+  "address",
+] as const;
 
 function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function isPlanId(value: string): value is PlanId {
+  return (PLAN_IDS as readonly string[]).includes(value);
+}
+
+function addDays(date: string, days: number) {
+  const result = new Date(`${date}T00:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  return result.toISOString().slice(0, 10);
+}
+
+function formatEuros(cents: number) {
+  return `${(cents / 100).toLocaleString("fr-FR")} €`;
+}
+
+function formatDate(value: string) {
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 /** Renvoie le premier message d'erreur rencontré, ou `null` si tout est valide. */
 function validate(payload: Payload) {
-  if (!isPlanId(payload.plan)) {
-    return "Formule inconnue.";
-  }
+  if (!isPlanId(payload.plan)) return "Formule inconnue.";
 
   for (const field of REQUIRED_FIELDS) {
     if (!payload[field]) return "Tous les champs sont requis.";
-  }
-
-  for (const [field, value] of Object.entries(payload)) {
-    if (value.length > MAX_FIELD_LENGTH) {
+    if (payload[field].length > MAX_FIELD_LENGTH) {
       return `Le champ « ${field} » dépasse ${MAX_FIELD_LENGTH} caractères.`;
     }
   }
@@ -69,26 +91,26 @@ function validate(payload: Payload) {
     return "Adresse email invalide.";
   }
 
-  if (PLANS[payload.plan].requiresDates) {
-    if (!payload.startDate || !payload.endDate) {
-      return "La période de location est requise.";
+  if (payload.plan === "leasing") {
+    if (!payload.startDate) return "La date de début est requise.";
+    if (Number.isNaN(new Date(payload.startDate).valueOf())) {
+      return "Date de début invalide.";
     }
-
-    const start = new Date(payload.startDate);
-    const end = new Date(payload.endDate);
-    if (Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) {
-      return "Dates invalides.";
-    }
-    if (end <= start) {
-      return "La date de fin doit suivre la date de début.";
+  } else {
+    if (
+      !Number.isInteger(payload.quantity) ||
+      payload.quantity < 1 ||
+      payload.quantity > MAX_QUANTITY
+    ) {
+      return `La quantité doit être comprise entre 1 et ${MAX_QUANTITY}.`;
     }
   }
 
-  return null;
-}
+  if (payload.options.some((option) => !OPTION_LABELS[option])) {
+    return "Option inconnue.";
+  }
 
-function formatEuros(cents: number) {
-  return `${(cents / 100).toLocaleString("fr-FR")} €`;
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -112,8 +134,10 @@ export async function POST(request: Request) {
   const payload: Payload = {
     plan: readString(raw.plan),
     startDate: readString(raw.startDate),
-    endDate: readString(raw.endDate),
-    name: readString(raw.name),
+    quantity: Number(raw.quantity ?? 1),
+    options: Array.isArray(raw.options) ? raw.options.map(readString) : [],
+    firstName: readString(raw.firstName),
+    lastName: readString(raw.lastName),
     email: readString(raw.email),
     phone: readString(raw.phone),
     address: readString(raw.address),
@@ -127,43 +151,99 @@ export async function POST(request: Request) {
   const origin =
     process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
 
-  // `validate` a déjà écarté toute formule inconnue.
-  const plan = PLANS[payload.plan as PlanId];
-  const description =
-    payload.plan === "leasing"
-      ? `Location du ${payload.startDate} au ${payload.endDate}. Caution intégralement remboursable en fin de location.`
-      : `Acompte déduit du prix de ${formatEuros(PURCHASE_PRICE)}. Solde de ${formatEuros(
-          PURCHASE_PRICE - plan.amount,
-        )} réglé avant ou à la livraison.`;
+  // La date de fin est recalculée ici : la durée est verrouillée à 30 jours et
+  // ne doit pas dépendre de ce que le navigateur a envoyé.
+  const endDate =
+    payload.plan === "leasing" ? addDays(payload.startDate, RENTAL_DAYS) : "";
+
+  const chosenOptions = payload.options
+    .map((option) => OPTION_LABELS[option])
+    .join(", ");
+
+  const metadata: Record<string, string> = {
+    plan: payload.plan,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    phone: payload.phone,
+    address: payload.address,
+    options: chosenOptions || "aucune",
+  };
+
+  let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];
+  let extra: Partial<Stripe.Checkout.SessionCreateParams> = {};
+
+  if (payload.plan === "leasing") {
+    metadata.startDate = payload.startDate;
+    metadata.endDate = endDate;
+    metadata.monthlyRent = formatEuros(PRICES.monthlyRent);
+
+    lineItems = [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "eur",
+          unit_amount: PRICES.monthlyRent,
+          product_data: {
+            name: "ATMOS ONE — loyer du 1er mois",
+            description: `Location du ${formatDate(payload.startDate)} au ${formatDate(endDate)} (${RENTAL_DAYS} jours). 100 % des loyers versés sont déduits en cas d'achat.`,
+          },
+        },
+      },
+      {
+        quantity: 1,
+        price_data: {
+          currency: "eur",
+          unit_amount: PRICES.shipping,
+          product_data: {
+            name: "Expédition sécurisée",
+            description: "Emballage renforcé et transport assuré, aller.",
+          },
+        },
+      },
+    ];
+
+    // Empreinte bancaire : la carte est conservée pour pouvoir prélever la
+    // caution de garantie hors session. Aucun montant n'est débité à ce titre
+    // au moment du paiement.
+    extra = {
+      customer_creation: "always",
+      payment_intent_data: {
+        setup_future_usage: "off_session",
+        description: "Loyer du 1er mois ATMOS ONE + empreinte pour caution",
+      },
+    };
+  } else {
+    const balance =
+      (PRICES.purchaseUnit - PRICES.purchaseDeposit) * payload.quantity;
+
+    metadata.quantity = String(payload.quantity);
+    metadata.balanceDue = formatEuros(balance);
+
+    lineItems = [
+      {
+        quantity: payload.quantity,
+        price_data: {
+          currency: "eur",
+          unit_amount: PRICES.purchaseDeposit,
+          product_data: {
+            name: "ATMOS ONE — acompte de réservation",
+            description: `Acompte par unité, déduit du prix de ${formatEuros(PRICES.purchaseUnit)}. Solde de ${formatEuros(balance)} réglé avant expédition.`,
+          },
+        },
+      },
+    ];
+  }
 
   try {
     const stripe = new Stripe(secretKey);
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       customer_email: payload.email,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: "eur",
-            unit_amount: plan.amount,
-            product_data: {
-              name: plan.productName,
-              description,
-            },
-          },
-        },
-      ],
-      metadata: {
-        plan: payload.plan,
-        startDate: payload.startDate,
-        endDate: payload.endDate,
-        name: payload.name,
-        phone: payload.phone,
-        address: payload.address,
-      },
+      line_items: lineItems,
+      metadata,
       success_url: `${origin}/reservation/confirmee?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/#offres`,
+      ...extra,
     });
 
     if (!session.url) {

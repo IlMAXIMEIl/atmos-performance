@@ -18,16 +18,19 @@ Toutes les sections sont construites. Une section = un composant dans `component
 4. Section Protocoles d'Altitude : Mode Sommeil / tente d'altitude (Live High, 2 000–3 500 m) et Mode Entraînement sous masque (Train High / IHT, 4 000–6 000 m), situés sur un axe d'altitude 0–6 500 m. Ces deux plages sont des recommandations de protocole, pas des limites de l'appareil. — `protocols-section.tsx`
 5. Section Science : Chiffres clés et réassurance (études, fer, adaptation). — `science-section.tsx`
 6. Section Offres : Toggle interactif Achat vs Location, puis teaser ATMOS Chamber. — `offers-section.tsx`. Les deux CTA ouvrent la modale — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`.
-   - **Achat** : 1 890 € TTC. Parcours en 2 étapes (coordonnées, paiement), acompte de **300 €** en ligne, solde de 1 590 € avant ou à la livraison. Pas d'étape de dates.
-   - **Location** : 340 €/mois. Parcours en 3 étapes (dates, coordonnées, paiement), caution de **500 €** remboursable. **Le système de réservation par dates n'existe que pour la location.**
-   - Les montants débités sont fixés dans la route serveur et jamais transmis par le navigateur.
+   - **Achat ferme** : 1 890 € l'unité. Étapes : configuration (quantité 1 à 5 + options), coordonnées, paiement. Acompte de **300 € par unité** encaissé en ligne ; solde (1 590 € par unité) réglé avant expédition.
+   - **Location** : 350 €/mois, 1 mois minimum. Étapes : date de début, coordonnées, paiement. Encaissement du 1er mois **+ 39 € d'expédition = 389 €**, et **empreinte bancaire** conservée pour la caution (aucun débit à ce titre). Mention obligatoire sous le bouton : 100 % des loyers versés sont déduits en cas d'achat.
+   - La durée de location est verrouillée à 30 jours : la date de fin est **recalculée par le serveur**, jamais reprise du navigateur. Idem pour tous les montants.
+   - L'empreinte bancaire passe par `setup_future_usage: "off_session"` sur la session Checkout (plus `customer_creation: "always"`), et non par un SetupIntent séparé : Stripe n'autorise pas un paiement et un SetupIntent dans une même session.
+   - Les options (oxymètre, monitoring) sont enregistrées en métadonnées mais **non tarifées** : elles ne modifient pas le montant encaissé.
 7. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
 
 Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.
 
 ## À compléter avant publication
-- Les specs du générateur et les prix (1 890 € à l'achat, 340 €/mois en location) sont des valeurs réelles. Restent des valeurs de remplissage : chiffres de la section Science, date de livraison, taille de la vague #1.
-- Incohérence à trancher : la carte Location annonce « engagement 24 mois », « sortie à 12 mois » et « échange de génération à mi-contrat », alors que la modale demande une date de début et de fin, donc une location courte. À 340 €/mois, 24 mois représenteraient 8 160 € contre 1 890 € à l'achat.
+- Les specs du générateur et les prix (1 890 € à l'achat, 350 €/mois + 39 € d'expédition en location, acompte 300 €) sont des valeurs réelles. Restent des valeurs de remplissage : chiffres de la section Science, date de livraison, taille de la vague #1.
+- Le montant de la caution de location n'est pas défini : seule l'empreinte est prise. Il faudra le fixer avant tout prélèvement hors session.
+- Les options d'équipement ne sont pas tarifées.
 - Champs `[À COMPLÉTER]` de la page mentions légales (identité de l'éditeur, hébergeur).
 - Clés Stripe : copier `.env.example` en `.env.local` et renseigner `STRIPE_SECRET_KEY`. Sans elle, la modale affiche « Le paiement n'est pas encore configuré sur ce site ». Le montant de l'acompte (500 €) est fixé dans `app/api/checkout/route.ts`, jamais transmis par le client.
 - Aucun webhook Stripe n'est branché : rien n'enregistre la réservation après paiement.

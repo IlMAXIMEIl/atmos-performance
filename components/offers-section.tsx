@@ -9,7 +9,6 @@ import {
   Infinity as InfinityIcon,
   KeyRound,
   PackageCheck,
-  RefreshCcw,
   ShieldCheck,
   Sparkles,
   Truck,
@@ -64,27 +63,29 @@ const PLANS: Plan[] = [
   },
   {
     id: "leasing",
-    label: "Leasing",
-    badge: "Sans apport",
-    price: "340 €",
-    terms: "par mois · engagement 24 mois",
+    label: "Location",
+    badge: "1 mois minimum",
+    price: "350 €",
+    terms: "par mois · 39 € d'expédition",
     pitch:
-      "Le même appareil, entretenu et renouvelé par nos soins, pour une mensualité fixe.",
+      "Le même appareil, entretenu par nos soins, mois par mois. Vous arrêtez quand vous voulez passé le premier mois.",
     highlights: [
+      {
+        icon: KeyRound,
+        label: "Loyers déduits à l'achat",
+        detail:
+          "100 % des loyers versés viennent en déduction des 1 890 € si vous décidez d'acheter.",
+      },
       {
         icon: Wrench,
         label: "Maintenance incluse",
-        detail: "Entretien annuel et pièces d'usure entièrement pris en charge.",
-      },
-      {
-        icon: RefreshCcw,
-        label: "Échange de génération",
-        detail: "Passage au modèle suivant à mi-contrat, sans surcoût.",
+        detail: "Entretien et pièces d'usure entièrement pris en charge.",
       },
       {
         icon: CalendarClock,
-        label: "Sortie à 12 mois",
-        detail: "Résiliation possible après un an, avec 60 jours de préavis.",
+        label: "Mois par mois",
+        detail:
+          "Une première période de 30 jours, reconduite tant que vous le souhaitez.",
       },
     ],
     cta: "Louer ATMOS ONE",
@@ -319,8 +320,8 @@ export function OffersSection() {
 
             <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
               {plan.id === "leasing"
-                ? "La caution fixe votre rang dans la vague #1 et reste remboursable."
-                : "Acompte de 300 € à la réservation, solde de 1 590 € avant ou à la livraison."}
+                ? "1er mois et expédition réglés en ligne, caution par simple empreinte bancaire."
+                : "Acompte de 300 € à la réservation, solde de 1 590 € avant expédition."}
             </p>
           </div>
         </div>
@@ -339,8 +340,8 @@ export function OffersSection() {
             icon: PackageCheck,
             text:
               plan.id === "leasing"
-                ? "Caution de 500 € entièrement remboursable"
-                : "Acompte de 300 €, déduit du prix d'achat",
+                ? "Caution par empreinte bancaire, sans débit"
+                : "Acompte de 300 € par unité, déduit du prix",
           },
           ...ASSURANCES,
         ].map(({ icon: Icon, text }) => (
