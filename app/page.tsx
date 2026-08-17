@@ -4,22 +4,22 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
 
-import { DualitySection } from "@/components/duality-section";
 import { OffersSection } from "@/components/offers-section";
 import { ProductSection } from "@/components/product-section";
+import { ProtocolsSection } from "@/components/protocols-section";
 import { ScienceSection } from "@/components/science-section";
 import { SiteFooter } from "@/components/site-footer";
 import { EASE, container, rise } from "@/lib/motion";
 
 const NAV_LINKS = [
   { label: "Produit", href: "#produit" },
-  { label: "Technologie", href: "#technologie" },
+  { label: "Protocoles", href: "#protocoles" },
   { label: "Offres", href: "#offres" },
 ];
 
 const METRICS = [
   { icon: Mountain, value: "Jusqu'à 6 000 m", label: "d'altitude simulée" },
-  { icon: Wind, value: "Hypoxie & Hyperoxie", label: "en un seul système" },
+  { icon: Wind, value: "9,5 % à 20,9 % O₂", label: "réglable au mètre près" },
   { icon: RefreshCw, value: "Option Location", label: "disponible dès la vague #1" },
 ];
 
@@ -37,7 +37,7 @@ export default function Home() {
           transition={{ duration: 2.2, ease: EASE }}
           className="absolute left-1/2 top-[-30%] h-[70rem] w-[70rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.16),rgba(37,99,235,0.06)_38%,transparent_68%)] blur-[2px]"
         />
-        {/* Respiration lente : rappel du cycle hypoxie / récupération */}
+        {/* Respiration lente : rappel du cycle d'exposition à l'altitude */}
         <motion.div
           animate={{ opacity: [0.35, 0.6, 0.35], scale: [1, 1.06, 1] }}
           transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
@@ -162,7 +162,7 @@ export default function Home() {
               {"Dominez l'Altitude."}
             </span>
             <span className="mt-1.5 block bg-gradient-to-r from-cyan-200 via-sky-300 to-blue-400 bg-clip-text text-transparent">
-              Maîtrisez la Récupération.
+              Sans quitter votre chambre.
             </span>
           </motion.h1>
   
@@ -172,7 +172,7 @@ export default function Home() {
             className="mt-8 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg"
           >
             {
-              "La technologie de simulation atmosphérique d'élite. Optimisez votre VO2max et accélérez votre régénération cellulaire à domicile."
+              "Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à 6 000 mètres chez vous. Travaillez votre VO2max et préparez vos acclimatations, nuit après nuit ou séance après séance."
             }
           </motion.p>
   
@@ -191,11 +191,11 @@ export default function Home() {
             </a>
   
             <a
-              href="#technologie"
+              href="#produit"
               className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
             >
               <Gauge className="h-4 w-4 text-cyan-300/80" />
-              Découvrir la technologie
+              Découvrir le générateur
             </a>
           </motion.div>
   
@@ -226,8 +226,8 @@ export default function Home() {
         {/* ── Section Produit ──────────────────────────────────────────── */}
         <ProductSection />
 
-        {/* ── Section Dualité ──────────────────────────────────────────── */}
-        <DualitySection />
+        {/* ── Section Protocoles ───────────────────────────────────────── */}
+        <ProtocolsSection />
 
         {/* ── Section Science ──────────────────────────────────────────── */}
         <ScienceSection />

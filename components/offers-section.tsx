@@ -11,6 +11,7 @@ import {
   PackageCheck,
   RefreshCcw,
   ShieldCheck,
+  Sparkles,
   Truck,
   Wrench,
   type LucideIcon,
@@ -94,7 +95,7 @@ const INCLUDED = [
   "Générateur ATMOS ONE",
   "Masque et circuit respiratoire",
   "Station de contrôle",
-  "Protocoles guidés hypoxie et hyperoxie",
+  "Protocoles guidés Live High et Train High",
   "Accompagnement au démarrage",
 ];
 
@@ -346,6 +347,36 @@ export function OffersSection() {
           </motion.li>
         ))}
       </motion.ul>
+
+      {/* ── Teaser : prochain produit de la gamme ────────────────────── */}
+      <motion.aside
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.9, ease: EASE }}
+        className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-8 py-9 text-center backdrop-blur-md"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(ellipse_at_50%_100%,rgba(129,140,248,0.14),transparent_70%)]"
+        />
+
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1 text-[0.6rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+            <Sparkles className="h-3 w-3 text-indigo-300/80" strokeWidth={1.5} />
+            À venir
+          </span>
+
+          <h3 className="mt-5 text-lg font-medium tracking-[0.06em] text-white/85 uppercase sm:text-xl">
+            ATMOS Chamber
+          </h3>
+
+          <p className="mx-auto mt-3 max-w-md text-[0.88rem] leading-relaxed font-light text-white/40 text-pretty">
+            Notre caisson de régénération hyperbare, second appareil de la gamme.
+            Un produit distinct du générateur d&apos;altitude.
+          </p>
+        </div>
+      </motion.aside>
     </section>
   );
 }

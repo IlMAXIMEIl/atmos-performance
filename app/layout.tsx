@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ATMOS PERFORMANCE — Simulation d'altitude",
+  title: "ATMOS ONE — Générateur d'altitude hypoxique",
   description:
-    "Générateurs de simulation d'altitude : hypoxie pour l'entraînement, hyperoxie pour la récupération. Pré-vente de la série de lancement, à l'achat ou en leasing.",
+    "ATMOS ONE simule jusqu'à 6 000 mètres d'altitude chez vous, de 20,9 % à 9,5 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Pré-vente à l'achat ou en leasing.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

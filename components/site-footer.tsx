@@ -51,7 +51,7 @@ function YoutubeMark(props: ComponentProps<"svg">) {
 
 const NAVIGATION = [
   { label: "Produit", href: "#produit" },
-  { label: "Technologie", href: "#technologie" },
+  { label: "Protocoles", href: "#protocoles" },
   { label: "La science", href: "#science" },
   { label: "Offres", href: "#offres" },
 ];
@@ -103,8 +103,8 @@ export function SiteFooter() {
             </a>
 
             <p className="mt-5 max-w-sm text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
-              Générateurs de simulation d&apos;altitude. Hypoxie pour
-              l&apos;entraînement, hyperoxie pour la récupération.
+              ATMOS ONE, générateur d&apos;altitude hypoxique. De 0 à 6 000
+              mètres simulés, pour la performance et l&apos;acclimatation.
             </p>
 
             <a

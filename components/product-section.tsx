@@ -120,10 +120,10 @@ export function ProductSection() {
           className="mt-5 text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl"
         >
           <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
-            Une seule machine.
+            ATMOS ONE.
           </span>{" "}
           <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
-            Deux atmosphères.
+            Générateur d&apos;altitude hypoxique.
           </span>
         </motion.h2>
 
@@ -132,7 +132,7 @@ export function ProductSection() {
           className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
           {
-            "ATMOS ONE sépare l'azote de l'oxygène pour produire, à la demande, un air d'altitude ou un air enrichi. Un seul appareil, piloté depuis une station unique."
+            "ATMOS ONE sépare l'azote de l'oxygène pour abaisser la fraction d'oxygène de 20,9 % à 9,5 %, soit n'importe quel palier entre le niveau de la mer et 6 000 mètres. Un seul appareil, piloté depuis une station unique."
           }
         </motion.p>
       </motion.div>
