@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -2 662 104" role="img" aria-labelledby="atmos-logo-title">
+  <title id="atmos-logo-title">ATMOS</title>
+  <!--
+    Logotype ATMOS — tracés géométriques, hauteur de capitale 100, graisse 18.
+    Le A est un Λ sans barre transversale. Les quatre premières lettres sont
+    Λ, T et O sont des remplissages ; le V du M et le S sont des tracés au
+    trait de 18, à vectoriser dans un éditeur (Objet > Décomposition) avant
+    une sortie imprimeur.
+  -->
+  <g fill="#FFFFFF">
+    <!-- Λ -->
+    <path d="M0 100 L39 0 L78 100 L58 100 L39 51.3 L20 100 Z" />
+
+    <!-- T -->
+    <path transform="translate(142 0)" d="M0 0 H72 V18 H45 V100 H27 V18 H0 Z" />
+
+    <!-- O -->
+    <path
+      transform="translate(438 0)"
+      fill-rule="evenodd"
+      d="M44 -1 A44 51 0 0 1 88 50 A44 51 0 0 1 44 101 A44 51 0 0 1 0 50 A44 51 0 0 1 44 -1 Z
+         M44 17 A26 33 0 0 1 70 50 A26 33 0 0 1 44 83 A26 33 0 0 1 18 50 A26 33 0 0 1 44 17 Z"
+    />
+  </g>
+
+  <!--
+    M : deux jambages pleins et un V au trait. Le V déborde volontairement
+    au-dessus de la ligne de capitale et sous la ligne de base ; le détourage
+    le recoupe à plat, ce qui donne des attaques droites et une pointe nette.
+  -->
+  <defs>
+    <clipPath id="atmos-m">
+      <rect x="0" y="0" width="96" height="100" />
+    </clipPath>
+  </defs>
+  <g transform="translate(278 0)">
+    <g clip-path="url(#atmos-m)">
+      <path fill="#FFFFFF" d="M0 0 H18 V100 H0 Z" />
+      <path fill="#FFFFFF" d="M78 0 H96 V100 H78 Z" />
+      <path
+        d="M-5.6 -30 L48 80 L101.6 -30"
+        fill="none"
+        stroke="#FFFFFF"
+        stroke-width="18"
+        stroke-linejoin="miter"
+      />
+    </g>
+  </g>
+
+  <!-- S -->
+  <path
+    transform="translate(590 0)"
+    d="M63 26 C63 15 51 9 36 9 C21 9 9 15 9 27 C9 39 20 44 36 47.5
+       C52 51 63 57 63 70 C63 84 51 91 36 91 C21 91 9 84 9 73"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="18"
+    stroke-linecap="butt"
+  />
+</svg>
