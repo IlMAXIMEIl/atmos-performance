@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
 
+import { DualitySection } from "@/components/duality-section";
+import { OffersSection } from "@/components/offers-section";
+import { ProductSection } from "@/components/product-section";
+import { ScienceSection } from "@/components/science-section";
+import { SiteFooter } from "@/components/site-footer";
+import { EASE, container, rise } from "@/lib/motion";
+
 const NAV_LINKS = [
+  { label: "Produit", href: "#produit" },
   { label: "Technologie", href: "#technologie" },
   { label: "Offres", href: "#offres" },
-  { label: "FAQ", href: "#faq" },
 ];
 
 const METRICS = [
@@ -15,25 +22,6 @@ const METRICS = [
   { icon: Wind, value: "Hypoxie & Hyperoxie", label: "en un seul système" },
   { icon: RefreshCw, value: "Option Location", label: "disponible dès la vague #1" },
 ];
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.15 },
-  },
-};
-
-const rise: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.9, ease: EASE },
-  },
-};
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -143,96 +131,113 @@ export default function Home() {
         </AnimatePresence>
       </motion.header>
 
-      {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <motion.main
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="relative z-20 mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-16 pb-20 text-center sm:pt-24 lg:pt-28"
-      >
-        {/* Badge de lancement */}
-        <motion.div variants={rise}>
-          <div className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full border border-cyan-300/25 bg-cyan-400/[0.06] px-4 py-1.5 backdrop-blur-md">
-            <span className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.22),transparent_70%)] opacity-70" />
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_2px_rgba(34,211,238,0.8)]" />
-            </span>
-            <span className="text-[0.68rem] font-medium tracking-[0.2em] text-cyan-100/90 uppercase">
-              Série de Lancement • Vague #1 Ouverte
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Titre principal */}
-        <motion.h1
-          variants={rise}
-          className="mt-9 text-[2.1rem] leading-[1.05] font-medium tracking-[-0.035em] text-balance sm:text-6xl sm:leading-[1.02] lg:text-[5.1rem]"
+      <main className="relative z-20">
+        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        <motion.section
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="mx-auto flex w-full max-w-5xl flex-col items-center px-6 pt-16 pb-20 text-center sm:pt-24 lg:pt-28"
         >
-          <span className="block bg-gradient-to-b from-white via-white to-white/70 bg-clip-text text-transparent">
-            {"Dominez l'Altitude."}
-          </span>
-          <span className="mt-1.5 block bg-gradient-to-r from-cyan-200 via-sky-300 to-blue-400 bg-clip-text text-transparent">
-            Maîtrisez la Récupération.
-          </span>
-        </motion.h1>
-
-        {/* Sous-titre */}
-        <motion.p
-          variants={rise}
-          className="mt-8 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg"
-        >
-          {
-            "La technologie de simulation atmosphérique d'élite. Optimisez votre VO2max et accélérez votre régénération cellulaire à domicile."
-          }
-        </motion.p>
-
-        {/* CTA */}
-        <motion.div
-          variants={rise}
-          className="mt-11 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row"
-        >
-          <a
-            href="#offres"
-            className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] sm:w-auto"
+          {/* Badge de lancement */}
+          <motion.div variants={rise}>
+            <div className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full border border-cyan-300/25 bg-cyan-400/[0.06] px-4 py-1.5 backdrop-blur-md">
+              <span className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.22),transparent_70%)] opacity-70" />
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_2px_rgba(34,211,238,0.8)]" />
+              </span>
+              <span className="text-[0.68rem] font-medium tracking-[0.2em] text-cyan-100/90 uppercase">
+                Série de Lancement • Vague #1 Ouverte
+              </span>
+            </div>
+          </motion.div>
+  
+          {/* Titre principal */}
+          <motion.h1
+            variants={rise}
+            className="mt-9 text-[2.1rem] leading-[1.05] font-medium tracking-[-0.035em] text-balance sm:text-6xl sm:leading-[1.02] lg:text-[5.1rem]"
           >
-            <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-            <span className="relative">Rejoindre la pré-vente</span>
-            <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </a>
-
-          <a
-            href="#technologie"
-            className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
+            <span className="block bg-gradient-to-b from-white via-white to-white/70 bg-clip-text text-transparent">
+              {"Dominez l'Altitude."}
+            </span>
+            <span className="mt-1.5 block bg-gradient-to-r from-cyan-200 via-sky-300 to-blue-400 bg-clip-text text-transparent">
+              Maîtrisez la Récupération.
+            </span>
+          </motion.h1>
+  
+          {/* Sous-titre */}
+          <motion.p
+            variants={rise}
+            className="mt-8 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg"
           >
-            <Gauge className="h-4 w-4 text-cyan-300/80" />
-            Découvrir la technologie
-          </a>
-        </motion.div>
+            {
+              "La technologie de simulation atmosphérique d'élite. Optimisez votre VO2max et accélérez votre régénération cellulaire à domicile."
+            }
+          </motion.p>
+  
+          {/* CTA */}
+          <motion.div
+            variants={rise}
+            className="mt-11 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row"
+          >
+            <a
+              href="#offres"
+              className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] sm:w-auto"
+            >
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+              <span className="relative">Rejoindre la pré-vente</span>
+              <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+  
+            <a
+              href="#technologie"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
+            >
+              <Gauge className="h-4 w-4 text-cyan-300/80" />
+              Découvrir la technologie
+            </a>
+          </motion.div>
+  
+          {/* Réassurance */}
+          <motion.div
+            variants={rise}
+            className="mt-20 w-full max-w-3xl border-t border-white/[0.07] pt-8"
+          >
+            <dl className="grid grid-cols-1 divide-y divide-white/[0.07] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+              {METRICS.map(({ icon: Icon, value, label }) => (
+                <div
+                  key={value}
+                  className="flex flex-col items-center gap-1.5 px-4 py-5 sm:py-2"
+                >
+                  <Icon className="mb-1 h-4 w-4 text-cyan-300/70" strokeWidth={1.5} />
+                  <dt className="text-sm font-medium tracking-tight text-white/90">
+                    {value}
+                  </dt>
+                  <dd className="text-[0.7rem] font-light tracking-[0.12em] text-white/40 uppercase">
+                    {label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </motion.div>
+        </motion.section>
 
-        {/* Réassurance */}
-        <motion.div
-          variants={rise}
-          className="mt-20 w-full max-w-3xl border-t border-white/[0.07] pt-8"
-        >
-          <dl className="grid grid-cols-1 divide-y divide-white/[0.07] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {METRICS.map(({ icon: Icon, value, label }) => (
-              <div
-                key={value}
-                className="flex flex-col items-center gap-1.5 px-4 py-5 sm:py-2"
-              >
-                <Icon className="mb-1 h-4 w-4 text-cyan-300/70" strokeWidth={1.5} />
-                <dt className="text-sm font-medium tracking-tight text-white/90">
-                  {value}
-                </dt>
-                <dd className="text-[0.7rem] font-light tracking-[0.12em] text-white/40 uppercase">
-                  {label}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </motion.div>
-      </motion.main>
+        {/* ── Section Produit ──────────────────────────────────────────── */}
+        <ProductSection />
+
+        {/* ── Section Dualité ──────────────────────────────────────────── */}
+        <DualitySection />
+
+        {/* ── Section Science ──────────────────────────────────────────── */}
+        <ScienceSection />
+
+        {/* ── Section Offres ───────────────────────────────────────────── */}
+        <OffersSection />
+      </main>
+
+      {/* ── Footer ───────────────────────────────────────────────────── */}
+      <SiteFooter />
     </div>
   );
 }
