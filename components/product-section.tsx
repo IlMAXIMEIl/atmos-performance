@@ -3,7 +3,7 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { Gauge, Mountain, Volume2, Wind, type LucideIcon } from "lucide-react";
+import { Mountain, Package, Volume2, Wind, type LucideIcon } from "lucide-react";
 
 import { EASE, container, rise } from "@/lib/motion";
 
@@ -15,7 +15,7 @@ type Spec = {
   metricLabel: string;
   title: string;
   description: string;
-  /** Remplissage de l'anneau et des graduations, de 0 à 1. */
+  /** Remplissage de la jauge, de 0 à 1. Poids visuel, sans unité. */
   ratio: number;
 };
 
@@ -24,46 +24,59 @@ const SPECS: Spec[] = [
     id: "altitude",
     label: "Altitude",
     icon: Mountain,
-    metric: "6 000 m",
+    metric: "6 500 m",
     metricLabel: "Altitude simulée",
     title: "L'altitude se règle au mètre près",
     description:
-      "Le générateur abaisse la fraction d'oxygène jusqu'à 9,5 % pour reproduire n'importe quel palier entre le niveau de la mer et 6 000 mètres. Vous fixez le sommet, la machine tient la consigne.",
-    ratio: 0.92,
+      "Le générateur abaisse la fraction d'oxygène de 20,9 % à 9 %, soit n'importe quel palier entre le niveau de la mer et 6 500 mètres (21 330 ft). Vous fixez le sommet, la machine tient la consigne.",
+    ratio: 1,
   },
   {
     id: "flux",
     label: "Flux d'air",
     icon: Wind,
-    metric: "120 L/min",
-    metricLabel: "Débit continu",
+    metric: "100 L/min",
+    metricLabel: "Débit hypoxique",
     title: "Un débit qui suit l'effort",
     description:
-      "De quoi alimenter un masque en sprint comme une tente d'altitude sur une nuit entière. Le flux s'ajuste à votre ventilation, sans à-coup ni sensation de résistance.",
-    ratio: 0.7,
-  },
-  {
-    id: "regulation",
-    label: "Régulation",
-    icon: Gauge,
-    metric: "± 0,1 %",
-    metricLabel: "Stabilité O₂",
-    title: "Une consigne tenue en boucle fermée",
-    description:
-      "Un capteur mesure la fraction d'oxygène en continu et corrige la séparation membranaire en temps réel. La consigne ne dérive pas, du premier au dernier intervalle.",
-    ratio: 0.85,
+      "Cent litres d'air hypoxique par minute : de quoi alimenter un masque en pleine séance comme une tente d'altitude sur une nuit entière.",
+    ratio: 0.78,
   },
   {
     id: "silence",
     label: "Silence",
     icon: Volume2,
-    metric: "42 dB",
+    metric: "≤ 50 dB",
     metricLabel: "Niveau sonore",
-    title: "Assez discret pour dormir à côté",
+    title: "Assez discret pour tourner la nuit",
     description:
-      "Compresseur suspendu et double caisson acoustique : l'appareil reste sous le niveau d'une chambre calme, y compris en exposition nocturne prolongée.",
-    ratio: 0.42,
+      "Cinquante décibels au maximum, l'ordre de grandeur d'un réfrigérateur. Pour les nuits sous tente, l'unité se place volontiers hors de la chambre, reliée au circuit.",
+    ratio: 0.5,
   },
+  {
+    id: "format",
+    label: "Format",
+    icon: Package,
+    metric: "27 kg",
+    metricLabel: "Poids net",
+    title: "Le volume d'un gros appareil ménager",
+    description:
+      "365 × 375 × 600 mm sur roulettes, pour 550 watts au maximum. Il se déplace d'une pièce à l'autre sans démontage.",
+    ratio: 0.45,
+  },
+];
+
+/** Fiche technique complète, telle que fournie par le constructeur. */
+const DATASHEET = [
+  { label: "Concentration hypoxique", value: "9 % – 20,9 % O₂" },
+  { label: "Altitude simulée", value: "0 – 6 500 m (0 – 21 330 ft)" },
+  { label: "Débit hypoxique", value: "100 L/min" },
+  { label: "Niveau sonore", value: "≤ 50 dB" },
+  { label: "Consommation", value: "≤ 550 W" },
+  { label: "Poids net", value: "27 kg" },
+  { label: "Dimensions", value: "365 × 375 × 600 mm" },
+  { label: "Alarmes", value: "Coupure d'alimentation, pression haute / basse" },
+  { label: "En option", value: "Oxymètre de pouls, système de monitoring" },
 ];
 
 /** Transition commune aux bascules de pilule (lecture de mesure + panneau). */
@@ -132,7 +145,7 @@ export function ProductSection() {
           className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
           {
-            "ATMOS ONE sépare l'azote de l'oxygène pour abaisser la fraction d'oxygène de 20,9 % à 9,5 %, soit n'importe quel palier entre le niveau de la mer et 6 000 mètres. Un seul appareil, piloté depuis une station unique."
+            "ATMOS ONE sépare l'azote de l'oxygène pour abaisser la fraction d'oxygène de 20,9 % à 9 %, soit n'importe quel palier entre le niveau de la mer et 6 500 mètres. Un seul appareil, piloté depuis une station unique."
           }
         </motion.p>
       </motion.div>
@@ -303,6 +316,42 @@ export function ProductSection() {
           </div>
         </motion.div>
       </div>
+
+      {/* ── Fiche technique ──────────────────────────────────────────── */}
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="mt-20 border-t border-white/[0.07] pt-12"
+      >
+        <motion.h3
+          variants={rise}
+          className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase"
+        >
+          Fiche technique
+        </motion.h3>
+
+        <motion.dl
+          variants={container}
+          className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {DATASHEET.map((row) => (
+            <motion.div
+              key={row.label}
+              variants={rise}
+              className="border-t border-white/[0.06] pt-4"
+            >
+              <dt className="text-[0.7rem] font-light tracking-[0.14em] text-white/35 uppercase">
+                {row.label}
+              </dt>
+              <dd className="mt-2 text-[0.95rem] font-light text-white/80 text-pretty">
+                {row.value}
+              </dd>
+            </motion.div>
+          ))}
+        </motion.dl>
+      </motion.div>
     </section>
   );
 }

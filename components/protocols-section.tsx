@@ -111,11 +111,11 @@ const PROTOCOLS: Protocol[] = [
 const MARKERS = [
   { value: 0, label: "0 m", caption: "Niveau de la mer", align: "left" },
   { value: 3500, label: "3 500 m", caption: "Palier nocturne", align: "center" },
-  { value: 6000, label: "6 000 m", caption: "Plafond du système", align: "right" },
+  { value: 6500, label: "6 500 m", caption: "Plafond du système", align: "right" },
 ] as const;
 
 const AXIS_MIN = 0;
-const AXIS_MAX = 6000;
+const AXIS_MAX = 6500;
 
 /** Convertit une altitude en position sur l'axe, en pourcentage. */
 function toAxis(value: number) {

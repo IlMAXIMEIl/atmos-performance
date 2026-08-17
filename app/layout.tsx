@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ATMOS ONE — Générateur d'altitude hypoxique",
   description:
-    "ATMOS ONE simule jusqu'à 6 000 mètres d'altitude chez vous, de 20,9 % à 9,5 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Pré-vente à l'achat ou en leasing.",
+    "ATMOS ONE simule jusqu'à 6 500 mètres d'altitude chez vous, de 20,9 % à 9 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Pré-vente à l'achat ou en leasing.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

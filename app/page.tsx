@@ -18,8 +18,8 @@ const NAV_LINKS = [
 ];
 
 const METRICS = [
-  { icon: Mountain, value: "Jusqu'à 6 000 m", label: "d'altitude simulée" },
-  { icon: Wind, value: "9,5 % à 20,9 % O₂", label: "réglable au mètre près" },
+  { icon: Mountain, value: "Jusqu'à 6 500 m", label: "d'altitude simulée" },
+  { icon: Wind, value: "9 % à 20,9 % O₂", label: "réglable au mètre près" },
   { icon: RefreshCw, value: "Option Location", label: "disponible dès la vague #1" },
 ];
 
@@ -172,7 +172,7 @@ export default function Home() {
             className="mt-8 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg"
           >
             {
-              "Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à 6 000 mètres chez vous. Travaillez votre VO2max et préparez vos acclimatations, nuit après nuit ou séance après séance."
+              "Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à 6 500 mètres chez vous. Travaillez votre VO2max et préparez vos acclimatations, nuit après nuit ou séance après séance."
             }
           </motion.p>
   

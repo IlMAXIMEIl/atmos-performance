@@ -103,7 +103,7 @@ export function SiteFooter() {
             </a>
 
             <p className="mt-5 max-w-sm text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
-              ATMOS ONE, générateur d&apos;altitude hypoxique. De 0 à 6 000
+              ATMOS ONE, générateur d&apos;altitude hypoxique. De 0 à 6 500
               mètres simulés, pour la performance et l&apos;acclimatation.
             </p>
 
