@@ -19,20 +19,65 @@ import {
   Lock,
   User,
   X,
+  type LucideIcon,
 } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
 
+export type PlanId = "achat" | "leasing";
+
 type Props = {
   open: boolean;
   onClose: () => void;
+  plan: PlanId;
 };
 
-const STEPS = [
-  { label: "Dates", icon: CalendarDays },
-  { label: "Coordonnées", icon: User },
-  { label: "Paiement", icon: Lock },
-];
+type StepId = "dates" | "contact" | "paiement";
+
+const STEP_META: Record<StepId, { label: string; icon: LucideIcon }> = {
+  dates: { label: "Dates", icon: CalendarDays },
+  contact: { label: "Coordonnées", icon: User },
+  paiement: { label: "Paiement", icon: Lock },
+};
+
+/**
+ * L'étape de dates n'existe qu'en location : une plage de dates n'a pas de
+ * sens pour un achat ferme.
+ */
+const PLAN_CONFIG: Record<
+  PlanId,
+  {
+    eyebrow: string;
+    title: string;
+    steps: StepId[];
+    recapPlan: string;
+    amountLabel: string;
+    amount: string;
+    submitLabel: string;
+    note: string;
+  }
+> = {
+  leasing: {
+    eyebrow: "Location · Vague #1",
+    title: "Louer ATMOS ONE",
+    steps: ["dates", "contact", "paiement"],
+    recapPlan: "Location",
+    amountLabel: "Caution à régler maintenant",
+    amount: "500 €",
+    submitLabel: "Régler la caution",
+    note: "Entièrement remboursable en fin de location. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.",
+  },
+  achat: {
+    eyebrow: "Achat · Vague #1",
+    title: "Acheter ATMOS ONE",
+    steps: ["contact", "paiement"],
+    recapPlan: "Achat",
+    amountLabel: "Acompte à régler maintenant",
+    amount: "300 €",
+    submitLabel: "Régler l'acompte",
+    note: "Acompte déduit du prix de 1 890 €. Le solde de 1 590 € est réglé avant ou à la livraison. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.",
+  },
+};
 
 const EMPTY_FORM = {
   startDate: "",
@@ -46,11 +91,8 @@ const EMPTY_FORM = {
 type FormState = typeof EMPTY_FORM;
 type FieldErrors = Partial<Record<keyof FormState, string>>;
 
-/** Affichage seul : le serveur reste seul maître du montant réellement débité. */
-const DEPOSIT_LABEL = "500 €";
-
-/** Ce parcours ne couvre que la location ; l'achat passe par le contact direct. */
-const PLAN = "leasing";
+// Les montants affichés ci-dessus le sont à titre indicatif : le serveur reste
+// seul maître de la somme réellement débitée.
 
 const FIELD_CLASS =
   "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[0.95rem] font-light text-white placeholder:text-white/25 transition-colors duration-300 [color-scheme:dark] focus:border-cyan-300/50 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-300/20";
@@ -135,9 +177,12 @@ function Field({
   );
 }
 
-export function ReservationModal({ open, onClose }: Props) {
+export function ReservationModal({ open, onClose, plan }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const config = PLAN_CONFIG[plan];
+  const steps = config.steps;
 
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -205,21 +250,17 @@ export function ReservationModal({ open, onClose }: Props) {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    const currentStep = steps[step];
 
-    if (step === 0) {
-      const found = validateDates(form, minDate);
+    if (currentStep !== "paiement") {
+      const found =
+        currentStep === "dates"
+          ? validateDates(form, minDate)
+          : validateContact(form);
       if (Object.keys(found).length > 0) return setErrors(found);
       setErrors({});
       setDirection(1);
-      return setStep(1);
-    }
-
-    if (step === 1) {
-      const found = validateContact(form);
-      if (Object.keys(found).length > 0) return setErrors(found);
-      setErrors({});
-      setDirection(1);
-      return setStep(2);
+      return setStep(step + 1);
     }
 
     setSubmitting(true);
@@ -229,7 +270,7 @@ export function ReservationModal({ open, onClose }: Props) {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: PLAN, ...form }),
+        body: JSON.stringify({ plan, ...form }),
       });
       const data = (await response.json()) as { url?: string; error?: string };
 
@@ -296,13 +337,13 @@ export function ReservationModal({ open, onClose }: Props) {
               <div className="flex items-start justify-between gap-6">
                 <div>
                   <span className="text-[0.62rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
-                    Location · Vague #1
+                    {config.eyebrow}
                   </span>
                   <h2
                     id="reservation-titre"
                     className="mt-2.5 text-xl font-medium tracking-[-0.02em] text-white sm:text-2xl"
                   >
-                    Louer ATMOS ONE
+                    {config.title}
                   </h2>
                 </div>
 
@@ -319,13 +360,14 @@ export function ReservationModal({ open, onClose }: Props) {
               {/* Progression */}
               <div className="mt-8">
                 <div className="flex items-center justify-between">
-                  {STEPS.map((item, index) => {
+                  {steps.map((stepId, index) => {
+                    const item = STEP_META[stepId];
                     const Icon = item.icon;
                     const done = index < step;
                     const current = index === step;
 
                     return (
-                      <div key={item.label} className="flex items-center gap-2.5">
+                      <div key={stepId} className="flex items-center gap-2.5">
                         <span
                           className={`flex h-7 w-7 items-center justify-center rounded-full border transition-colors duration-500 ${
                             done
@@ -356,7 +398,7 @@ export function ReservationModal({ open, onClose }: Props) {
                 <div className="mt-5 h-px w-full bg-white/[0.08]">
                   <motion.div
                     initial={false}
-                    animate={{ scaleX: (step + 1) / STEPS.length }}
+                    animate={{ scaleX: (step + 1) / steps.length }}
                     transition={{ duration: 0.5, ease: EASE }}
                     className="h-px w-full origin-left bg-gradient-to-r from-cyan-300 to-blue-500"
                   />
@@ -368,7 +410,7 @@ export function ReservationModal({ open, onClose }: Props) {
                 <div ref={panelRef} className="min-h-[17rem]">
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.div key={step} {...slide}>
-                      {step === 0 && (
+                      {steps[step] === "dates" && (
                         <div className="flex flex-col gap-5">
                           <p className="text-[0.88rem] leading-relaxed font-light text-white/50">
                             Indiquez la période de location souhaitée. Elle reste
@@ -419,7 +461,7 @@ export function ReservationModal({ open, onClose }: Props) {
                         </div>
                       )}
 
-                      {step === 1 && (
+                      {steps[step] === "contact" && (
                         <div className="flex flex-col gap-5">
                           <Field id="name" label="Nom complet" error={errors.name}>
                             <input
@@ -497,15 +539,19 @@ export function ReservationModal({ open, onClose }: Props) {
                         </div>
                       )}
 
-                      {step === 2 && (
+                      {steps[step] === "paiement" && (
                         <div className="flex flex-col gap-6">
                           <dl className="flex flex-col gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
                             {[
-                              { label: "Formule", value: "Location" },
-                              {
-                                label: "Période de location",
-                                value: `${formatDate(form.startDate)} → ${formatDate(form.endDate)}`,
-                              },
+                              { label: "Formule", value: config.recapPlan },
+                              ...(plan === "leasing"
+                                ? [
+                                    {
+                                      label: "Période de location",
+                                      value: `${formatDate(form.startDate)} → ${formatDate(form.endDate)}`,
+                                    },
+                                  ]
+                                : []),
                               { label: "Nom", value: form.name },
                               { label: "Email", value: form.email },
                               { label: "Téléphone", value: form.phone },
@@ -527,17 +573,15 @@ export function ReservationModal({ open, onClose }: Props) {
 
                           <div className="flex items-baseline justify-between border-t border-white/[0.07] pt-5">
                             <span className="text-[0.88rem] font-light text-white/60">
-                              Caution à régler maintenant
+                              {config.amountLabel}
                             </span>
                             <span className="text-xl font-medium tracking-tight text-white">
-                              {DEPOSIT_LABEL}
+                              {config.amount}
                             </span>
                           </div>
 
                           <p className="text-[0.78rem] leading-relaxed font-light text-white/35">
-                            Entièrement remboursable en fin de location. Le
-                            paiement est traité par Stripe : aucune coordonnée
-                            bancaire ne transite par ce site.
+                            {config.note}
                           </p>
                         </div>
                       )}
@@ -572,7 +616,7 @@ export function ReservationModal({ open, onClose }: Props) {
                   <button
                     type="submit"
                     disabled={submitting}
-                    data-autofocus={step === 2 ? "" : undefined}
+                    data-autofocus={steps[step] === "paiement" ? "" : undefined}
                     className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-[#04070D] shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? (
@@ -582,7 +626,9 @@ export function ReservationModal({ open, onClose }: Props) {
                       </>
                     ) : (
                       <>
-                        {step === 2 ? "Régler l'acompte" : "Continuer"}
+                        {steps[step] === "paiement"
+                          ? config.submitLabel
+                          : "Continuer"}
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </>
                     )}

@@ -39,7 +39,7 @@ const PLANS: Plan[] = [
     id: "achat",
     label: "Achat",
     badge: "Vous êtes propriétaire",
-    price: "8 900 €",
+    price: "1 890 €",
     terms: "TTC · paiement unique",
     pitch:
       "L'appareil vous appartient dès la livraison. Aucune échéance, aucune condition de restitution.",
@@ -60,13 +60,13 @@ const PLANS: Plan[] = [
         detail: "Nouveaux protocoles et évolutions logicielles inclus.",
       },
     ],
-    cta: "Réserver ma place",
+    cta: "Acheter ATMOS ONE",
   },
   {
     id: "leasing",
     label: "Leasing",
     badge: "Sans apport",
-    price: "290 €",
+    price: "340 €",
     terms: "par mois · engagement 24 mois",
     pitch:
       "Le même appareil, entretenu et renouvelé par nos soins, pour une mensualité fixe.",
@@ -109,10 +109,6 @@ const ASSURANCES = [
 /** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
 const CTA_CLASS =
   "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none";
-
-const PURCHASE_MAILTO = `mailto:contact@atmos-performance.com?subject=${encodeURIComponent(
-  "Commande ATMOS ONE — formule Achat",
-)}`;
 
 const swap = {
   initial: { opacity: 0, y: 12, filter: "blur(6px)" },
@@ -311,32 +307,20 @@ export function OffersSection() {
               ))}
             </ul>
 
-            {/*
-              Seule la location se réserve en ligne. L'achat n'a pas de parcours
-              de paiement : il passe par un échange direct.
-            */}
-            {plan.id === "leasing" ? (
-              <button
-                type="button"
-                onClick={() => setModalOpen(true)}
-                className={CTA_CLASS}
-              >
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-                <span className="relative">{plan.cta}</span>
-                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            ) : (
-              <a href={PURCHASE_MAILTO} className={CTA_CLASS}>
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-                <span className="relative">{plan.cta}</span>
-                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </a>
-            )}
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className={CTA_CLASS}
+            >
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+              <span className="relative">{plan.cta}</span>
+              <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </button>
 
             <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
               {plan.id === "leasing"
                 ? "La caution fixe votre rang dans la vague #1 et reste remboursable."
-                : "Nous revenons vers vous sous 48 h pour finaliser la commande."}
+                : "Acompte de 300 € à la réservation, solde de 1 590 € avant ou à la livraison."}
             </p>
           </div>
         </div>
@@ -356,7 +340,7 @@ export function OffersSection() {
             text:
               plan.id === "leasing"
                 ? "Caution de 500 € entièrement remboursable"
-                : "Acompte de 500 € entièrement remboursable",
+                : "Acompte de 300 €, déduit du prix d'achat",
           },
           ...ASSURANCES,
         ].map(({ icon: Icon, text }) => (
@@ -406,7 +390,11 @@ export function OffersSection() {
         </div>
       </motion.aside>
 
-      <ReservationModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <ReservationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        plan={plan.id}
+      />
     </section>
   );
 }
