@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Gauge, Mountain, Volume2, Wind, type LucideIcon } from "lucide-react";
 
@@ -65,31 +66,7 @@ const SPECS: Spec[] = [
   },
 ];
 
-const RING_RADIUS = 78;
-const RING_LENGTH = 2 * Math.PI * RING_RADIUS;
-const TICK_COUNT = 48;
-const VENT_COUNT = 24;
-
-/**
- * Les graduations sont calculées au rendu, côté serveur puis côté client.
- * `Math.cos`/`Math.sin` ne sont pas garantis bit-à-bit identiques entre les
- * deux moteurs : on arrondit pour que le HTML sérialisé corresponde et éviter
- * une erreur d'hydratation.
- */
-const TICKS = Array.from({ length: TICK_COUNT }, (_, index) => {
-  const angle = (index / TICK_COUNT) * Math.PI * 2;
-  const round = (value: number) => Math.round(value * 1000) / 1000;
-
-  return {
-    ratio: index / TICK_COUNT,
-    x1: round(100 + Math.cos(angle) * 88),
-    y1: round(100 + Math.sin(angle) * 88),
-    x2: round(100 + Math.cos(angle) * 94),
-    y2: round(100 + Math.sin(angle) * 94),
-  };
-});
-
-/** Transition commune aux bascules de pilule (lecture centrale + panneau). */
+/** Transition commune aux bascules de pilule (lecture de mesure + panneau). */
 const swap = {
   initial: { opacity: 0, y: 10, filter: "blur(6px)" },
   animate: { opacity: 1, y: 0, filter: "blur(0px)" },
@@ -193,102 +170,56 @@ export function ProductSection() {
               </span>
             </div>
 
-            {/* Cadran */}
-            <div className="relative mt-8 aspect-square w-full">
-              <svg
-                viewBox="0 0 200 200"
-                aria-hidden
-                className="h-full w-full -rotate-90"
-              >
-                <defs>
-                  <linearGradient id="atmos-ring" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#67e8f9" />
-                    <stop offset="100%" stopColor="#3b82f6" />
-                  </linearGradient>
-                </defs>
-
-                {/* Graduations : celles couvertes par la mesure s'allument */}
-                {TICKS.map((tick, index) => (
-                  <line
-                    key={index}
-                    x1={tick.x1}
-                    y1={tick.y1}
-                    x2={tick.x2}
-                    y2={tick.y2}
-                    stroke={
-                      tick.ratio <= active.ratio
-                        ? "rgba(103,232,249,0.55)"
-                        : "rgba(148,163,184,0.18)"
-                    }
-                    strokeWidth="1"
-                    className="transition-[stroke] duration-500"
-                  />
-                ))}
-
-                <circle
-                  cx="100"
-                  cy="100"
-                  r={RING_RADIUS}
-                  fill="none"
-                  stroke="rgba(148,163,184,0.14)"
-                  strokeWidth="1.5"
-                />
-                <motion.circle
-                  cx="100"
-                  cy="100"
-                  r={RING_RADIUS}
-                  fill="none"
-                  stroke="url(#atmos-ring)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray={RING_LENGTH}
-                  initial={false}
-                  animate={{ strokeDashoffset: RING_LENGTH * (1 - active.ratio) }}
-                  transition={{ duration: 1.1, ease: EASE }}
-                />
-              </svg>
-
-              {/* Respiration au centre du cadran */}
+            {/*
+              Le cliché est sur fond noir opaque (aucune transparence, pourtour
+              mesuré à 5/255). Deux traitements se cumulent pour effacer ce
+              fond : `screen`, qui laisse le support inchangé là où l'image est
+              noire, et un masque radial qui estompe les bords — ce dernier
+              reste valable même si le `backdrop-blur` du panneau isole le
+              mélange dans son propre contexte d'empilement.
+            */}
+            <div className="relative mt-6 aspect-square w-full">
               <motion.div
                 aria-hidden
-                animate={{ opacity: [0.3, 0.55, 0.3], scale: [0.94, 1.04, 0.94] }}
+                animate={{ opacity: [0.35, 0.6, 0.35], scale: [0.96, 1.03, 0.96] }}
                 transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-                className="pointer-events-none absolute inset-[18%] rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.16),transparent_70%)]"
+                className="pointer-events-none absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_70%)]"
               />
 
-              {/* Lecture de la mesure active */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+              <Image
+                src="/generator.png"
+                alt="Le générateur ATMOS ONE, vu de face : écran de contrôle, sortie hypoxique et débitmètre."
+                width={1024}
+                height={1024}
+                sizes="(min-width: 1024px) 28rem, (min-width: 640px) 60vw, 85vw"
+                className="relative h-full w-full object-contain mix-blend-screen [mask-image:radial-gradient(ellipse_at_center,black_60%,transparent_95%)]"
+              />
+            </div>
+
+            {/* Lecture de la mesure sélectionnée */}
+            <div className="mt-6 border-t border-white/[0.07] pt-6">
+              <div className="flex min-h-[3.25rem] items-baseline justify-between gap-4">
                 <AnimatePresence mode="wait">
                   <motion.div key={active.id} {...swap}>
-                    <div className="text-3xl font-medium tracking-tight text-white sm:text-4xl">
+                    <div className="text-2xl font-medium tracking-tight text-white sm:text-3xl">
                       {active.metric}
                     </div>
-                    <div className="mt-2.5 text-[0.62rem] font-light tracking-[0.2em] text-white/45 uppercase">
+                    <div className="mt-1.5 text-[0.62rem] font-light tracking-[0.2em] text-white/45 uppercase">
                       {active.metricLabel}
                     </div>
                   </motion.div>
                 </AnimatePresence>
               </div>
-            </div>
 
-            {/* Grille de sortie d'air */}
-            <div
-              aria-hidden
-              className="mt-8 flex items-end justify-center gap-1.5"
-            >
-              {Array.from({ length: VENT_COUNT }, (_, index) => (
-                <motion.span
-                  key={index}
-                  animate={{ opacity: [0.12, 0.5, 0.12], scaleY: [0.65, 1, 0.65] }}
-                  transition={{
-                    duration: 3.6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: index * 0.09,
-                  }}
-                  className="h-7 w-px origin-bottom bg-gradient-to-t from-cyan-300/70 to-transparent"
+              {/* Jauge : conserve le lien visuel entre les pilules et l'unité */}
+              <div className="mt-5 h-px w-full bg-white/[0.09]">
+                <motion.div
+                  initial={false}
+                  animate={{ scaleX: active.ratio }}
+                  transition={{ duration: 1.1, ease: EASE }}
+                  className="h-px w-full origin-left bg-gradient-to-r from-cyan-300 to-blue-500"
                 />
-              ))}
+              </div>
             </div>
           </div>
         </motion.div>
