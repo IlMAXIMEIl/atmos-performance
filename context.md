@@ -30,7 +30,12 @@ Toutes les sections sont construites. Une section = un composant dans `component
 Pages annexes : `/mentions-legales`, `/reservation/confirmee`, et le blog.
 
 ## Blog & SEO
-- `/blog` liste les articles, `/blog/[slug]` les affiche. Les articles vivent dans `lib/posts.ts` : un tableau d'objets au corps découpé en blocs typés (paragraphe, titre, liste). Ajouter un article = ajouter une entrée.
+- `/blog` liste les articles, `/blog/[slug]` les affiche. **Les articles sont des fichiers Markdown dans `content/blog/`** : pour publier, déposer un `.md` et rebuilder. `lib/posts.ts` les lit au build (gray-matter + marked).
+- Frontmatter attendu : `title`, `description`, `date` (AAAA-MM-JJ, **obligatoire**, le build échoue sinon), et en option `slug` (sinon le nom de fichier fait foi), `category`, `readTime`, `author`, `tags`.
+- Le H1 d'ouverture du Markdown est retiré automatiquement : le titre est déjà rendu par la page, deux H1 nuiraient au SEO. Écrire le corps en `##` et `###`.
+- Les fragments LaTeX du type `$O_2$` fréquents dans les rédactions IA sont convertis en indices Unicode (O₂). Le reste du LaTeX n'est pas géré.
+- Deux articles ne peuvent pas partager le même slug : le build échoue avec un message explicite.
+- La mise en forme du corps est dans `.article-body` (`app/globals.css`) : titres, listes, citations, tableaux (défilement horizontal propre).
 - Chaque article génère title, description, canonical, OpenGraph article (dates, tags), Twitter card et un JSON-LD `Article` (Schema.org).
 - `app/sitemap.ts` et `app/robots.ts` sont générés depuis les mêmes données. `metadataBase` est défini dans `app/layout.tsx` à partir de `lib/site.ts`.
 - Lien « Blog » présent dans la navigation du header et du footer pour le maillage interne.

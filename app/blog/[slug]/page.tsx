@@ -3,14 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
-import { formatPostDate, getAllPosts, getPost, POSTS } from "@/lib/posts";
+import { formatPostDate, getAllPosts, getPost } from "@/lib/posts";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
 /** Prérend les articles au build : leur contenu est statique. */
 export function generateStaticParams() {
-  return POSTS.map((post) => ({ slug: post.slug }));
+  return getAllPosts().map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -63,7 +63,7 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.updatedAt ?? post.publishedAt,
     inLanguage: "fr-FR",
     keywords: post.tags.join(", "),
-    author: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    author: { "@type": "Organization", name: post.author },
     publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     mainEntityOfPage: {
       "@type": "WebPage",
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: Props) {
             ))}
             <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-light text-white/30">
               <Clock className="h-3 w-3" strokeWidth={1.5} />
-              {post.readingMinutes} min de lecture
+              {post.readTime} de lecture
             </span>
           </div>
 
@@ -129,47 +129,12 @@ export default async function BlogPostPage({ params }: Props) {
             {post.description}
           </p>
 
-          <div className="mt-12 flex flex-col gap-6">
-            {post.body.map((block, index) => {
-              if (block.type === "heading") {
-                return (
-                  <h2
-                    key={index}
-                    className="mt-6 text-xl font-medium tracking-[-0.02em] text-balance text-white sm:text-2xl"
-                  >
-                    {block.text}
-                  </h2>
-                );
-              }
-
-              if (block.type === "list") {
-                return (
-                  <ul key={index} className="flex flex-col gap-3">
-                    {block.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3.5">
-                        <span
-                          aria-hidden
-                          className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-cyan-300/70"
-                        />
-                        <span className="text-[0.98rem] leading-relaxed font-light text-white/60 text-pretty">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                );
-              }
-
-              return (
-                <p
-                  key={index}
-                  className="text-[0.98rem] leading-[1.75] font-light text-white/60 text-pretty"
-                >
-                  {block.text}
-                </p>
-              );
-            })}
-          </div>
+          <div
+            className="article-body mt-12"
+            // Contenu de première main : nos propres fichiers Markdown, versionnés
+            // dans le dépôt. Aucune saisie de visiteur n'atteint cette page.
+            dangerouslySetInnerHTML={{ __html: post.html }}
+          />
         </article>
 
         {others.length > 0 && (

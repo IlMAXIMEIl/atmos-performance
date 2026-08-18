@@ -77,7 +77,7 @@ export default function BlogIndexPage() {
                   ))}
                   <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-light text-white/30">
                     <Clock className="h-3 w-3" strokeWidth={1.5} />
-                    {post.readingMinutes} min
+                    {post.readTime}
                   </span>
                 </div>
 
