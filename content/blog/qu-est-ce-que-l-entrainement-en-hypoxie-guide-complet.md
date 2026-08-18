@@ -2,7 +2,7 @@
 title: "Qu'est-ce que l'entraînement en hypoxie et comment fonctionne-t-il ? (Guide complet)"
 slug: "qu-est-ce-que-l-entrainement-en-hypoxie-guide-complet"
 description: "Découvrez les principes physiologiques de l'entraînement en altitude et de l'hypoxie intermittente : mécanismes cellulaires, bénéfices sur la VO2 max, la récupération et l'énergie."
-date: "2026-08-18"
+date: "2026-07-21"
 category: "Comprendre l'Hypoxie"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

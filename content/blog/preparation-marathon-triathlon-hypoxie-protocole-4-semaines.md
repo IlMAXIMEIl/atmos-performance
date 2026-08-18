@@ -2,7 +2,7 @@
 title: "Préparation Marathon et Triathlon avec l'Hypoxie : Le Protocole Clé en Main sur 4 Semaines"
 slug: "preparation-marathon-triathlon-hypoxie-protocole-4-semaines"
 description: "Guide pratique et protocole d'hypoxie sur 4 semaines pour coureurs et triathlètes : timing optimal, gestion de l'affûtage, gains sur l'économie de course et suivi des biomarqueurs."
-date: "2026-08-18"
+date: "2026-08-09"
 category: "Performance & Récupération"
 readTime: "8 min"
 author: "Équipe ATMOS Performance"

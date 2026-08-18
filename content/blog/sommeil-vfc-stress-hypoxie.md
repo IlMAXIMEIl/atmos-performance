@@ -2,7 +2,7 @@
 title: "Sommeil, Stress et Variabilité de la Fréquence Cardiaque (VFC) : Comment l'Hypoxie Rééquilibre le Système Nerveux"
 slug: "sommeil-vfc-stress-hypoxie"
 description: "Découvrez comment l'hypoxie intermittente renforce le tonus vagal, augmente la variabilité de la fréquence cardiaque (VFC / HRV) et optimise les phases de sommeil profond réparateur."
-date: "2026-08-18"
+date: "2026-07-31"
 category: "Santé & Longévité"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

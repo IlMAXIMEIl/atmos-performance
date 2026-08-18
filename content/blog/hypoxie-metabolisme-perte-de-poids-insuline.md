@@ -2,7 +2,7 @@
 title: "Hypoxie et Métabolisme : Perte de Poids, Sensibilité à l'Insuline et Dépense Énergétique"
 slug: "hypoxie-metabolisme-perte-de-poids-insuline"
 description: "Analyse scientifique de l'impact de l'hypoxie sur le métabolisme : activation de l'AMPK, translocation des récepteurs GLUT4, dépense calorique basale et composition corporelle."
-date: "2026-08-18"
+date: "2026-08-04"
 category: "Santé & Longévité"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

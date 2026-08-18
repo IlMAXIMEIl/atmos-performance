@@ -2,7 +2,7 @@
 title: "Stage en altitude vs Simulateur d'hypoxie à domicile : Le comparatif complet et chiffré"
 slug: "stage-altitude-vs-generateur-hypoxie-comparatif"
 description: "Comparatif objectif entre stage en montagne et générateur d'hypoxie : coûts réels, contraintes physiologiques, gains d'entraînement et rentabilité."
-date: "2026-08-18"
+date: "2026-08-11"
 category: "Comprendre l'Hypoxie"
 readTime: "8 min"
 author: "Équipe ATMOS Performance"

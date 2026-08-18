@@ -2,7 +2,7 @@
 title: "Hypoxie et Biohacking : Clarté mentale, BDNF et régulation du système nerveux"
 slug: "hypoxie-biohacking-clarte-mentale-bdnf-systeme-nerveux"
 description: "Découvrez comment l'hypoxie intermittente stimule le facteur neurotrophique BDNF, optimise la clarté cognitive, régule le stress et améliore la variabilité cardiaque."
-date: "2026-08-18"
+date: "2026-08-02"
 category: "Santé & Longévité"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

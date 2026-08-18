@@ -2,7 +2,7 @@
 title: "Comment choisir un générateur d'hypoxie : Le guide d'achat et critères techniques"
 slug: "comment-choisir-generateur-hypoxie-guide-achat"
 description: "Guide comparatif pour choisir son générateur d'altitude : débit d'air, technologie PSA, niveau sonore, plage d'hypoxie et critères pour particuliers et professionnels."
-date: "2026-08-18"
+date: "2026-08-16"
 category: "Équipement & Guides"
 readTime: "8 min"
 author: "Équipe ATMOS Performance"

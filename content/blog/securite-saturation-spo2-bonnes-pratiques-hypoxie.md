@@ -2,7 +2,7 @@
 title: "Normes de sécurité, saturation en oxygène (SpO2) et bonnes pratiques : Le guide de l'hypoxie contrôlée"
 slug: "securite-saturation-spo2-bonnes-pratiques-hypoxie"
 description: "Comprendre la saturation en oxygène (SpO2), les seuils physiologiques sécurisés, les contre-indications et les règles d'or pour pratiquer l'hypoxie sans risque."
-date: "2026-08-18"
+date: "2026-08-07"
 category: "Équipement & Guides"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

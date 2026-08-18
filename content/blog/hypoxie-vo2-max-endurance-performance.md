@@ -2,7 +2,7 @@
 title: "Comment l'hypoxie améliore la VO2 Max et repousse les seuils d'endurance (Études et Protocoles)"
 slug: "hypoxie-vo2-max-endurance-performance"
 description: "Analyse scientifique de l'impact de l'hypoxie sur la VO2 Max : cinétique de l'oxygène, transporteurs de lactate (MCT), densité mitochondriale et protocoles d'entraînement."
-date: "2026-08-18"
+date: "2026-07-26"
 category: "Performance & Récupération"
 readTime: "8 min"
 author: "Équipe ATMOS Performance"

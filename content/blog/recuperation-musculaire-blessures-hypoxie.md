@@ -2,7 +2,7 @@
 title: "Récupération musculaire accélérée et gestion des blessures : Le rôle clé de l'hypoxie"
 slug: "recuperation-musculaire-blessures-hypoxie"
 description: "Comment l'hypoxie contrôlée accélère la régénération tissulaire, stimule la microcirculation (VEGF) et permet de maintenir sa condition aérobie en cas de blessure."
-date: "2026-08-18"
+date: "2026-07-28"
 category: "Performance & Récupération"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

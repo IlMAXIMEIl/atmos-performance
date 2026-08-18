@@ -2,7 +2,7 @@
 title: "Tente d'hypoxie vs Masque à flux contrôlé : Quel système choisir ?"
 slug: "tente-hypoxie-vs-masque-flux-controle"
 description: "Comparatif complet entre tente d'altitude et générateur à masque à flux contrôlé : confort, précision de l'oxygène, accumulation de CO2 et efficacité physiologique."
-date: "2026-08-18"
+date: "2026-08-14"
 category: "Équipement & Guides"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"

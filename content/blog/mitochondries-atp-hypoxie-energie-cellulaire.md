@@ -2,7 +2,7 @@
 title: "Mitochondries, ATP et Hypoxie : La science de l'énergie cellulaire et de la longévité"
 slug: "mitochondries-atp-hypoxie-energie-cellulaire"
 description: "Découvrez comment l'hypoxie intermittente stimule la biogenèse mitochondriale, optimise la synthèse d'ATP et favorise le recyclage cellulaire (mitophagie)."
-date: "2026-08-18"
+date: "2026-07-24"
 category: "Santé & Longévité"
 readTime: "7 min"
 author: "Équipe ATMOS Performance"
