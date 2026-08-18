@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 
+import { LEASING_OPEN } from "@/lib/offering";
+
 /**
  * Barème, en centimes. Défini ici et jamais reçu du client : un montant
  * transmis par le navigateur serait modifiable par l'utilisateur.
@@ -79,6 +81,12 @@ function formatDate(value: string) {
 /** Renvoie le premier message d'erreur rencontré, ou `null` si tout est valide. */
 function validate(payload: Payload) {
   if (!isPlanId(payload.plan)) return "Formule inconnue.";
+
+  // La location est présentée sur le site mais son tunnel reste fermé au
+  // lancement : refuser ici évite qu'un appel direct le contourne.
+  if (payload.plan === "leasing" && !LEASING_OPEN) {
+    return "La location n'est pas encore ouverte à la réservation.";
+  }
 
   for (const field of REQUIRED_FIELDS) {
     if (!payload[field]) return "Tous les champs sont requis.";

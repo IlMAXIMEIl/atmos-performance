@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 import { ReservationModal } from "@/components/reservation-modal";
+import { WaitlistForm } from "@/components/waitlist-form";
+import { LEASING_OPEN } from "@/lib/offering";
 import { EASE, container, rise } from "@/lib/motion";
 
 type PlanId = "achat" | "leasing";
@@ -64,7 +66,7 @@ const PLANS: Plan[] = [
   {
     id: "leasing",
     label: "Location",
-    badge: "1 mois minimum",
+    badge: LEASING_OPEN ? "1 mois minimum" : "Bientôt disponible",
     price: "350 €",
     terms: "par mois · 39 € d'expédition",
     pitch:
@@ -176,7 +178,7 @@ export function OffersSection() {
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
           {
-            "La vague #1 ouvre la pré-vente aux deux formules. Le matériel livré est strictement le même : seule la manière de le financer change."
+            "La vague #1 ouvre la pré-vente à l'achat ferme. La location suivra : laissez votre email pour être prévenu de son ouverture."
           }
         </motion.p>
 
@@ -308,19 +310,29 @@ export function OffersSection() {
               ))}
             </ul>
 
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className={CTA_CLASS}
-            >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-              <span className="relative">{plan.cta}</span>
-              <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </button>
+            {/*
+              Au lancement, seul l'achat ferme est ouvert. La location garde sa
+              carte mais bascule sur une inscription à la liste d'attente.
+            */}
+            {plan.id === "leasing" && !LEASING_OPEN ? (
+              <WaitlistForm />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className={CTA_CLASS}
+              >
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
+                <span className="relative">{plan.cta}</span>
+                <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+            )}
 
             <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
               {plan.id === "leasing"
-                ? "1er mois et expédition réglés en ligne, caution par simple empreinte bancaire."
+                ? LEASING_OPEN
+                  ? "1er mois et expédition réglés en ligne, caution par simple empreinte bancaire."
+                  : "La location ouvrira après la première vague. Laissez votre email pour être prévenu."
                 : "Acompte de 300 € à la réservation, solde de 1 590 € avant expédition."}
             </p>
           </div>
@@ -340,7 +352,7 @@ export function OffersSection() {
             icon: PackageCheck,
             text:
               plan.id === "leasing"
-                ? "Caution par empreinte bancaire, sans débit"
+                ? "Ouverture de la location après la vague #1"
                 : "Acompte de 300 € par unité, déduit du prix",
           },
           ...ASSURANCES,

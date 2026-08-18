@@ -19,13 +19,22 @@ Toutes les sections sont construites. Une section = un composant dans `component
 5. Section Science : Chiffres clés et réassurance (études, fer, adaptation). — `science-section.tsx`
 6. Section Offres : Toggle interactif Achat vs Location, puis teaser ATMOS Chamber. — `offers-section.tsx`. Les deux CTA ouvrent la modale — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`.
    - **Achat ferme** : 1 890 € l'unité. Étapes : configuration (quantité 1 à 5 + options), coordonnées, paiement. Acompte de **300 € par unité** encaissé en ligne ; solde (1 590 € par unité) réglé avant expédition.
-   - **Location** : 350 €/mois, 1 mois minimum. Étapes : date de début, coordonnées, paiement. Encaissement du 1er mois **+ 39 € d'expédition = 389 €**, et **empreinte bancaire** conservée pour la caution (aucun débit à ce titre). Mention obligatoire sous le bouton : 100 % des loyers versés sont déduits en cas d'achat.
+   - **Au lancement, seul l'achat ferme est ouvert.** La carte Location reste affichée en « Bientôt disponible » avec un formulaire de liste d'attente (`components/waitlist-form.tsx` → `/api/waitlist`). Bascule unique : `LEASING_OPEN` dans `lib/offering.ts`, respectée par la page **et** par la route de paiement.
+   - **Location (fermée pour l'instant)** : 350 €/mois, 1 mois minimum. Étapes : date de début, coordonnées, paiement. Encaissement du 1er mois **+ 39 € d'expédition = 389 €**, et **empreinte bancaire** conservée pour la caution (aucun débit à ce titre). Mention obligatoire sous le bouton : 100 % des loyers versés sont déduits en cas d'achat.
    - La durée de location est verrouillée à 30 jours : la date de fin est **recalculée par le serveur**, jamais reprise du navigateur. Idem pour tous les montants.
    - L'empreinte bancaire passe par `setup_future_usage: "off_session"` sur la session Checkout (plus `customer_creation: "always"`), et non par un SetupIntent séparé : Stripe n'autorise pas un paiement et un SetupIntent dans une même session.
    - Les options (oxymètre, monitoring) sont enregistrées en métadonnées mais **non tarifées** : elles ne modifient pas le montant encaissé.
-7. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
+7. Section FAQ : accordéons interactifs, avant le footer. Tableau `FAQ` modulaire en haut de `faq-section.tsx` — éditer ce tableau suffit.
+8. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
 
-Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.
+Pages annexes : `/mentions-legales`, `/reservation/confirmee`, et le blog.
+
+## Blog & SEO
+- `/blog` liste les articles, `/blog/[slug]` les affiche. Les articles vivent dans `lib/posts.ts` : un tableau d'objets au corps découpé en blocs typés (paragraphe, titre, liste). Ajouter un article = ajouter une entrée.
+- Chaque article génère title, description, canonical, OpenGraph article (dates, tags), Twitter card et un JSON-LD `Article` (Schema.org).
+- `app/sitemap.ts` et `app/robots.ts` sont générés depuis les mêmes données. `metadataBase` est défini dans `app/layout.tsx` à partir de `lib/site.ts`.
+- Lien « Blog » présent dans la navigation du header et du footer pour le maillage interne.
+- **`SITE_URL` vaut `https://atmos-performance.com` par défaut** (`lib/site.ts`) : à surcharger via `NEXT_PUBLIC_SITE_URL` si le domaine change, sinon canonical et sitemap pointeront au mauvais endroit.
 
 ## À compléter avant publication
 - Les specs du générateur et les prix (1 890 € à l'achat, 350 €/mois + 39 € d'expédition en location, acompte 300 €) sont des valeurs réelles. Restent des valeurs de remplissage : chiffres de la section Science, date de livraison, taille de la vague #1.

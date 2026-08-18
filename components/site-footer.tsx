@@ -54,6 +54,8 @@ const NAVIGATION = [
   { label: "Protocoles", href: "#protocoles" },
   { label: "La science", href: "#science" },
   { label: "Offres", href: "#offres" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const SOCIALS = [
@@ -127,12 +129,21 @@ export function SiteFooter() {
             <ul className="mt-6 flex flex-col gap-3.5">
               {NAVIGATION.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
-                  >
-                    {link.label}
-                  </a>
+                  {link.href.startsWith("/") ? (
+                    <Link
+                      href={link.href}
+                      className="text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className="text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

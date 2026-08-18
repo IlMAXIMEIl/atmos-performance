@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
 
 import { OffersSection } from "@/components/offers-section";
 import { ProductSection } from "@/components/product-section";
 import { ProtocolsSection } from "@/components/protocols-section";
+import { FaqSection } from "@/components/faq-section";
 import { ScienceSection } from "@/components/science-section";
 import { SiteFooter } from "@/components/site-footer";
 import { EASE, container, rise } from "@/lib/motion";
@@ -15,12 +17,14 @@ const NAV_LINKS = [
   { label: "Produit", href: "#produit" },
   { label: "Protocoles", href: "#protocoles" },
   { label: "Offres", href: "#offres" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const METRICS = [
   { icon: Mountain, value: "Jusqu'à 6 500 m", label: "d'altitude simulée" },
   { icon: Wind, value: "9 % à 20,9 % O₂", label: "réglable au mètre près" },
-  { icon: RefreshCw, value: "Option Location", label: "disponible dès la vague #1" },
+  { icon: RefreshCw, value: "Vague #1 ouverte", label: "acompte de 300 € remboursable" },
 ];
 
 export default function Home() {
@@ -67,16 +71,21 @@ export default function Home() {
           </a>
 
           <div className="hidden items-center gap-10 md:flex">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="group relative text-[0.8rem] font-light tracking-[0.16em] text-white/55 uppercase transition-colors duration-300 hover:text-white"
-              >
-                {link.label}
-                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-to-r from-cyan-300 to-transparent transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+            {NAV_LINKS.map((link) => {
+              // Les ancres restent de simples <a> ; les routes passent par
+              // <Link> pour bénéficier de la navigation client.
+              const Tag = link.href.startsWith("/") ? Link : "a";
+              return (
+                <Tag
+                  key={link.label}
+                  href={link.href}
+                  className="group relative text-[0.8rem] font-light tracking-[0.16em] text-white/55 uppercase transition-colors duration-300 hover:text-white"
+                >
+                  {link.label}
+                  <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-to-r from-cyan-300 to-transparent transition-all duration-300 group-hover:w-full" />
+                </Tag>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-3">
@@ -108,16 +117,19 @@ export default function Home() {
               className="overflow-hidden md:hidden"
             >
               <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6">
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="text-sm font-light tracking-[0.16em] text-white/65 uppercase"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {NAV_LINKS.map((link) => {
+                  const Tag = link.href.startsWith("/") ? Link : "a";
+                  return (
+                    <Tag
+                      key={link.label}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-sm font-light tracking-[0.16em] text-white/65 uppercase"
+                    >
+                      {link.label}
+                    </Tag>
+                  );
+                })}
                 <a
                   href="#offres"
                   onClick={() => setMenuOpen(false)}
@@ -234,6 +246,9 @@ export default function Home() {
 
         {/* ── Section Offres ───────────────────────────────────────────── */}
         <OffersSection />
+
+        {/* ── FAQ ──────────────────────────────────────────────────────── */}
+        <FaqSection />
       </main>
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
