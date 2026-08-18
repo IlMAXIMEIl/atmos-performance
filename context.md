@@ -35,8 +35,8 @@ Page annexe : `/mentions-legales` — `app/mentions-legales/page.tsx`.
 - Clés Stripe : copier `.env.example` en `.env.local` et renseigner `STRIPE_SECRET_KEY`. **Vérifié en mode test : les deux tunnels créent bien leur session Checkout.** Une clé absente ou refusée donne le même message côté visiteur (« Le paiement n'est pas encore configuré sur ce site »).
 - Une clé secrète Stripe valide ne contient que deux tirets bas (`sk_test_` puis une seule chaîne). Trois épisodes de gabarit résiduel ont été perdus sur ce point.
 - Webhook branché : `app/api/webhooks/stripe/route.ts` écoute `checkout.session.completed`, vérifie la signature sur le corps brut et enregistre la commande via `lib/orders.ts`. Idempotent sur l'identifiant d'événement. Nécessite `STRIPE_WEBHOOK_SECRET`.
-- **Le stockage est un fichier JSONL local (`.data/orders.jsonl`, gitignoré).** Il ne survit pas à un déploiement sans disque persistant (Vercel, Netlify) : à remplacer par une base ou un envoi d'email avant la mise en production. Seules `recordOrder` et `listOrders` sont à réécrire.
-- Aucun email de confirmation n'est envoyé ; la page `/reservation/confirmee` reste déclarative.
+- **Décision assumée : pas de base de données.** Le suivi des commandes se fait par les emails automatiques de Stripe et l'historique du Dashboard. Le fichier JSONL local (`.data/orders.jsonl`, gitignoré) ne sert qu'aux tests et n'a pas vocation à survivre à un déploiement.
+- Le site n'envoie aucun email lui-même ; la page `/reservation/confirmee` reste déclarative. Les emails de reçu doivent être activés dans Stripe (Paramètres > Emails aux clients > Paiements réussis).
 - L'empreinte carte de la location n'est observable qu'après un paiement réel : Stripe ne crée le PaymentIntent qu'au moment où le client règle.
 - Icônes de marque du footer (Instagram, YouTube, TikTok) : redessinées à la main, à remplacer par les marques officielles.
 
