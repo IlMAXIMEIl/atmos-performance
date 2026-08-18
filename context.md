@@ -33,7 +33,7 @@ Pages annexes : `/mentions-legales`, `/reservation/confirmee`, et le blog.
 - `/blog` liste les articles, `/blog/[slug]` les affiche. **Les articles sont des fichiers Markdown dans `content/blog/`** : pour publier, déposer un `.md` et rebuilder. `lib/posts.ts` les lit au build (gray-matter + marked).
 - Frontmatter attendu : `title`, `description`, `date` (AAAA-MM-JJ, **obligatoire**, le build échoue sinon), et en option `slug` (sinon le nom de fichier fait foi), `category`, `readTime`, `author`, `tags`.
 - Le H1 d'ouverture du Markdown est retiré automatiquement : le titre est déjà rendu par la page, deux H1 nuiraient au SEO. Écrire le corps en `##` et `###`.
-- Les fragments LaTeX du type `$O_2$` fréquents dans les rédactions IA sont convertis en indices Unicode (O₂). Le reste du LaTeX n'est pas géré.
+- Les fragments LaTeX fréquents dans les rédactions IA sont convertis : indices (`$SpO_2$` → SpO₂), exposants (`$H^+$` → H⁺), `\text{}`, et retrait de la notation autour des expressions sans symbole (`$ml/kg/min$`). Un caractère sans équivalent Unicode fait retomber le fragment en texte simple plutôt qu'en charabia à moitié converti.
 - Deux articles ne peuvent pas partager le même slug : le build échoue avec un message explicite.
 - La mise en forme du corps est dans `.article-body` (`app/globals.css`) : titres, listes, citations, tableaux (défilement horizontal propre).
 - Chaque article génère title, description, canonical, OpenGraph article (dates, tags), Twitter card et un JSON-LD `Article` (Schema.org).
