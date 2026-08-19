@@ -81,7 +81,7 @@ Pour une utilisation axée sur la vitalité cognitive et le bien-être général
 
 * **Format :** Séances passives assis dans un fauteuil confortable, dans un environnement calme ou pendant une session de lecture/méditation.
 * **Fréquence :** 2 à 3 séances de 30 à 45 minutes par semaine.
-* **Altitude simulée :** Entre 3 500 m et 4 500 m ($FiO_2$ 13,6 % à 11,9 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**.
+* **Altitude simulée :** Entre 4 000 m et 4 500 m ($FiO_2$ 12,7 % à 11,9 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**.
 * **Saturation cible ($SpO_2$) :** Maintenue entre **84 % et 88 %**, garantissant un stimulus efficace sans aucun inconfort.
 
 ---

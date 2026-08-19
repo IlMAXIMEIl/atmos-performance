@@ -70,7 +70,7 @@ Pour optimiser la récupération nerveuse et la profondeur du sommeil, le protoc
 
 * **Type de séance :** Hypoxie Intermittente au Repos (IHE) en position semi-allongée.
 * **Durée :** 30 à 45 minutes par séance.
-* **Altitude simulée :** Entre 3 500 m et 4 200 m ($FiO_2$ 13,6 % à 12,4 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**. Le corps étant immobile, la demande métabolique reste minimale : c'est le contraste entre les phases, et non la seule profondeur, qui porte le stimulus sur le système nerveux autonome.
+* **Altitude simulée :** Entre 4 000 m et 4 500 m ($FiO_2$ 12,7 % à 11,9 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**. Le corps étant immobile, la demande métabolique reste minimale : c'est le contraste entre les phases, et non la seule profondeur, qui porte le stimulus sur le système nerveux autonome.
 * **Fréquence :** 3 séances par semaine sur un cycle de 3 à 4 semaines.
 * **Fenêtre horaire :** Idéalement en fin d'après-midi (entre 17h et 19h). Évitez de réaliser la séance dans les 90 minutes précédant immédiatement l'extinction des feux pour laisser au système nerveux le temps de finaliser son rebond parasympathique.
 

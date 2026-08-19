@@ -48,7 +48,7 @@ La production locale de **VEGF** induite par l'hypoxie passive (séances au repo
 ### Protocole 1 : Récupération & Réparation Tissulaire (Passif)
 * **Indication :** Post-opératoire, tendinopathies chroniques, fatigue générale.
 * **Format :** Séance passive de 35 à 45 minutes sur table de soin ou fauteuil relax.
-* **Paramétrage :** Altitude simulée de 3 500 m à 4 200 m au repos strict ($SpO_2$ cible : 78 % - 82 %).
+* **Paramétrage :** Altitude simulée de 4 000 m à 4 500 m au repos strict ($SpO_2$ cible : 78 % - 82 %).
 * **Rythme :** 2 séances par semaine pendant 5 semaines.
 
 ### Protocole 2 : Réathlétisation Aérobie Protégée (Actif doux)

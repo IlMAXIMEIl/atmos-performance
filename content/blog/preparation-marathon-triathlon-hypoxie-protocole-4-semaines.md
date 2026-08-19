@@ -46,19 +46,19 @@ Une précision de vocabulaire, parce qu'elle change le protocole : ce bloc n'est
 ### Semaine 1 (J-28 à J-22) : Phase d'acclimatation et d'induction
 * **Objectif :** Habituer le système respiratoire et le système nerveux autonome à la baisse de pression partielle d'oxygène.
 * **Séances Hypoxie :** 3 séances passives de 40 minutes.
-* **Paramétrage :** Palier d'entrée à 3 200 m ($FiO_2$ 14,1 %), au repos strict. Saturation pulsée ($SpO_2$) cible : **82 % à 86 %**.
+* **Paramétrage :** Palier d'entrée à 4 000 m ($FiO_2$ 12,7 %), au repos strict. Saturation pulsée ($SpO_2$) cible : **80 % à 84 %**.
 * **Entraînement physique :** Maintien du volume habituel (séances clés au seuil sur le terrain).
 
 ### Semaine 2 (J-21 à J-15) : Phase de stimulation maximale
 * **Objectif :** Déclencher la cascade de libération d'EPO endogène et la synthèse des transporteurs enzymatiques.
 * **Séances Hypoxie :** 4 séances passives de 50 minutes.
-* **Paramétrage :** Palier de croisière à 4 200 m ($FiO_2$ 12,4 %). $SpO_2$ cible : **78 % à 82 %**.
+* **Paramétrage :** Palier de croisière à 4 400 m ($FiO_2$ 12,1 %). $SpO_2$ cible : **78 % à 82 %**.
 * **Entraînement physique :** Dernière grosse sortie longue et travail spécifique d'allure marathon / triathlon.
 
 ### Semaine 3 (J-14 à J-8) : Phase de consolidation métabolique
 * **Objectif :** Consolider la biogenèse mitochondriale tout en amorçant la baisse de la charge mécanique extérieure.
 * **Séances Hypoxie :** 3 séances passives de 45 minutes.
-* **Paramétrage :** Altitude simulée stabilisée à 3 800 m ($FiO_2$ 13,0 %). $SpO_2$ cible : **80 % à 84 %**.
+* **Paramétrage :** Altitude simulée stabilisée à 4 200 m ($FiO_2$ 12,4 %). $SpO_2$ cible : **78 % à 82 %**.
 * **Entraînement physique :** Début de l'affûtage (baisse du kilométrage de 30 %, conservation de courtes portions à allure course).
 
 ### Semaine 4 (J-7 à Jour J) : Affûtage final et surcompensation
@@ -72,9 +72,9 @@ Une précision de vocabulaire, parce qu'elle change le protocole : ce bloc n'est
 
 | Période | Volume Terrain | Séances Hypoxie | Altitude Simulée | $SpO_2$ Cible |
 | :--- | :--- | :--- | :--- | :--- |
-| **Semaine 1 (J-28)** | 100 % (Volume standard) | 3 x 40 min (Repos) | 3 200 m | 82 % - 86 % |
-| **Semaine 2 (J-21)** | 100 % (Dernier pic) | 4 x 50 min (Repos) | 4 200 m | 78 % - 82 % |
-| **Semaine 3 (J-14)** | 70 % (Début affûtage) | 3 x 45 min (Repos) | 3 800 m | 80 % - 84 % |
+| **Semaine 1 (J-28)** | 100 % (Volume standard) | 3 x 40 min (Repos) | 4 000 m | 80 % - 84 % |
+| **Semaine 2 (J-21)** | 100 % (Dernier pic) | 4 x 50 min (Repos) | 4 400 m | 78 % - 82 % |
+| **Semaine 3 (J-14)** | 70 % (Début affûtage) | 3 x 45 min (Repos) | 4 200 m | 78 % - 82 % |
 | **Semaine 4 (J-7)** | 40 % (Affûtage final) | 1-2 x 30 min (Léger) | 2 500 m | > 88 % |
 
 ---

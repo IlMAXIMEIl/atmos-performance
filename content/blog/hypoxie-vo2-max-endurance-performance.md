@@ -73,7 +73,7 @@ L'utilisation d'un générateur d'hypoxie à flux continu permet deux approches 
 ### Protocole 1 : Hypoxie Intermittente au Repos (IHE) — Phase de fondation
 * **Objectif :** Stimulation hématologique et mitochondriale sans fatigue neuromusculaire.
 * **Modalité :** Séances passives de 45 à 60 minutes, 3 à 4 fois par semaine.
-* **Paramétrage :** Altitude simulée comprise entre 3 500 m et 4 500 m, soit 13,6 % à 11,9 % d'$O_2$ ($SpO_2$ cible : 78 % - 82 %). Ces paliers ne se pratiquent qu'au repos strict, immobile.
+* **Paramétrage :** Altitude simulée comprise entre 4 000 m et 4 500 m, soit 12,7 % à 11,9 % d'$O_2$ ($SpO_2$ cible : 78 % - 82 %). Ces paliers ne se pratiquent qu'au repos strict, immobile.
 
 ### Protocole 2 : Entraînement intermittent en hypoxie (IHT) — Phase d'affûtage
 * **Objectif :** Amélioration du seuil lactique et de la tolérance à l'effort sous-maximal.

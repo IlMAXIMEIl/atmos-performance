@@ -71,7 +71,7 @@ Selon la condition physique de l'utilisateur, deux stratégies sont préconisée
 * **Profil :** Personnes en rééquilibrage métabolique, en surcharge pondérale ou limitées sur le plan articulaire.
 * **Modalité :** Séances passives assis dans un fauteuil, avec inhalation contrôlée d'air hypoxique alternée avec de l'air ambiant.
 * **Durée :** 35 à 45 minutes, 3 fois par semaine pendant 4 à 6 semaines.
-* **Altitude simulée :** 3 500 m à 4 200 m ($FiO_2$ 13,6 % à 12,4 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**.
+* **Altitude simulée :** 4 000 m à 4 500 m ($FiO_2$ 12,7 % à 11,9 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**.
 
 ### Protocole 2 : Exercice à très basse intensité sous hypoxie (Cardio Zone 1/2)
 * **Profil :** Sportifs et personnes actives cherchant à optimiser leur composition corporelle.
