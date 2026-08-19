@@ -37,18 +37,27 @@ Le projet est bâti en `output: "standalone"` : le build produit un serveur
 autonome dans `.next/standalone`, sans `node_modules` à réinstaller.
 
 ```bash
-npm ci && npm run build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
+npm ci
+npm run build
+npm start
 ```
 
-**La copie de `public/` et `.next/static/` n'est pas optionnelle.** Le
-`server.js` généré ne les embarque pas : sans elle, le site se charge sans
+Rien d'autre à faire : `npm run build` enchaîne `next build` puis la copie de
+`public/` et `.next/static/` dans le dossier standalone — deux dossiers que le
+build n'y place pas de lui-même, et sans lesquels le site se charge sans
 styles, sans polices et sans images.
 
-Démarrage :
+`npm start` lance `node .next/standalone/server.js`, le seul point d'entrée
+valable ici : `next start` ne fonctionne pas avec `output: "standalone"` et
+Next le signale explicitement. Le port et l'interface se règlent par
+l'environnement (`PORT`, `HOSTNAME`).
 
-```bash
-PORT=3000 HOSTNAME=0.0.0.0 node .next/standalone/server.js
-```
+### Construire sur le serveur, pas en local
+
+`sharp`, qu'utilise l'optimisation d'images, est une dépendance **native** :
+son binaire est compilé pour un couple OS/architecture donné. Un build fait
+sur un Mac puis téléversé plante sur le Linux d'Hostinger. Lancer `npm ci &&
+npm run build` dans l'environnement cible (ou une CI Linux) règle la question.
 
 ### Les variables d'environnement se déclarent côté hébergeur
 
