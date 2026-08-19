@@ -4,9 +4,21 @@ import { useState, type FormEvent } from "react";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 
 import { WaitlistConsent } from "@/components/waitlist-consent";
+import type { WaitlistSource } from "@/lib/waitlist";
 
-/** Inscription à l'ouverture de la location. */
-export function WaitlistForm() {
+/**
+ * Inscription à une liste d'attente.
+ *
+ * La liste de destination se choisit à l'appel : les deux intentions ne se
+ * relancent pas de la même façon et ne partagent pas la même liste Brevo. Par
+ * défaut la location, l'usage historique de ce formulaire — le seul appel qui
+ * l'omet reste ainsi inchangé.
+ */
+export function WaitlistForm({
+  source = "location",
+}: {
+  source?: WaitlistSource;
+} = {}) {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "envoi" | "ok">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +37,7 @@ export function WaitlistForm() {
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "location" }),
+        body: JSON.stringify({ email, source }),
       });
       const data = (await response.json()) as { error?: string };
 

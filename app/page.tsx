@@ -3,7 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
+import {
+  ArrowRight,
+  Gauge,
+  Menu,
+  Mountain,
+  RefreshCw,
+  Wind,
+  X,
+} from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
 import { FAQ, FaqSection } from "@/components/faq-section";
@@ -25,6 +33,7 @@ const NAV_LINKS = [
   { label: "Simulateur", href: "/outils/simulateur-altitude" },
   { label: "Blog", href: "/blog" },
   { label: "Glossaire", href: "/glossaire" },
+  { label: "À propos", href: "/a-propos" },
 ];
 
 const METRICS = [
@@ -117,7 +126,11 @@ export default function Home() {
               aria-expanded={menuOpen}
               className="rounded-full border border-white/10 p-2.5 text-white/70 transition-colors hover:text-white lg:hidden"
             >
-              {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {menuOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Menu className="h-4 w-4" />
+              )}
             </button>
           </div>
         </nav>
@@ -179,7 +192,7 @@ export default function Home() {
               </span>
             </div>
           </motion.div>
-  
+
           {/* Titre principal */}
           <motion.h1
             variants={rise}
@@ -192,7 +205,7 @@ export default function Home() {
               Sans quitter votre chambre.
             </span>
           </motion.h1>
-  
+
           {/* Sous-titre */}
           <motion.p
             variants={rise}
@@ -202,7 +215,7 @@ export default function Home() {
               "Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à 6 500 mètres chez vous. Travaillez votre VO2max et préparez vos acclimatations, nuit après nuit ou séance après séance."
             }
           </motion.p>
-  
+
           {/* CTA */}
           <motion.div
             variants={rise}
@@ -216,7 +229,7 @@ export default function Home() {
               <span className="relative">Rejoindre la liste prioritaire</span>
               <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
-  
+
             <a
               href="#produit"
               className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
@@ -225,7 +238,7 @@ export default function Home() {
               Découvrir le générateur
             </a>
           </motion.div>
-  
+
           {/* Réassurance */}
           <motion.div
             variants={rise}
@@ -237,7 +250,10 @@ export default function Home() {
                   key={value}
                   className="flex flex-col items-center gap-1.5 px-4 py-5 sm:py-2"
                 >
-                  <Icon className="mb-1 h-4 w-4 text-cyan-300/70" strokeWidth={1.5} />
+                  <Icon
+                    className="mb-1 h-4 w-4 text-cyan-300/70"
+                    strokeWidth={1.5}
+                  />
                   <dt className="text-sm font-medium tracking-tight text-white/90">
                     {value}
                   </dt>

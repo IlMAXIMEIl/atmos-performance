@@ -15,6 +15,7 @@ const LINKS = [
   { label: "Simulateur", href: "/outils/simulateur-altitude" },
   { label: "Blog", href: "/blog" },
   { label: "Glossaire", href: "/glossaire" },
+  { label: "À propos", href: "/a-propos" },
 ];
 
 export function PageHeader({ maxWidth = "max-w-4xl" }: { maxWidth?: string }) {

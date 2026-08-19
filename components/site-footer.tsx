@@ -59,6 +59,7 @@ const NAVIGATION = [
   { label: "Outils", href: "/outils" },
   { label: "Blog", href: "/blog" },
   { label: "Glossaire", href: "/glossaire" },
+  { label: "À propos", href: "/a-propos" },
 ];
 
 const SOCIALS = [
