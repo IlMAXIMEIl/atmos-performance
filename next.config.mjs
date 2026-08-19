@@ -1,5 +1,15 @@
-import type { NextConfig } from "next";
-
+/**
+ * Configuration Next.js — **en `.mjs`, et pas en `.ts`**.
+ *
+ * Le serveur de build d'Hostinger tourne sur une glibc antérieure à 2.29 :
+ * le binaire natif `@next/swc-linux-x64-gnu` n'y charge pas, et Next se rabat
+ * sur son compilateur WASM. Or celui-ci échoue à compiler un `next.config.ts`
+ * (`Cannot find module …next.config`), ce qui fait échouer le build entier.
+ * En JavaScript pur, il n'y a rien à compiler : le fichier est chargé tel quel.
+ *
+ * Ne pas repasser ce fichier en TypeScript sans vérifier que l'hébergeur a été
+ * mis à jour. Le typage est conservé par l'annotation JSDoc ci-dessous.
+ */
 /**
  * En-têtes de sécurité appliqués à toutes les réponses.
  *
@@ -56,7 +66,8 @@ const SECURITY_HEADERS = [
   },
 ];
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   /**
    * Build autonome pour l'hébergement Node d'Hostinger (« Web Apps »).
    *

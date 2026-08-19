@@ -10,15 +10,15 @@ import {
   getAllGlossaryEntries,
   getGlossaryEntry,
   type GlossaryEntry,
+  GLOSSARY_PATH,
+  GLOSSARY_SET_NAME,
 } from "@/lib/glossary";
 import { getPost } from "@/lib/posts";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { TOOLS_PATH } from "@/lib/tools";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-const GLOSSARY_PATH = "/glossaire";
 const GLOSSARY_URL = `${SITE_URL}${GLOSSARY_PATH}`;
-const GLOSSARY_SET_NAME = "Glossaire ATMOS de l'hypoxie";
 
 type Props = { params: Promise<{ slug: string }> };
 

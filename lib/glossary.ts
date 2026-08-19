@@ -71,6 +71,20 @@ function readEntry(fileName: string): GlossaryEntry {
 }
 
 /** Fiches classées alphabétiquement, accents ignorés comme il se doit. */
+/**
+ * Racine des pages du glossaire.
+ *
+ * Placée ici et non dans un fichier `page.tsx` : Next n'autorise dans un module
+ * de page qu'une liste fermée d'exports (`default`, `metadata`,
+ * `generateStaticParams`…). Toute autre constante exportée fait échouer la
+ * vérification de types du build. Les deux pages du glossaire la dupliquaient
+ * par ailleurs, ce qui règle la question du même coup.
+ */
+export const GLOSSARY_PATH = "/glossaire";
+
+/** Nom du recueil, repris tel quel dans les données structurées `DefinedTermSet`. */
+export const GLOSSARY_SET_NAME = "Glossaire ATMOS de l'hypoxie";
+
 export function getAllGlossaryEntries(): GlossaryEntry[] {
   const files = readdirSync(CONTENT_DIR).filter((name) => name.endsWith(".md"));
   const entries = files.map(readEntry);

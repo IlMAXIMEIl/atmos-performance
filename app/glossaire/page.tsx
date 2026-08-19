@@ -5,11 +5,14 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { JsonLd } from "@/components/json-ld";
 import { PageHeader } from "@/components/page-header";
 import { SiteFooter } from "@/components/site-footer";
-import { getAllGlossaryEntries } from "@/lib/glossary";
+import {
+  GLOSSARY_PATH,
+  GLOSSARY_SET_NAME,
+  getAllGlossaryEntries,
+} from "@/lib/glossary";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
-export const GLOSSARY_PATH = "/glossaire";
 const PAGE_URL = `${SITE_URL}${GLOSSARY_PATH}`;
 
 const TITLE = "Glossaire de l'hypoxie et de l'entraînement en altitude";
@@ -17,7 +20,6 @@ const DESCRIPTION =
   "Les termes techniques de l'entraînement en altitude définis simplement : HIF-1α, SpO₂, VFC, biogenèse mitochondriale, hypoxie normobare.";
 
 /** Nom du recueil, cité par chaque fiche dans son `inDefinedTermSet`. */
-export const GLOSSARY_SET_NAME = "Glossaire ATMOS de l'hypoxie";
 
 export const metadata: Metadata = {
   title: `${TITLE} — ATMOS`,
