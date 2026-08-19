@@ -55,6 +55,20 @@ export const FAQ: FaqEntry[] = [
     ],
   },
   {
+    question: "Quelle est la garantie sur ATMOS ONE ?",
+    answer: [
+      "La garantie légale de conformité s'applique deux ans à compter de la livraison : tout défaut de fabrication est pris en charge, pièces et main-d'œuvre, sans frais. La garantie légale des vices cachés s'applique en parallèle.",
+      "Elle ne couvre pas ce qui ne relève pas d'un défaut de fabrication : filtres non remplacés aux intervalles indiqués dans le manuel, utilisation en environnement poussiéreux ou humide, choc, immersion, ou ouverture du boîtier. Un générateur d'hypoxie filtre l'air en continu — l'entretien des filtres conditionne sa longévité, et nous vous rappelons les échéances.",
+    ],
+  },
+  {
+    question: "Puis-je retourner l'appareil si je change d'avis ?",
+    answer: [
+      "Oui. Vous disposez de quatorze jours à compter de la réception pour exercer votre droit de rétractation, sans avoir à vous justifier.",
+      "Les frais de retour par transporteur sont à votre charge. L'appareil doit revenir complet avec ses accessoires ; une dépréciation peut être retenue s'il a été manipulé au-delà de ce qui est nécessaire pour en essayer le fonctionnement. Nous vous recommandons de conserver l'emballage d'origine, seul conditionnement prévu pour ce transport.",
+    ],
+  },
+  {
     question: "Que comprend la livraison ?",
     answer: [
       "Le générateur ATMOS ONE, le masque et son circuit respiratoire, la station de contrôle, les protocoles guidés Live High et Train High, ainsi qu'un accompagnement au démarrage.",
@@ -176,7 +190,10 @@ export function FaqSection() {
                 role="region"
                 aria-labelledby={`faq-question-${index}`}
                 initial={false}
-                animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                animate={{
+                  height: isOpen ? "auto" : 0,
+                  opacity: isOpen ? 1 : 0,
+                }}
                 transition={{ duration: 0.4, ease: EASE }}
                 inert={!isOpen}
                 className="overflow-hidden"

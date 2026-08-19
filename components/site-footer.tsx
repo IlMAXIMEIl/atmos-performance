@@ -188,12 +188,20 @@ export function SiteFooter() {
             © {COPYRIGHT_YEAR} ATMOS PERFORMANCE. Tous droits réservés.
           </p>
 
-          <Link
-            href="/mentions-legales"
-            className="text-[0.78rem] font-light text-white/45 transition-colors hover:text-white"
-          >
-            Mentions légales
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/cgv"
+              className="text-[0.78rem] font-light text-white/45 transition-colors hover:text-white"
+            >
+              CGV
+            </Link>
+            <Link
+              href="/mentions-legales"
+              className="text-[0.78rem] font-light text-white/45 transition-colors hover:text-white"
+            >
+              Mentions légales
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

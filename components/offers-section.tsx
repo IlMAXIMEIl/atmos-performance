@@ -16,12 +16,16 @@ import {
   CreditCard,
   Infinity as InfinityIcon,
   KeyRound,
+  LifeBuoy,
+  RotateCcw,
   ShieldCheck,
   Sparkles,
   Truck,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+
+import Link from "next/link";
 
 import { WaitlistForm } from "@/components/waitlist-form";
 import { WaitlistModal } from "@/components/waitlist-modal";
@@ -134,6 +138,40 @@ const ASSURANCES = [
   {
     icon: CalendarClock,
     text: `${BATCH_NAME} : ${BATCH_UNITS} unités, puis série suivante`,
+  },
+];
+
+/**
+ * Ce qui se passe après la livraison.
+ *
+ * Placé au moment de la décision plutôt que dans une page annexe : l'objection
+ * « et si ça tombe en panne ? » suit immédiatement le prix.
+ *
+ * Le périmètre de la garantie est décrit comme une conséquence, jamais comme
+ * une condition : la garantie légale de conformité est d'ordre public et ne
+ * peut pas être subordonnée à un entretien. Une panne née d'un défaut
+ * d'entretien sort du périmètre parce qu'elle n'est pas un défaut de
+ * fabrication — pas parce qu'une clause l'exclut. Une clause de ce genre serait
+ * réputée non écrite, donc sans effet protecteur.
+ */
+const AFTER_SALE = [
+  {
+    icon: ShieldCheck,
+    title: "Garantie 2 ans, pièces et main-d'œuvre",
+    body: "La garantie légale de conformité couvre tout défaut de fabrication pendant deux ans à compter de la livraison, sans frais, sans franchise et sans formalité d'enregistrement.",
+    note: "Restent hors périmètre les pannes qui ne relèvent pas d'un défaut de fabrication : filtres non remplacés aux intervalles indiqués, appareil utilisé en environnement poussiéreux ou humide, choc, immersion, ouverture du boîtier.",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Assistance et diagnostic depuis la France",
+    body: "Un interlocuteur, pas un formulaire. Le diagnostic se fait à distance dans la majorité des cas, et les pièces de rechange partent de notre stock — sans transiter par un service après-vente à l'étranger.",
+    note: null,
+  },
+  {
+    icon: RotateCcw,
+    title: "14 jours pour changer d'avis",
+    body: "Droit de rétractation légal à compter de la réception, sans motif à donner. Remboursement sous quatorze jours après retour de l'appareil.",
+    note: "Les frais de retour par transporteur sont à votre charge. L'appareil doit revenir complet avec ses accessoires — conservez l'emballage d'origine, c'est le seul conditionnement prévu pour ce transport.",
   },
 ];
 
@@ -464,6 +502,63 @@ export function OffersSection() {
           </motion.li>
         ))}
       </motion.ul>
+
+      {/* ── Après l'achat ────────────────────────────────────────────── */}
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 sm:p-10"
+      >
+        <motion.div variants={rise} className="max-w-2xl">
+          <h3 className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+            Après l&apos;achat
+          </h3>
+          <p className="mt-4 text-[1.15rem] leading-snug font-medium tracking-[-0.02em] text-balance text-white sm:text-2xl">
+            Ce qui se passe une fois la machine chez vous.
+          </p>
+        </motion.div>
+
+        <div className="mt-9 grid gap-8 border-t border-white/[0.07] pt-8 md:grid-cols-3 md:gap-10">
+          {AFTER_SALE.map(({ icon: Icon, title, body, note }) => (
+            <motion.div key={title} variants={rise}>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                <Icon className="h-4 w-4 text-cyan-300" strokeWidth={1.6} />
+              </span>
+
+              <h4 className="mt-6 text-[0.95rem] leading-snug font-medium tracking-tight text-balance text-white">
+                {title}
+              </h4>
+
+              <p className="mt-3 text-[0.86rem] leading-relaxed font-light text-white/55 text-pretty">
+                {body}
+              </p>
+
+              {note && (
+                <p className="mt-3 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+                  {note}
+                </p>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.p
+          variants={rise}
+          className="mt-8 border-t border-white/[0.07] pt-6 text-[0.8rem] leading-relaxed font-light text-white/35 text-pretty"
+        >
+          Le détail des garanties, des modalités de retour et de la prise en
+          charge des frais figure dans nos{" "}
+          <Link
+            href="/cgv"
+            className="text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+          >
+            conditions générales de vente
+          </Link>
+          .
+        </motion.p>
+      </motion.div>
 
       {/* ── Déroulé de la précommande ────────────────────────────────── */}
       <motion.div

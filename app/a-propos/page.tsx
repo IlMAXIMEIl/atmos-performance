@@ -361,7 +361,7 @@ export default function AProposPage() {
             </span>
           </h2>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
+          <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:gap-6">
             <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
               <div className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
                 Livré avec l&apos;appareil
@@ -397,6 +397,25 @@ export default function AProposPage() {
               <p className="mt-5 text-[0.85rem] leading-relaxed font-light text-white/40 text-pretty">
                 {
                   "C'est précisément le poste qu'un acheteur qui importe seul découvre trop tard, et la raison pour laquelle nous l'avons pris en charge plutôt que de le laisser à votre porte."
+                }
+              </p>
+            </div>
+
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
+              <div className="flex items-center gap-2.5 text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+                <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.6} />
+                Garantie et SAV
+              </div>
+
+              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-white/60 text-pretty">
+                {
+                  "Deux ans de garantie légale sur les défauts de fabrication, pièces et main-d'œuvre. Assistance et diagnostic depuis la France, pièces expédiées de notre stock."
+                }
+              </p>
+
+              <p className="mt-5 text-[0.85rem] leading-relaxed font-light text-white/40 text-pretty">
+                {
+                  "Vendre moins cher ne veut pas dire disparaître après la livraison. Le détail figure dans nos conditions générales de vente."
                 }
               </p>
             </div>

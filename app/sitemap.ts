@@ -38,6 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/glossaire`, changeFrequency: "monthly", priority: 0.7 },
     ...glossary,
     { url: `${SITE_URL}/a-propos`, changeFrequency: "yearly", priority: 0.6 },
+    { url: `${SITE_URL}/cgv`, changeFrequency: "yearly", priority: 0.3 },
     {
       url: `${SITE_URL}/mentions-legales`,
       changeFrequency: "yearly",
