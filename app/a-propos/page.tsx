@@ -202,13 +202,13 @@ export default function AProposPage() {
               Pourquoi notre prix est plus bas.
             </span>{" "}
             <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
-              Et pourquoi ce n&apos;est pas suspect.
+              Trois raisons, aucune sur la machine.
             </span>
           </h1>
 
           <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg">
             {
-              "C'est la première question que pose un acheteur devant un écart de prix sur du matériel technique — et c'est une bonne question. Voici la réponse, avant tout le reste : l'écart vient du chemin parcouru par la machine, pas de la machine elle-même."
+              "C'est la première question que pose un acheteur devant un écart de prix sur du matériel technique. Voici la réponse, avant tout le reste : l'écart se joue sur le chemin parcouru par l'appareil, jamais sur l'appareil lui-même."
             }
           </p>
 
