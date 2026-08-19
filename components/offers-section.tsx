@@ -175,6 +175,33 @@ const AFTER_SALE = [
   },
 ];
 
+/**
+ * Le second appareil de la gamme, en trois lignes.
+ *
+ * Un teaser, pas une fiche : aucune caractéristique technique, aucune date,
+ * aucune promesse d'efficacité. La littérature sur l'hyperbarie de faible
+ * pression appliquée à la récupération sportive est bien plus mince que celle
+ * de l'hypoxie — annoncer un bénéfice ici contredirait la ligne que tient le
+ * reste du site. On annonce une direction, on ne vend rien.
+ */
+const NEXT_PRODUCT = [
+  {
+    label: "Hypoxie",
+    detail:
+      "Raréfier l'oxygène pour imposer la contrainte et déclencher l'adaptation. C'est ATMOS ONE.",
+  },
+  {
+    label: "Hyperbarie",
+    detail:
+      "Augmenter la pression pour travailler l'autre versant du cycle, celui du retour au calme.",
+  },
+  {
+    label: "Même exigence",
+    detail:
+      "Aucune recommandation qui ne s'appuie sur la littérature — y compris quand elle est moins généreuse que le discours ambiant.",
+  },
+];
+
 /** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
 const CTA_CLASS =
   "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none";
@@ -642,9 +669,29 @@ export function OffersSection() {
             ATMOS Chamber
           </h3>
 
-          <p className="mx-auto mt-3 max-w-md text-[0.88rem] leading-relaxed font-light text-white/40 text-pretty">
-            Notre caisson de régénération hyperbare, second appareil de la
-            gamme. Un produit distinct du générateur d&apos;altitude.
+          <p className="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
+            Le second appareil de la gamme, un caisson hyperbare.
+            L&apos;altitude raréfie l&apos;oxygène pour déclencher
+            l&apos;adaptation ; la pression fait le chemin inverse. Deux
+            directions opposées, un même cycle d&apos;entraînement.
+          </p>
+
+          <dl className="mx-auto mt-9 grid max-w-2xl gap-7 border-t border-white/[0.07] pt-8 text-left sm:grid-cols-3 sm:gap-8">
+            {NEXT_PRODUCT.map(({ label, detail }) => (
+              <div key={label}>
+                <dt className="text-[0.6rem] font-medium tracking-[0.2em] text-white/40 uppercase">
+                  {label}
+                </dt>
+                <dd className="mt-2.5 text-[0.84rem] leading-relaxed font-light text-white/50 text-pretty">
+                  {detail}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="mx-auto mt-8 max-w-xl text-[0.78rem] leading-relaxed font-light text-white/30 text-pretty">
+            Ni date, ni précommande pour l&apos;instant. Les inscrits du{" "}
+            {BATCH_NAME} seront prévenus les premiers.
           </p>
         </div>
       </motion.aside>
