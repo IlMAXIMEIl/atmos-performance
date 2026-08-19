@@ -4,13 +4,15 @@ import {
   ArrowLeft,
   ArrowRight,
   Ban,
+  Check,
+  Factory,
   FlaskConical,
   Gauge,
-  Mountain,
+  Percent,
+  PackageCheck,
   ShieldCheck,
   Store,
   Truck,
-  Wrench,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,17 +20,17 @@ import { JsonLd } from "@/components/json-ld";
 import { PageHeader } from "@/components/page-header";
 import { SiteFooter } from "@/components/site-footer";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { CAMP, ATMOS_PRICE, formatNumber } from "@/lib/altitude";
-import { BATCH_NAME, BATCH_UNITS } from "@/lib/offering";
+import { ATMOS_PRICE, CAMP, formatNumber } from "@/lib/altitude";
+import { BATCH_NAME, BATCH_UNITS, INCLUDED_ITEMS } from "@/lib/offering";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { ORGANIZATION_ID, breadcrumbSchema } from "@/lib/structured-data";
 import { TOOLS_PATH } from "@/lib/tools";
 
 const PAGE_URL = `${SITE_URL}/a-propos`;
 
-const TITLE = "À propos d'ATMOS PERFORMANCE";
+const TITLE = "Pourquoi ATMOS ONE coûte moins cher";
 const DESCRIPTION =
-  "Pourquoi nous vendons ATMOS ONE en direct, sans distributeur : notre parti pris sur le prix, et l'exigence scientifique qui ne bouge pas pour autant.";
+  "Import direct, vente sans revendeur, marge assumée plus faible : l'écart de prix d'ATMOS ONE s'explique par la structure du circuit, pas par la machine.";
 
 export const metadata: Metadata = {
   title: `${TITLE} — ATMOS`,
@@ -52,24 +54,50 @@ export const metadata: Metadata = {
 /** Coût d'un stage de trois semaines en centre d'altitude, pour l'échelle. */
 const CAMP_TOTAL = CAMP.nights * CAMP.nightlyRate + CAMP.travel;
 
+/**
+ * La réponse à l'objection, en trois points.
+ *
+ * Placée avant tout le reste : sur du matériel technique, un prix plus bas
+ * n'enchante pas, il inquiète. Tant que l'écart n'est pas expliqué, le
+ * visiteur cherche le défaut — autant lui donner la raison tout de suite.
+ */
+const REASONS: { icon: LucideIcon; title: string; body: string }[] = [
+  {
+    icon: Truck,
+    title: "Nous importons nous-mêmes",
+    body: "ATMOS ONE sort d'une usine spécialisée, comme la quasi-totalité du matériel hypoxique vendu en Europe. Ce qui change tient à la suite : nous prenons l'import à notre compte, au lieu de le confier à un importateur qui refacture son intervention.",
+  },
+  {
+    icon: Ban,
+    title: "Nous vendons sans revendeur",
+    body: "Ni distributeur, ni boutique partenaire, ni commission de réseau. Ce site est le seul point de vente. La marge d'un maillon absent ne se répercute sur personne.",
+  },
+  {
+    icon: Percent,
+    title: "Nous prenons moins de marge",
+    body: "C'est une décision, pas une astuce comptable. Nous préférons équiper beaucoup de sportifs avec une marge modeste que quelques-uns au prix fort. Le reste du marché arbitre dans l'autre sens.",
+  },
+];
+
 type Step = { icon: LucideIcon; label: string; detail: string };
 
 /**
- * Les deux circuits, présentés côte à côte.
+ * Les deux circuits, côte à côte.
  *
- * Le propos tient à la structure du circuit, pas à un chiffre de concurrent :
- * nous ne citons aucun prix que nous ne pratiquons pas nous-mêmes.
+ * Le point de départ est identique — c'est justement ce qui rend la
+ * comparaison honnête. Aucun prix de concurrent n'est cité : le propos porte
+ * sur le nombre de maillons, pas sur des chiffres que nous ne pratiquons pas.
  */
 const CLASSIC_CHAIN: Step[] = [
   {
-    icon: Wrench,
-    label: "Fabricant",
-    detail: "Conçoit et assemble la machine.",
+    icon: Factory,
+    label: "Usine spécialisée",
+    detail: "Conçoit et assemble le générateur.",
   },
   {
     icon: Truck,
     label: "Importateur",
-    detail: "Prend en charge le passage en douane.",
+    detail: "Achemine, dédouane, refacture son service.",
   },
   {
     icon: Store,
@@ -85,14 +113,19 @@ const CLASSIC_CHAIN: Step[] = [
 
 const DIRECT_CHAIN: Step[] = [
   {
-    icon: Wrench,
-    label: "Notre atelier",
-    detail: "Conception, assemblage, contrôle.",
+    icon: Factory,
+    label: "Usine spécialisée",
+    detail: "Le même point de départ. C'est la suite qui diffère.",
+  },
+  {
+    icon: PackageCheck,
+    label: "Nous, en import direct",
+    detail: "Transport DDP : droits et taxes réglés au départ.",
   },
   {
     icon: ArrowRight,
     label: "Vous",
-    detail: "Livraison directe, sans intermédiaire.",
+    detail: "Livraison à domicile, sans intermédiaire.",
   },
 ];
 
@@ -155,7 +188,7 @@ export default function AProposPage() {
           Retour à l&apos;accueil
         </Link>
 
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
+        {/* ── L'objection, et sa réponse ───────────────────────────────── */}
         <section aria-labelledby="a-propos-titre">
           <span className="mt-10 block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
             À propos
@@ -163,62 +196,77 @@ export default function AProposPage() {
 
           <h1
             id="a-propos-titre"
-            className="mt-5 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-[3.25rem]"
+            className="mt-5 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-[3.15rem]"
           >
             <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
-              La science de la haute altitude.
+              Pourquoi notre prix est plus bas.
             </span>{" "}
             <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
-              Sans compromis, sans intermédiaires.
+              Et pourquoi ce n&apos;est pas suspect.
             </span>
           </h1>
 
           <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg">
             {
-              "ATMOS PERFORMANCE conçoit et vend ATMOS ONE en direct. Pas de réseau de distribution, pas de marges empilées entre l'atelier et votre salon. Le prix affiché est celui de la machine, pas celui de la chaîne qui l'aurait acheminée."
+              "C'est la première question que pose un acheteur devant un écart de prix sur du matériel technique — et c'est une bonne question. Voici la réponse, avant tout le reste : l'écart vient du chemin parcouru par la machine, pas de la machine elle-même."
             }
           </p>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-3 md:gap-6">
+            {REASONS.map(({ icon: Icon, title, body }) => (
+              <article
+                key={title}
+                className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 hover:border-cyan-300/25"
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.14),transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                />
+
+                <div className="relative">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                    <Icon className="h-4 w-4 text-cyan-300" strokeWidth={1.6} />
+                  </span>
+
+                  <h2 className="mt-6 text-[1.05rem] leading-snug font-medium tracking-[-0.02em] text-balance text-white">
+                    {title}
+                  </h2>
+
+                  <p className="mt-3.5 text-[0.86rem] leading-relaxed font-light text-white/50 text-pretty">
+                    {body}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
 
-        {/* ── Notre ADN ────────────────────────────────────────────────── */}
-        <section aria-labelledby="adn-titre" className="mt-24 sm:mt-28">
+        {/* ── Les deux circuits ────────────────────────────────────────── */}
+        <section aria-labelledby="circuits-titre" className="mt-24 sm:mt-28">
           <span className="block text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
-            Notre ADN
+            Le circuit, en clair
           </span>
 
           <h2
-            id="adn-titre"
+            id="circuits-titre"
             className="mt-5 text-[1.65rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl lg:text-4xl"
           >
             <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
-              Une technologie d&apos;élite, retenue prisonnière de son circuit.
+              Même point de départ, deux chemins.
             </span>
           </h2>
 
-          <div className="mt-8 flex flex-col gap-5 text-[0.98rem] leading-relaxed font-light text-white/60 text-pretty">
-            <p>
-              {
-                "Nous venons de la performance et de la physiologie. Pendant des années, nous avons regardé la même chose se répéter : l'hypoxie contrôlée est l'un des leviers d'entraînement les mieux documentés de la littérature, et pourtant l'équipement reste l'apanage des fédérations, des centres nationaux et de quelques équipes professionnelles."
-              }
-            </p>
-            <p>
-              {
-                "Ce n'est pas un problème de technologie. Un générateur d'hypoxie normobare sépare l'azote de l'oxygène — le principe est stable depuis des décennies, et il n'a rien d'ésotérique. Le verrou est ailleurs : dans un circuit de distribution taillé pour le matériel médical, où chaque maillon prend sa part avant que la machine n'arrive chez quelqu'un."
-              }
-            </p>
-            <p>
-              {
-                "Notre parti pris est simple, et c'est le seul que nous ayons trouvé pour faire tomber le prix sans toucher à la machine : supprimer les maillons. Nous concevons, nous assemblons, nous vendons. Personne entre nous et vous."
-              }
-            </p>
-          </div>
+          <p className="mt-8 max-w-3xl text-[0.98rem] leading-relaxed font-light text-white/60 text-pretty">
+            {
+              "Le matériel hypoxique sort d'un petit nombre d'usines spécialisées, et les marques qui le vendent en Europe s'y approvisionnent. Nous ne prétendons pas le contraire. Ce qui sépare deux prix, sur ce marché, ce n'est presque jamais la machine : c'est le nombre d'acteurs qui la manipulent avant vous."
+            }
+          </p>
 
-          {/* Les deux circuits, côte à côte */}
           <div className="mt-12 grid gap-5 lg:grid-cols-2 lg:gap-6">
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
               <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/40 uppercase">
                 <Ban className="h-3.5 w-3.5" strokeWidth={1.6} />
-                Le circuit classique
+                Le circuit habituel
               </div>
 
               <ol className="mt-7 flex flex-col gap-5">
@@ -244,7 +292,7 @@ export default function AProposPage() {
 
               <p className="mt-8 border-t border-white/[0.07] pt-6 text-[0.85rem] leading-relaxed font-light text-white/40 text-pretty">
                 {
-                  "Quatre acteurs, quatre marges. Le client final paie l'addition d'un acheminement, pas une machine plus performante."
+                  "Trois marges empilées après l'usine. Le client final paie l'addition d'un acheminement, pas une machine plus performante."
                 }
               </p>
             </div>
@@ -257,7 +305,7 @@ export default function AProposPage() {
 
               <div className="relative">
                 <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-cyan-300/70 uppercase">
-                  <Mountain className="h-3.5 w-3.5" strokeWidth={1.6} />
+                  <PackageCheck className="h-3.5 w-3.5" strokeWidth={1.6} />
                   Le nôtre
                 </div>
 
@@ -290,10 +338,67 @@ export default function AProposPage() {
                     <span className="text-xl font-light text-white/50">€</span>
                   </div>
                   <p className="mt-4 text-[0.85rem] leading-relaxed font-light text-white/50 text-pretty">
-                    {`Prix public d'ATMOS ONE. Pour l'échelle : un stage de trois semaines en centre d'altitude revient à ${formatNumber(CAMP_TOTAL)} € d'hébergement et de trajet — une fois, sans rien vous laisser entre les mains.`}
+                    {`Prix public d'ATMOS ONE, livraison comprise. Pour l'échelle : un stage de trois semaines en centre d'altitude revient à ${formatNumber(CAMP_TOTAL)} € d'hébergement et de trajet — une fois, sans rien vous laisser entre les mains.`}
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Ce que le prix ne retire pas ─────────────────────────────── */}
+        <section aria-labelledby="garanties-titre" className="mt-24 sm:mt-28">
+          <span className="block text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+            Ce que l&apos;écart ne retire pas
+          </span>
+
+          <h2
+            id="garanties-titre"
+            className="mt-5 text-[1.65rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl lg:text-4xl"
+          >
+            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+              Moins cher ne veut pas dire allégé.
+            </span>
+          </h2>
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
+              <div className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+                Livré avec l&apos;appareil
+              </div>
+
+              <ul className="mt-7 flex flex-col gap-4">
+                {INCLUDED_ITEMS.map((item) => (
+                  <li key={item} className="flex items-start gap-3.5">
+                    <Check
+                      className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
+                      strokeWidth={2}
+                    />
+                    <span className="text-[0.92rem] leading-relaxed font-light text-white/70 text-pretty">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
+              <div className="flex items-center gap-2.5 text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+                <PackageCheck className="h-3.5 w-3.5" strokeWidth={1.6} />
+                Transport DDP
+              </div>
+
+              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-white/60 text-pretty">
+                {
+                  "Droits de douane et taxes d'importation sont réglés au départ, par nous. Vous n'avez rien à avancer au transporteur, rien à déclarer, et aucune facture ne suit la livraison."
+                }
+              </p>
+
+              <p className="mt-5 text-[0.85rem] leading-relaxed font-light text-white/40 text-pretty">
+                {
+                  "C'est précisément le poste qu'un acheteur qui importe seul découvre trop tard, et la raison pour laquelle nous l'avons pris en charge plutôt que de le laisser à votre porte."
+                }
+              </p>
             </div>
           </div>
         </section>

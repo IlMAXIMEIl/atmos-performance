@@ -72,6 +72,21 @@ export const WAITLIST_SUBTITLE = "Ouverture des commandes imminente";
  * qui va réellement se passer au clic. Il redeviendra « Précommander » le
  * jour où `ORDERS_OPEN` passera à `true`.
  */
+/**
+ * Ce que comprend la livraison, quelle que soit la formule.
+ *
+ * Source unique : la section Offres l'affiche, la page « À propos » s'y
+ * réfère. Une ligne ajoutée ici apparaît des deux côtés — l'inverse de ce qui
+ * s'est produit sur les altitudes, recopiées de page en page jusqu'à diverger.
+ */
+export const INCLUDED_ITEMS = [
+  "Générateur ATMOS ONE",
+  "Masque et circuit respiratoire",
+  "Station de contrôle",
+  "Protocoles guidés Live High et Train High",
+  "Accompagnement au démarrage",
+] as const;
+
 export const WAITLIST_CTA = "Rejoindre la liste d'attente";
 export const WAITLIST_CTA_SHORT = "Liste d'attente";
 

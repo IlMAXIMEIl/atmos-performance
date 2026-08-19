@@ -1,6 +1,11 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import {
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -24,6 +29,7 @@ import {
   BATCH_NAME,
   BATCH_SCARCITY,
   BATCH_UNITS,
+  INCLUDED_ITEMS,
   INSTALLMENTS_NOTE,
   LEASING_DEPOSIT_NOTE,
   LEASING_OPEN,
@@ -78,7 +84,8 @@ const PLANS: Plan[] = [
       {
         icon: ShieldCheck,
         label: "Garantie 3 ans",
-        detail: "Pièces et main-d'œuvre comprises, retour atelier pris en charge.",
+        detail:
+          "Pièces et main-d'œuvre comprises, retour atelier pris en charge.",
       },
       {
         icon: InfinityIcon,
@@ -120,18 +127,14 @@ const PLANS: Plan[] = [
 ];
 
 /** Livré quelle que soit la formule retenue. */
-const INCLUDED = [
-  "Générateur ATMOS ONE",
-  "Masque et circuit respiratoire",
-  "Station de contrôle",
-  "Protocoles guidés Live High et Train High",
-  "Accompagnement au démarrage",
-];
 
 /** Le premier élément dépend de la formule ; ces deux-là ne varient pas. */
 const ASSURANCES = [
   { icon: Truck, text: "Livraison estimée au premier trimestre 2027" },
-  { icon: CalendarClock, text: `${BATCH_NAME} : ${BATCH_UNITS} unités, puis série suivante` },
+  {
+    icon: CalendarClock,
+    text: `${BATCH_NAME} : ${BATCH_UNITS} unités, puis série suivante`,
+  },
 ];
 
 /** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
@@ -242,9 +245,7 @@ export function OffersSection() {
           variants={rise}
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
-          {
-            `L'édition de lancement ouvre la précommande à l'achat ferme, en série limitée. ${BATCH_SCARCITY}. La location suivra : laissez votre email pour être prévenu de son ouverture.`
-          }
+          {`L'édition de lancement ouvre la précommande à l'achat ferme, en série limitée. ${BATCH_SCARCITY}. La location suivra : laissez votre email pour être prévenu de son ouverture.`}
         </motion.p>
 
         {/* Bascule Achat / Leasing */}
@@ -272,7 +273,9 @@ export function OffersSection() {
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => setPlanId(item.id)}
                 className={`relative rounded-full px-7 py-2.5 text-[0.82rem] font-medium tracking-[0.06em] transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none ${
-                  isActive ? "text-[#04070D]" : "text-white/55 hover:text-white/85"
+                  isActive
+                    ? "text-[#04070D]"
+                    : "text-white/55 hover:text-white/85"
                 }`}
               >
                 {isActive && (
@@ -384,7 +387,7 @@ export function OffersSection() {
             </div>
 
             <ul className="mt-7 flex flex-col gap-4">
-              {INCLUDED.map((item) => (
+              {INCLUDED_ITEMS.map((item) => (
                 <li key={item} className="flex items-start gap-3.5">
                   <Check
                     className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
@@ -523,7 +526,10 @@ export function OffersSection() {
 
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1 text-[0.6rem] font-medium tracking-[0.24em] text-white/45 uppercase">
-            <Sparkles className="h-3 w-3 text-indigo-300/80" strokeWidth={1.5} />
+            <Sparkles
+              className="h-3 w-3 text-indigo-300/80"
+              strokeWidth={1.5}
+            />
             À venir
           </span>
 
@@ -532,8 +538,8 @@ export function OffersSection() {
           </h3>
 
           <p className="mx-auto mt-3 max-w-md text-[0.88rem] leading-relaxed font-light text-white/40 text-pretty">
-            Notre caisson de régénération hyperbare, second appareil de la gamme.
-            Un produit distinct du générateur d&apos;altitude.
+            Notre caisson de régénération hyperbare, second appareil de la
+            gamme. Un produit distinct du générateur d&apos;altitude.
           </p>
         </div>
       </motion.aside>
