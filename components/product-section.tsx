@@ -4,6 +4,8 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  ChevronDown,
+  ChevronUp,
   Mountain,
   Package,
   Volume2,
@@ -336,38 +338,66 @@ export function ProductSection() {
 
       {/* ── Fiche technique ──────────────────────────────────────────── */}
       <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="show"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
-        className="mt-20 border-t border-white/[0.07] pt-12"
+        transition={{ duration: 0.9, ease: EASE }}
+        className="mt-20 border-t border-white/[0.07] pt-8"
       >
-        <motion.h3
-          variants={rise}
-          className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase"
-        >
-          Fiche technique
-        </motion.h3>
+        {/*
+          Repliée par défaut, en `<details>` natif.
 
-        <motion.dl
-          variants={container}
-          className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {DATASHEET.map((row) => (
-            <motion.div
-              key={row.label}
-              variants={rise}
-              className="border-t border-white/[0.06] pt-4"
-            >
-              <dt className="text-[0.7rem] font-light tracking-[0.14em] text-white/35 uppercase">
-                {row.label}
-              </dt>
-              <dd className="mt-2 text-[0.95rem] font-light text-white/80 text-pretty">
-                {row.value}
-              </dd>
-            </motion.div>
-          ))}
-        </motion.dl>
+          Elle rassure l'acheteur technique mais ne vend rien : personne ne
+          commande pour des dimensions en millimètres. Déployée, elle coûtait à
+          elle seule un écran entier de défilement sur téléphone, entre la
+          présentation du produit et les offres.
+
+          `<details>` plutôt qu'un état React : aucun script à hydrater, le
+          contenu reste dans le DOM — donc indexé — et le repli fonctionne même
+          si le JavaScript échoue.
+        */}
+        <details className="group">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-2 [&::-webkit-details-marker]:hidden">
+            <span className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase transition-colors group-hover:text-white/70">
+              Fiche technique
+            </span>
+
+            <span className="flex shrink-0 items-center gap-2.5 text-[0.75rem] font-light text-white/35 transition-colors group-hover:text-white/60">
+              <span className="group-open:hidden">Afficher</span>
+              <span className="hidden group-open:inline">Masquer</span>
+              {/*
+                Deux icônes plutôt qu'une rotation : `group-open:rotate-180`
+                ne produit aucune règle applicable dans cette version de
+                Tailwind — la propriété `rotate` reste à 0 alors même que le
+                sélecteur correspond. Le masquage conditionnel, lui, fonctionne.
+              */}
+              <ChevronDown
+                className="h-4 w-4 group-open:hidden"
+                strokeWidth={1.6}
+              />
+              <ChevronUp
+                className="hidden h-4 w-4 group-open:block"
+                strokeWidth={1.6}
+              />
+            </span>
+          </summary>
+
+          <dl className="mt-6 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+            {DATASHEET.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-baseline justify-between gap-5 border-t border-white/[0.06] py-3.5"
+              >
+                <dt className="shrink-0 text-[0.7rem] font-light tracking-[0.14em] text-white/35 uppercase">
+                  {row.label}
+                </dt>
+                <dd className="text-right text-[0.88rem] font-light text-white/80 text-pretty">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </details>
       </motion.div>
     </section>
   );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 
 import { AltitudeSimulator } from "@/components/altitude-simulator";
 import { JsonLd } from "@/components/json-ld";
@@ -345,7 +345,11 @@ export default function SimulateurAltitudePage() {
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[0.98rem] font-medium tracking-tight text-balance text-white/90 [&::-webkit-details-marker]:hidden">
                   <h3>{item.question}</h3>
                   <ChevronDown
-                    className="h-4 w-4 shrink-0 text-cyan-300/70 transition-transform duration-300 group-open:rotate-180"
+                    className="h-4 w-4 shrink-0 text-cyan-300/70 group-open:hidden"
+                    strokeWidth={1.6}
+                  />
+                  <ChevronUp
+                    className="hidden h-4 w-4 shrink-0 text-cyan-300/70 group-open:block"
                     strokeWidth={1.6}
                   />
                 </summary>
