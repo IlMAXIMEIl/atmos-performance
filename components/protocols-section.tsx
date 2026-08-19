@@ -309,7 +309,7 @@ export function ProtocolsSection() {
             transition={{ duration: 0.9, ease: EASE, delay: index * 0.12 }}
             onHoverStart={() => setHovered(protocol.id)}
             onHoverEnd={() => setHovered(null)}
-            className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 ${protocol.theme.border}`}
+            className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-7 backdrop-blur-xl transition-colors duration-500 sm:p-8 ${protocol.theme.border}`}
           >
             {/* Halo d'accent, révélé au survol */}
             <div
@@ -341,23 +341,27 @@ export function ProtocolsSection() {
                 {protocol.description}
               </p>
 
-              <ul className="mt-9 flex flex-col gap-5 border-t border-white/[0.07] pt-8">
+              {/*
+                Puces tenues sur un fil de texte plutôt qu'en blocs empilés :
+                l'ancienne mise en forme — pastille de 32 px, libellé, puis
+                détail à la ligne — coûtait trois lignes par puce sur
+                téléphone, soit près d'un écran et demi pour les trois cartes.
+              */}
+              <ul className="mt-7 flex flex-col gap-3.5 border-t border-white/[0.07] pt-6">
                 {protocol.points.map(({ icon: Icon, label, detail }) => (
-                  <li key={label} className="flex items-start gap-4">
-                    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                      <Icon
-                        className={`h-3.5 w-3.5 ${protocol.theme.icon}`}
-                        strokeWidth={1.6}
-                      />
-                    </span>
-                    <div>
-                      <div className="text-sm font-medium tracking-tight text-white/90">
+                  <li key={label} className="flex items-start gap-3">
+                    <Icon
+                      className={`mt-[0.25rem] h-3.5 w-3.5 shrink-0 ${protocol.theme.icon}`}
+                      strokeWidth={1.6}
+                    />
+                    <p className="text-[0.85rem] leading-relaxed text-pretty">
+                      <span className="font-medium tracking-tight text-white/85">
                         {label}
-                      </div>
-                      <div className="mt-1 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
-                        {detail}
-                      </div>
-                    </div>
+                      </span>{" "}
+                      <span className="font-light text-white/45">
+                        — {detail}
+                      </span>
+                    </p>
                   </li>
                 ))}
               </ul>

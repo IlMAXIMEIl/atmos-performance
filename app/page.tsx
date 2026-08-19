@@ -15,6 +15,7 @@ import {
 
 import { JsonLd } from "@/components/json-ld";
 import { FAQ, FaqSection } from "@/components/faq-section";
+import { NextProductSection } from "@/components/next-product-section";
 import { OffersSection } from "@/components/offers-section";
 import { ProductSection } from "@/components/product-section";
 import { ProtocolsSection } from "@/components/protocols-section";
@@ -281,6 +282,16 @@ export default function Home() {
 
         {/* ── Section Offres ───────────────────────────────────────────── */}
         <OffersSection />
+
+        {/*
+          La gamme, après le prix et non avant.
+
+          Rien ne doit s'intercaler entre le parcours d'achat et le tarif. Ici,
+          la section répond au doute qui suit précisément l'annonce d'un prix
+          chez une marque qu'on ne connaît pas : est-ce une maison qui construit
+          une gamme, ou un produit isolé ?
+        */}
+        <NextProductSection />
 
         {/* ── FAQ ──────────────────────────────────────────────────────── */}
         <FaqSection />

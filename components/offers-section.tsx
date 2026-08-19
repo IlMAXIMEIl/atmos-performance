@@ -19,7 +19,6 @@ import {
   LifeBuoy,
   RotateCcw,
   ShieldCheck,
-  Sparkles,
   Truck,
   Wrench,
   type LucideIcon,
@@ -149,60 +148,30 @@ const ASSURANCES = [
  * Ce qui se passe après la livraison.
  *
  * Placé au moment de la décision plutôt que dans une page annexe : l'objection
- * « et si ça tombe en panne ? » suit immédiatement le prix.
+ * « et si ça tombe en panne ? » suit immédiatement le prix. Tenu en trois
+ * lignes denses — il rassure, il ne raconte pas ; le détail vit dans les CGV.
  *
  * Le périmètre de la garantie est décrit comme une conséquence, jamais comme
  * une condition : la garantie légale de conformité est d'ordre public et ne
  * peut pas être subordonnée à un entretien. Une panne née d'un défaut
  * d'entretien sort du périmètre parce qu'elle n'est pas un défaut de
- * fabrication — pas parce qu'une clause l'exclut. Une clause de ce genre serait
- * réputée non écrite, donc sans effet protecteur.
+ * fabrication — pas parce qu'une clause l'exclut.
  */
 const AFTER_SALE = [
   {
     icon: ShieldCheck,
-    title: "Garantie 2 ans, pièces et main-d'œuvre",
-    body: "La garantie légale de conformité couvre tout défaut de fabrication pendant deux ans à compter de la livraison, sans frais, sans franchise et sans formalité d'enregistrement.",
-    note: "Restent hors périmètre les pannes qui ne relèvent pas d'un défaut de fabrication : filtres non remplacés aux intervalles indiqués, appareil utilisé en environnement poussiéreux ou humide, choc, immersion, ouverture du boîtier.",
+    title: "Garantie 2 ans",
+    body: "Défauts de fabrication : pièces, main-d'œuvre et frais de renvoi pris en charge.",
   },
   {
     icon: LifeBuoy,
-    title: "Assistance et diagnostic depuis la France",
-    body: "Un interlocuteur, pas un formulaire. Le diagnostic se fait à distance dans la majorité des cas, et les pièces de rechange partent de notre stock — sans transiter par un service après-vente à l'étranger.",
-    note: null,
+    title: "SAV depuis la France",
+    body: "Diagnostic à distance, pièces expédiées de notre stock.",
   },
   {
     icon: RotateCcw,
     title: "14 jours pour changer d'avis",
-    body: "Droit de rétractation légal à compter de la réception, sans motif à donner. Remboursement sous quatorze jours après retour de l'appareil.",
-    note: "Les frais de retour par transporteur sont à votre charge. L'appareil doit revenir complet avec ses accessoires — conservez l'emballage d'origine, c'est le seul conditionnement prévu pour ce transport.",
-  },
-];
-
-/**
- * Le second appareil de la gamme, en trois lignes.
- *
- * Un teaser, pas une fiche : aucune caractéristique technique, aucune date,
- * aucune promesse d'efficacité. La littérature sur l'hyperbarie de faible
- * pression appliquée à la récupération sportive est bien plus mince que celle
- * de l'hypoxie — annoncer un bénéfice ici contredirait la ligne que tient le
- * reste du site. On annonce une direction, on ne vend rien.
- */
-const NEXT_PRODUCT = [
-  {
-    label: "Hypoxie",
-    detail:
-      "Raréfier l'oxygène pour imposer la contrainte et déclencher l'adaptation. C'est ATMOS ONE.",
-  },
-  {
-    label: "Hyperbarie",
-    detail:
-      "Augmenter la pression pour travailler l'autre versant du cycle, celui du retour au calme.",
-  },
-  {
-    label: "Même exigence",
-    detail:
-      "Aucune recommandation qui ne s'appuie sur la littérature — y compris quand elle est moins généreuse que le discours ambiant.",
+    body: "Rétractation sans motif ; frais de retour à votre charge.",
   },
 ];
 
@@ -549,51 +518,36 @@ export function OffersSection() {
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, amount: 0.2 }}
-        className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 sm:p-10"
+        viewport={{ once: true, amount: 0.3 }}
+        className="mt-8 rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-7 py-7 sm:px-9"
       >
-        <motion.div variants={rise} className="max-w-2xl">
-          <h3 className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
-            Après l&apos;achat
-          </h3>
-          <p className="mt-4 text-[1.15rem] leading-snug font-medium tracking-[-0.02em] text-balance text-white sm:text-2xl">
-            Ce qui se passe une fois la machine chez vous.
-          </p>
-        </motion.div>
-
-        <div className="mt-9 grid gap-8 border-t border-white/[0.07] pt-8 md:grid-cols-3 md:gap-10">
-          {AFTER_SALE.map(({ icon: Icon, title, body, note }) => (
-            <motion.div key={title} variants={rise}>
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                <Icon className="h-4 w-4 text-cyan-300" strokeWidth={1.6} />
-              </span>
-
-              <h4 className="mt-6 text-[0.95rem] leading-snug font-medium tracking-tight text-balance text-white">
-                {title}
-              </h4>
-
-              <p className="mt-3 text-[0.86rem] leading-relaxed font-light text-white/55 text-pretty">
-                {body}
-              </p>
-
-              {note && (
-                <p className="mt-3 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
-                  {note}
+        <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
+          {AFTER_SALE.map(({ icon: Icon, title, body }) => (
+            <motion.div key={title} variants={rise} className="flex gap-3.5">
+              <Icon
+                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
+                strokeWidth={1.6}
+              />
+              <div>
+                <div className="text-[0.85rem] font-medium tracking-tight text-white/85">
+                  {title}
+                </div>
+                <p className="mt-1.5 text-[0.8rem] leading-relaxed font-light text-white/40 text-pretty">
+                  {body}
                 </p>
-              )}
+              </div>
             </motion.div>
           ))}
         </div>
 
         <motion.p
           variants={rise}
-          className="mt-8 border-t border-white/[0.07] pt-6 text-[0.8rem] leading-relaxed font-light text-white/35 text-pretty"
+          className="mt-7 border-t border-white/[0.07] pt-5 text-[0.78rem] font-light text-white/30"
         >
-          Le détail des garanties, des modalités de retour et de la prise en
-          charge des frais figure dans nos{" "}
+          Conditions détaillées dans nos{" "}
           <Link
             href="/cgv"
-            className="text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+            className="text-white/50 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
           >
             conditions générales de vente
           </Link>
@@ -646,59 +600,6 @@ export function OffersSection() {
           </motion.ol>
         </div>
       </motion.div>
-
-      {/* ── Teaser : prochain produit de la gamme ────────────────────── */}
-      <motion.aside
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{ duration: 0.9, ease: EASE }}
-        className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-8 py-9 text-center backdrop-blur-md"
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-[radial-gradient(ellipse_at_50%_100%,rgba(129,140,248,0.14),transparent_70%)]"
-        />
-
-        <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1 text-[0.6rem] font-medium tracking-[0.24em] text-white/45 uppercase">
-            <Sparkles
-              className="h-3 w-3 text-indigo-300/80"
-              strokeWidth={1.5}
-            />
-            À venir
-          </span>
-
-          <h3 className="mt-5 text-lg font-medium tracking-[0.06em] text-white/85 uppercase sm:text-xl">
-            ATMOS Chamber
-          </h3>
-
-          <p className="mx-auto mt-4 max-w-xl text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
-            Le second appareil de la gamme, un caisson hyperbare.
-            L&apos;altitude raréfie l&apos;oxygène pour déclencher
-            l&apos;adaptation ; la pression fait le chemin inverse. Deux
-            directions opposées, un même cycle d&apos;entraînement.
-          </p>
-
-          <dl className="mx-auto mt-9 grid max-w-2xl gap-7 border-t border-white/[0.07] pt-8 text-left sm:grid-cols-3 sm:gap-8">
-            {NEXT_PRODUCT.map(({ label, detail }) => (
-              <div key={label}>
-                <dt className="text-[0.6rem] font-medium tracking-[0.2em] text-white/40 uppercase">
-                  {label}
-                </dt>
-                <dd className="mt-2.5 text-[0.84rem] leading-relaxed font-light text-white/50 text-pretty">
-                  {detail}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          <p className="mx-auto mt-8 max-w-xl text-[0.78rem] leading-relaxed font-light text-white/30 text-pretty">
-            Ni date, ni précommande pour l&apos;instant. Les inscrits du{" "}
-            {BATCH_NAME} seront prévenus les premiers.
-          </p>
-        </div>
-      </motion.aside>
 
       {/*
         Tant que les commandes ne sont pas ouvertes, les boutons d'action
