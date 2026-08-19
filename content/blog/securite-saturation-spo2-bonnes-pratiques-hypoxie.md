@@ -32,9 +32,10 @@ Au niveau de la mer, chez un individu en bonne santé respiratoire, la $SpO_2$ s
 Lorsque l'on respire un air dont la fraction d'oxygène ($FiO_2$) est réduite par un générateur, la pression partielle d'oxygène dans les alvéoles pulmonaires diminue, entraînant une désaturation transitoire du sang artériel :
 
 * **Zone de repos normoxique :** 96 % - 99 % (saturation basale au niveau de la mer).
-* **Zone d'adaptation modérée :** 88 % - 92 % (altitude simulée de 1 800 m à 2 500 m, idéale pour les premières séances ou l'exercice actif).
-* **Zone d'adaptation optimale (IHT) :** 80 % - 87 % (altitude simulée de 3 000 m à 4 500 m, déclenchement optimal de **HIF-1α** et de l'EPO sans stress excessif).
-* **Zone d'alerte basse :** Inférieure à 75 % (inutile pour le progrès physiologique et potentiellement inconfortable ; nécessite de retirer le masque ou de remonter l'apport d'$O_2$).
+* **Zone d'adaptation modérée :** 88 % - 92 % (altitude simulée de 2 100 m à 2 600 m, la plage des premières séances et des nuits sous tente).
+* **Zone d'adaptation optimale à l'effort (IHT) :** 84 % - 88 % (altitude simulée de 2 500 m à 3 500 m, le compromis entre stimulus hypoxique et intensité tenable).
+* **Zone d'exposition passive (IHE) :** 78 % - 82 % (altitude simulée de 3 500 m à 5 000 m, déclenchement optimal de **HIF-1α** et de l'EPO). Ces valeurs ne s'obtiennent qu'au repos strict, immobile : à l'effort, le même palier ferait plonger la saturation bien plus bas.
+* **Zone d'alerte basse :** Inférieure à 80 % à l'effort, inférieure à 75 % au repos strict (inutile pour le progrès physiologique et potentiellement inconfortable ; nécessite de retirer le masque ou de remonter l'apport d'$O_2$).
 
 ---
 
@@ -42,10 +43,11 @@ Lorsque l'on respire un air dont la fraction d'oxygène ($FiO_2$) est réduite p
 
 | Objectif de séance | Type d'exercice | Altitude simulée indicative | $SpO_2$ cible recommandée |
 | :--- | :--- | :--- | :--- |
-| **Initiation & Acclimatation** | Repos passif | 2 000 m - 2 500 m | 88 % - 91 % |
-| **Régénération Cellulaire & Mitophagie** | Repos passif (IHT) | 3 200 m - 4 200 m | 82 % - 86 % |
-| **Endurance active (Zone 2)** | Home-trainer / Tapis | 1 800 m - 2 400 m | 85 % - 89 % |
-| **Tolérance au lactate & Seuil** | Intervalles actifs | 2 200 m - 2 800 m | 83 % - 87 % |
+| **Initiation & Acclimatation** | Repos passif | 2 500 m - 3 200 m | 88 % - 92 % |
+| **Régénération Cellulaire & Mitophagie** | Repos passif (IHE) | 3 500 m - 4 500 m | 78 % - 82 % |
+| **Endurance active (Zone 2)** | Home-trainer / Tapis (IHT) | 2 500 m - 3 000 m | 84 % - 88 % |
+| **Tolérance au lactate & Seuil** | Intervalles actifs (IHT) | 2 800 m - 3 500 m | 84 % - 88 % |
+| **Sommeil sous tente (LHTL)** | Nuit complète | 2 100 m - 2 600 m | 88 % - 92 % en moyenne |
 
 ---
 
@@ -58,7 +60,7 @@ Chaque séance d'hypoxie — qu'elle soit passive ou active — doit être effec
 En dehors du sommeil en tente (qui reste plafonné à très basse altitude), l'hypoxie au masque s'utilise par **cycles alternés** : par exemple 4 à 6 minutes d'air hypoxique suivies de 3 à 5 minutes de retour à l'air ambiant. C'est ce contraste rapide qui active les cascades génétiques tout en évitant l'épuisement.
 
 ### Règle n°3 : L'augmentation progressive de la charge
-Ne commencez jamais un cycle par une simulation d'altitude à 5 000 m. Démarrez toujours la première semaine autour de 2 000 m à 2 500 m pour évaluer la tolérance individuelle de votre système cardiovasculaire et de vos barorécepteurs.
+Ne commencez jamais un cycle par une simulation d'altitude à 5 000 m. Démarrez toujours la première semaine 400 à 600 m sous votre palier visé pour évaluer la tolérance individuelle de votre système cardiovasculaire et de vos barorécepteurs.
 
 ### Règle n°4 : Une hydratation adaptée
 La ventilation sous air hypoxique stimule légèrement le rythme respiratoire. Boire un grand verre d'eau avant chaque séance évite les sensations de gorge sèche ou de céphalée réflexe.

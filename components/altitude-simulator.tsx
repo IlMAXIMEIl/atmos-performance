@@ -146,7 +146,13 @@ type OptionProps = {
   onSelect: () => void;
 };
 
-function Option({ icon: Icon, label, detail, selected, onSelect }: OptionProps) {
+function Option({
+  icon: Icon,
+  label,
+  detail,
+  selected,
+  onSelect,
+}: OptionProps) {
   return (
     <button
       type="button"
@@ -168,7 +174,9 @@ function Option({ icon: Icon, label, detail, selected, onSelect }: OptionProps) 
       <span className="relative flex items-start justify-between gap-3">
         <Icon
           className={`h-4 w-4 shrink-0 transition-colors duration-300 ${
-            selected ? "text-cyan-300" : "text-white/40 group-hover:text-white/70"
+            selected
+              ? "text-cyan-300"
+              : "text-white/40 group-hover:text-white/70"
           }`}
           strokeWidth={1.6}
         />
@@ -180,7 +188,9 @@ function Option({ icon: Icon, label, detail, selected, onSelect }: OptionProps) 
               : "border-white/15 group-hover:border-white/30"
           }`}
         >
-          {selected && <Check className="h-2.5 w-2.5 text-cyan-200" strokeWidth={3} />}
+          {selected && (
+            <Check className="h-2.5 w-2.5 text-cyan-200" strokeWidth={3} />
+          )}
         </span>
       </span>
 
@@ -280,7 +290,7 @@ export function AltitudeSimulator() {
   // lisibles dans l'URL côté acquisition.
   const reservationHref =
     `/?reserver=achat&profil=${profile}&objectif=${goal}` +
-    `&niveau=${level}&palier=${protocol.altitude}#offres`;
+    `&niveau=${level}&palier=${protocol.targetAltitudeMeters}#offres`;
 
   return (
     <div className="flex flex-col gap-8">
@@ -342,7 +352,11 @@ export function AltitudeSimulator() {
             </div>
           </Step>
 
-          <Step index={2} title="L'objectif" question="Que cherchez-vous à obtenir ?">
+          <Step
+            index={2}
+            title="L'objectif"
+            question="Que cherchez-vous à obtenir ?"
+          >
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {GOALS.map((item) => (
                 <Option
@@ -398,7 +412,7 @@ export function AltitudeSimulator() {
               Votre protocole recommandé
             </span>
             <span className="rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] px-3.5 py-1 text-[0.68rem] font-medium tracking-[0.08em] text-cyan-100/90">
-              {protocol.family}
+              {protocol.protocolTitle}
             </span>
           </div>
 
@@ -411,7 +425,7 @@ export function AltitudeSimulator() {
 
               <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2">
                 <span className="text-[3.4rem] leading-none font-medium tracking-[-0.04em] text-white tabular-nums sm:text-7xl">
-                  {formatNumber(protocol.altitude)}
+                  {formatNumber(protocol.targetAltitudeMeters)}
                 </span>
                 <span className="text-2xl font-light text-white/50">m</span>
 
@@ -420,13 +434,13 @@ export function AltitudeSimulator() {
                     FiO₂
                   </span>
                   <span className="mt-0.5 block text-xl font-medium tracking-tight text-cyan-200 tabular-nums">
-                    {formatDecimal(protocol.fio2)} %
+                    {formatDecimal(protocol.fio2EquivalentPercent)} %
                   </span>
                 </span>
               </div>
 
               <p className="mt-4 text-[0.85rem] font-light text-white/45">
-                {landmarkFor(protocol.altitude)}
+                {landmarkFor(protocol.targetAltitudeMeters)}
               </p>
 
               {/* Situation du palier sur la course de l'appareil */}
@@ -434,27 +448,48 @@ export function AltitudeSimulator() {
                 <div className="relative h-1.5 w-full rounded-full bg-white/[0.08]">
                   <div
                     className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-300 to-blue-500"
-                    style={{ width: `${percent(protocol.altitude, 0, MAX_ALTITUDE)}%` }}
+                    style={{
+                      width: `${percent(protocol.targetAltitudeMeters, 0, MAX_ALTITUDE)}%`,
+                    }}
                   />
                   <span
                     className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-white shadow-[0_0_14px_-1px_rgba(56,189,248,0.9)]"
-                    style={{ left: `${percent(protocol.altitude, 0, MAX_ALTITUDE)}%` }}
+                    style={{
+                      left: `${percent(protocol.targetAltitudeMeters, 0, MAX_ALTITUDE)}%`,
+                    }}
                   />
                 </div>
                 <div className="mt-3 flex justify-between text-[0.65rem] font-light tracking-[0.1em] text-white/30 uppercase">
                   <span>Niveau de la mer</span>
-                  <span>{formatNumber(MAX_ALTITUDE)} m · plafond ATMOS ONE</span>
+                  <span>
+                    {formatNumber(MAX_ALTITUDE)} m · plafond ATMOS ONE
+                  </span>
                 </div>
               </div>
 
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
                 <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
-                  <TrendingUp className="h-3.5 w-3.5 text-cyan-300/80" strokeWidth={1.6} />
+                  <TrendingUp
+                    className="h-3.5 w-3.5 text-cyan-300/80"
+                    strokeWidth={1.6}
+                  />
                   Montée en charge
                 </div>
-                <p className="mt-3 text-[0.88rem] leading-relaxed font-light text-white/55 text-pretty">
-                  {`Première semaine à ${formatNumber(protocol.rampAltitude)} m (${formatDecimal(protocol.rampFio2)} % d'O₂), puis passage au palier de croisière une fois la tolérance vérifiée à l'oxymètre.`}
-                </p>
+                <ol className="mt-4 flex flex-col gap-3">
+                  {protocol.acclimatizationProtocol.map((step, index) => (
+                    <li key={step} className="flex items-start gap-3">
+                      <span
+                        aria-hidden
+                        className="mt-[0.1rem] flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] text-[0.6rem] font-medium text-cyan-100/80 tabular-nums"
+                      >
+                        {index + 1}
+                      </span>
+                      <span className="text-[0.85rem] leading-relaxed font-light text-white/55 text-pretty">
+                        {step}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
 
@@ -469,35 +504,59 @@ export function AltitudeSimulator() {
               <Spec
                 icon={Timer}
                 label="Durée totale de séance"
-                value={formatDuration(protocol.totalMinutes)}
+                value={formatDuration(protocol.sessionMinutes)}
                 hint={protocol.modality}
               />
               <Spec
                 icon={CalendarDays}
                 label="Fréquence"
-                value={`${protocol.sessionsPerWeek} séances par semaine`}
+                value={protocol.weeklyDose.frequency}
                 hint={`Soit ${savings.sessions} séances sur l'ensemble du cycle.`}
               />
               <Spec
                 icon={Mountain}
                 label="Durée du cycle"
-                value={`${protocol.weeks} semaines`}
+                value={`${protocol.weeklyDose.totalWeeksRecommended} semaines`}
                 hint="Puis 2 à 3 semaines sans exposition avant de relancer un bloc."
               />
+              {protocol.sleepAltitudeMeters > 0 &&
+                protocol.sleepFio2Percent !== null && (
+                  <>
+                    <Spec
+                      icon={Moon}
+                      label="Dose nocturne"
+                      value={`${protocol.sleepHoursPerDay} à ${protocol.sleepHoursPerDay + 2} h par nuit`}
+                      hint={`Le palier de sommeil est le chiffre de tête de cette fiche : c'est lui qui définit le protocole. Plafond de verre à 2 600 m, figé — aucun bonus de niveau ne le franchit.`}
+                    />
+                    <Spec
+                      icon={Bike}
+                      label="Palier des séances IHT"
+                      value={`${formatNumber(protocol.sessionAltitudeMeters)} m · ${formatDecimal(protocol.sessionFio2Percent)} % d'O₂`}
+                      hint="Sous masque, à l'effort sous-maximal. Plus haut que le sommeil, et c'est normal : l'exposition y dure quelques dizaines de minutes, pas douze heures."
+                    />
+                  </>
+                )}
               <Spec
                 icon={HeartPulse}
                 label="Plage SpO₂ cible"
-                value={`${protocol.spo2[0]} – ${protocol.spo2[1]} %`}
+                value={protocol.targetSpo2Range}
                 hint="Mesurée au doigt pendant la phase hypoxique. C'est elle qui commande le réglage, pas l'inverse : si la saturation descend sous la plage, remontez la FiO₂."
               />
             </div>
           </div>
 
-          {protocol.complement && (
-            <p className="mt-10 rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-[0.88rem] leading-relaxed font-light text-white/55 text-pretty">
-              {protocol.complement}
+          <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+            <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+              <Wind
+                className="h-3.5 w-3.5 text-cyan-300/80"
+                strokeWidth={1.6}
+              />
+              Pourquoi ce protocole
+            </div>
+            <p className="mt-3 text-[0.88rem] leading-relaxed font-light text-white/55 text-pretty">
+              {protocol.physiologicalRationale}
             </p>
-          )}
+          </div>
 
           {/* ── Consignes de sécurité ────────────────────────────────── */}
           <div className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-5 sm:p-6">
@@ -507,8 +566,11 @@ export function AltitudeSimulator() {
             </div>
             <ul className="mt-4 flex flex-col gap-2.5">
               {[
+                protocol.clinicalSafetyNotes,
                 "Séance systématiquement suivie à l'oxymètre de pouls, au doigt, pendant toute la phase hypoxique.",
-                "Sous 80 % de SpO₂, on interrompt : retour à l'air ambiant, on ne « tient » pas une saturation basse.",
+                protocol.exposure === "repos"
+                  ? "Sous 75 % de SpO₂, on interrompt : retour à l'air ambiant, on ne « tient » pas une saturation basse. Ce plancher plus bas ne vaut qu'au repos strict, immobile."
+                  : "Sous 80 % de SpO₂, on interrompt : retour à l'air ambiant, on ne « tient » pas une saturation basse.",
                 "Vertiges, céphalée, nausée ou confusion : arrêt immédiat, quelle que soit la valeur affichée.",
                 "Jamais de première séance seul, ni de séance en hypoxie pendant le sommeil sans supervision préalable.",
                 "Grossesse, pathologie cardiaque ou respiratoire, anémie, hypertension non contrôlée : avis médical avant toute exposition.",
@@ -525,6 +587,10 @@ export function AltitudeSimulator() {
               ))}
             </ul>
           </div>
+
+          <p className="mt-6 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+            {protocol.disclaimerLegal}
+          </p>
 
           {/* ── Passage à l'acte ─────────────────────────────────────── */}
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
@@ -596,7 +662,9 @@ export function AltitudeSimulator() {
               </span>
               <span className="text-3xl font-medium tracking-[-0.03em] text-white tabular-nums">
                 {formatNumber(altitude)}
-                <span className="ml-1.5 text-base font-light text-white/45">m</span>
+                <span className="ml-1.5 text-base font-light text-white/45">
+                  m
+                </span>
               </span>
             </label>
 
@@ -639,7 +707,9 @@ export function AltitudeSimulator() {
               </span>
               <span className="text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
                 {formatDecimal(fio2)}
-                <span className="ml-1.5 text-base font-light text-white/45">%</span>
+                <span className="ml-1.5 text-base font-light text-white/45">
+                  %
+                </span>
               </span>
             </label>
 
@@ -650,7 +720,9 @@ export function AltitudeSimulator() {
               >
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300"
-                  style={{ width: `${percent(fio2, MIN_FIO2, SEA_LEVEL_FIO2)}%` }}
+                  style={{
+                    width: `${percent(fio2, MIN_FIO2, SEA_LEVEL_FIO2)}%`,
+                  }}
                 />
               </div>
               <input
@@ -673,7 +745,10 @@ export function AltitudeSimulator() {
         </div>
 
         <p className="mt-9 flex items-center gap-2.5 text-[0.85rem] font-light text-white/45">
-          <Mountain className="h-3.5 w-3.5 shrink-0 text-cyan-300/70" strokeWidth={1.6} />
+          <Mountain
+            className="h-3.5 w-3.5 shrink-0 text-cyan-300/70"
+            strokeWidth={1.6}
+          />
           {landmarkFor(altitude)}
         </p>
 
@@ -733,7 +808,10 @@ export function AltitudeSimulator() {
             {/* Le stage */}
             <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] p-6 sm:p-7">
               <div className="flex items-center gap-2.5">
-                <Plane className="h-3.5 w-3.5 text-white/40" strokeWidth={1.6} />
+                <Plane
+                  className="h-3.5 w-3.5 text-white/40"
+                  strokeWidth={1.6}
+                />
                 <span className="text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
                   Stage en altitude
                 </span>
@@ -762,7 +840,9 @@ export function AltitudeSimulator() {
                   </dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-white/45">Trois semaines hors de chez vous</dt>
+                  <dt className="text-white/45">
+                    Trois semaines hors de chez vous
+                  </dt>
                   <dd className="shrink-0 text-white/40">non chiffré</dd>
                 </div>
               </dl>
@@ -777,7 +857,10 @@ export function AltitudeSimulator() {
 
               <div className="relative">
                 <div className="flex items-center gap-2.5">
-                  <Wind className="h-3.5 w-3.5 text-cyan-300" strokeWidth={1.6} />
+                  <Wind
+                    className="h-3.5 w-3.5 text-cyan-300"
+                    strokeWidth={1.6}
+                  />
                   <span className="text-[0.66rem] font-medium tracking-[0.2em] text-cyan-100/80 uppercase">
                     ATMOS ONE
                   </span>
@@ -799,7 +882,7 @@ export function AltitudeSimulator() {
                   </div>
                   <div className="flex items-baseline justify-between gap-4">
                     <dt className="text-white/45">
-                      {`Électricité du cycle, ${savings.sessions} séances`}
+                      {`Électricité du cycle, ${formatNumber(savings.hours)} h de fonctionnement`}
                     </dt>
                     <dd className="shrink-0 text-white/70 tabular-nums">
                       {formatDecimal(savings.energyCost)} €
@@ -818,27 +901,36 @@ export function AltitudeSimulator() {
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] px-6 py-7">
               <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
-                <Zap className="h-3.5 w-3.5 text-cyan-300/80" strokeWidth={1.6} />
+                <Zap
+                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  strokeWidth={1.6}
+                />
                 Dès le premier cycle
               </div>
               <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
                 {formatNumber(savings.firstCycle)} € économisés
               </div>
               <p className="mt-2 text-[0.8rem] font-light text-white/40 text-pretty">
-                Appareil compris, sur les {protocol.weeks} semaines de votre protocole.
+                Appareil compris, sur les{" "}
+                {protocol.weeklyDose.totalWeeksRecommended} semaines de votre
+                protocole.
               </p>
             </div>
 
             <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] px-6 py-7">
               <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
-                <Repeat className="h-3.5 w-3.5 text-cyan-300/80" strokeWidth={1.6} />
+                <Repeat
+                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  strokeWidth={1.6}
+                />
                 À chaque cycle suivant
               </div>
               <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
                 {formatNumber(savings.nextCycle)} € économisés
               </div>
               <p className="mt-2 text-[0.8rem] font-light text-white/40 text-pretty">
-                L&apos;appareil est payé : il ne reste que la consommation électrique.
+                L&apos;appareil est payé : il ne reste que la consommation
+                électrique.
               </p>
             </div>
           </div>

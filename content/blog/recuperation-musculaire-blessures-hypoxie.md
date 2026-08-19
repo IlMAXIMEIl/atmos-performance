@@ -19,7 +19,7 @@ L'exposition contrôlée à l'hypoxie s'affirme comme un levier stratégique dou
 
 > **En Bref (Points clés)**
 > * **Hyper-perfusion tissulaire :** En réponse au signal hypoxique, la sécrétion de **VEGF** stimule la néo-vascularisation et l'irrigation des zones lésées.
-> * **Récupération passive :** Des protocoles d'hypoxie intermittente au repos (IHT) facilitent le drainage métabolique et modulent la cascade inflammatoire post-effort.
+> * **Récupération passive :** Des protocoles d'hypoxie intermittente au repos (IHE) facilitent le drainage métabolique et modulent la cascade inflammatoire post-effort.
 > * **Maintien aérobie sans impact :** Lors d'une blessure orthopédique, s'entraîner à intensité mécanique réduite sous hypoxie permet de préserver la VO2 max et le volume cardiaque.
 > * **Réathlétisation écourtée :** Accélération du retour à la compétition grâce à la préservation des adaptations enzymatiques périphériques.
 
@@ -78,7 +78,7 @@ L'entraînement sous hypoxie offre une solution unique :
 ## 5. Protocoles types selon la situation
 
 ### Scénario 1 : Récupération post-compétition ou gros bloc d'entraînement
-* **Méthode :** Séances passives d'Hypoxie Intermittente au Repos (IHT).
+* **Méthode :** Séances passives d'Hypoxie Intermittente au Repos (IHE).
 * **Durée :** 30 à 45 minutes par jour, dans les 24 à 48 heures suivant l'effort majeur.
 * **Objectif :** Restaurer la variabilité cardiaque (VRC), calmer le stress oxydatif et stimuler le flux sanguin sans fatigue supplémentaire.
 

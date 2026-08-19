@@ -13,7 +13,7 @@ Dans un quotidien marqué par les sollicitations numériques permanentes, la sur
 
 Or, sans un sommeil profond de qualité, aucune surcompensation athlétique ni régénération cellulaire durable n'est possible.
 
-Si l'altitude continue mal gérée perturbe le sommeil, l'exposition ciblée à l'**hypoxie intermittente au repos (IHT)** agit à l'inverse comme un puissant régulateur du système nerveux autonome. Analyse des mécanismes physiologiques et des bénéfices sur l'architecture du sommeil.
+Si l'altitude continue mal gérée perturbe le sommeil, l'exposition ciblée à l'**hypoxie intermittente au repos (IHE)** agit à l'inverse comme un puissant régulateur du système nerveux autonome. Analyse des mécanismes physiologiques et des bénéfices sur l'architecture du sommeil.
 
 ---
 
@@ -68,9 +68,9 @@ Le sommeil se divise en cycles successifs comprenant du sommeil léger, du somme
 
 Pour optimiser la récupération nerveuse et la profondeur du sommeil, le protocole s'effectue exclusivement en mode passif :
 
-* **Type de séance :** Hypoxie Intermittente au Repos (IHT) en position semi-allongée.
+* **Type de séance :** Hypoxie Intermittente au Repos (IHE) en position semi-allongée.
 * **Durée :** 30 à 45 minutes par séance.
-* **Altitude simulée :** Modérée (entre 2 200 m et 3 200 m / $FiO_2$ ~ 14-16 %).
+* **Altitude simulée :** Entre 3 500 m et 4 200 m ($FiO_2$ 13,6 % à 12,4 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**. Le corps étant immobile, la demande métabolique reste minimale : c'est le contraste entre les phases, et non la seule profondeur, qui porte le stimulus sur le système nerveux autonome.
 * **Fréquence :** 3 séances par semaine sur un cycle de 3 à 4 semaines.
 * **Fenêtre horaire :** Idéalement en fin d'après-midi (entre 17h et 19h). Évitez de réaliser la séance dans les 90 minutes précédant immédiatement l'extinction des feux pour laisser au système nerveux le temps de finaliser son rebond parasympathique.
 

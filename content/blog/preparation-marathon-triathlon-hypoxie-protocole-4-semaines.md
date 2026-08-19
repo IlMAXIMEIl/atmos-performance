@@ -39,29 +39,31 @@ L'hypoxie stimule directement ces 3 composantes via la stabilisation du facteur 
 
 ## 2. Le Protocole Clé en Main sur 4 Semaines (J-28 à J-0)
 
-Ce plan combine l'entraînement physique classique avec des séances d'**Hypoxie Intermittente au Repos (IHT)** pour appliquer le principe *Live High, Train Low* à domicile.
+Ce plan combine l'entraînement physique classique avec des séances d'**Hypoxie Intermittente au Repos (IHE)** : l'exposition se fait au repos, l'entraînement reste en plaine à pleine intensité.
+
+Une précision de vocabulaire, parce qu'elle change le protocole : ce bloc n'est pas du *Live High, Train Low*. Le LHTL suppose de **dormir** en altitude, 12 à 14 h par jour entre 2 200 et 2 500 m — l'optimum de la réponse EPO, plafonné à 2 600 m — pendant trois à quatre semaines, ce qui demande une tente. Les séances passives décrites ici en sont le substitut le plus accessible — un stimulus plus court et plus profond, sans installation nocturne. Si vous disposez d'une tente, les deux se cumulent.
 
 ### Semaine 1 (J-28 à J-22) : Phase d'acclimatation et d'induction
 * **Objectif :** Habituer le système respiratoire et le système nerveux autonome à la baisse de pression partielle d'oxygène.
 * **Séances Hypoxie :** 3 séances passives de 40 minutes.
-* **Paramétrage :** Altitude simulée modérée (2 200 m à 2 800 m / $FiO_2$ ~ 15-16 %). Saturation pulsée ($SpO_2$) cible : **86 % à 89 %**.
+* **Paramétrage :** Palier d'entrée à 3 200 m ($FiO_2$ 14,1 %), au repos strict. Saturation pulsée ($SpO_2$) cible : **82 % à 86 %**.
 * **Entraînement physique :** Maintien du volume habituel (séances clés au seuil sur le terrain).
 
 ### Semaine 2 (J-21 à J-15) : Phase de stimulation maximale
 * **Objectif :** Déclencher la cascade de libération d'EPO endogène et la synthèse des transporteurs enzymatiques.
 * **Séances Hypoxie :** 4 séances passives de 50 minutes.
-* **Paramétrage :** Altitude simulée augmentée (3 200 m à 4 000 m / $FiO_2$ ~ 13-14 %). $SpO_2$ cible : **82 % à 85 %**.
+* **Paramétrage :** Palier de croisière à 4 200 m ($FiO_2$ 12,4 %). $SpO_2$ cible : **78 % à 82 %**.
 * **Entraînement physique :** Dernière grosse sortie longue et travail spécifique d'allure marathon / triathlon.
 
 ### Semaine 3 (J-14 à J-8) : Phase de consolidation métabolique
 * **Objectif :** Consolider la biogenèse mitochondriale tout en amorçant la baisse de la charge mécanique extérieure.
 * **Séances Hypoxie :** 3 séances passives de 45 minutes.
-* **Paramétrage :** Altitude simulée stabilisée (3 500 m / $FiO_2$ ~ 14 %). $SpO_2$ cible : **83 % à 86 %**.
+* **Paramétrage :** Altitude simulée stabilisée à 3 800 m ($FiO_2$ 13,0 %). $SpO_2$ cible : **80 % à 84 %**.
 * **Entraînement physique :** Début de l'affûtage (baisse du kilométrage de 30 %, conservation de courtes portions à allure course).
 
 ### Semaine 4 (J-7 à Jour J) : Affûtage final et surcompensation
 * **Objectif :** Récupération nerveuse complète, restitution de l'homéostasie et pic de forme le jour de la course.
-* **Séances Hypoxie :** 1 à 2 séances très légères en début de semaine (30 min à 2 000 m), puis **arrêt complet 72 h avant le départ**.
+* **Séances Hypoxie :** 1 à 2 séances très légères en début de semaine (30 min à 2 500 m), puis **arrêt complet 72 h avant le départ**.
 * **Entraînement physique :** Baisse du volume de 60 %, rappels neuromusculaires très courts (lignes droites / déblocages courts).
 
 ---
@@ -70,10 +72,10 @@ Ce plan combine l'entraînement physique classique avec des séances d'**Hypoxie
 
 | Période | Volume Terrain | Séances Hypoxie | Altitude Simulée | $SpO_2$ Cible |
 | :--- | :--- | :--- | :--- | :--- |
-| **Semaine 1 (J-28)** | 100 % (Volume standard) | 3 x 40 min (Repos) | 2 200 m - 2 800 m | 86 % - 89 % |
-| **Semaine 2 (J-21)** | 100 % (Dernier pic) | 4 x 50 min (Repos) | 3 200 m - 4 000 m | 82 % - 85 % |
-| **Semaine 3 (J-14)** | 70 % (Début affûtage) | 3 x 45 min (Repos) | 3 500 m | 83 % - 86 % |
-| **Semaine 4 (J-7)** | 40 % (Affûtage final) | 1-2 x 30 min (Léger) | 2 000 m | > 88 % |
+| **Semaine 1 (J-28)** | 100 % (Volume standard) | 3 x 40 min (Repos) | 3 200 m | 82 % - 86 % |
+| **Semaine 2 (J-21)** | 100 % (Dernier pic) | 4 x 50 min (Repos) | 4 200 m | 78 % - 82 % |
+| **Semaine 3 (J-14)** | 70 % (Début affûtage) | 3 x 45 min (Repos) | 3 800 m | 80 % - 84 % |
+| **Semaine 4 (J-7)** | 40 % (Affûtage final) | 1-2 x 30 min (Léger) | 2 500 m | > 88 % |
 
 ---
 
@@ -93,7 +95,7 @@ Pour que les cascades adaptatives se traduisent par une hausse concrète de l'en
 La fenêtre optimale de surcompensation se situe généralement entre le **7e et le 18e jour** suivant la dernière séance d'hypoxie soutenue. C'est durant cette période que la masse d'hémoglobine est à son apogée et que la fatigue nerveuse induite par le stimulus hypoxique est entièrement dissipée.
 
 ### Peut-on faire ce protocole avec des séances actives sur home-trainer ?
-Oui. Les athlètes expérimentés peuvent remplacer une séance passive par une séance d'endurance de base (Zone 2) de 45 minutes sous masque hypoxique réglé à altitude modérée (1 800 m à 2 200 m) en semaine 1 et 2.
+Oui. Les athlètes expérimentés peuvent remplacer une séance passive par une séance d'endurance de base (Zone 2) de 45 minutes sous masque hypoxique réglé en plage d'entraînement (2 500 m à 3 000 m) en semaine 1 et 2. Le palier descend par rapport aux séances passives : à l'effort, la saturation chute bien plus vite pour une même altitude simulée.
 
 ### Quel est l'avantage par rapport à un stage d'affûtage en montagne ?
 Le générateur à domicile évite la décompensation neuromusculaire souvent observée lors des retours de stage en altitude (sensation de jambes lourdes liée à la réadaptation barométrique). De plus, l'athlète conserve l'ensemble de ses repères d'allure et de sommeil à la maison.

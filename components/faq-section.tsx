@@ -35,8 +35,9 @@ export const FAQ: FaqEntry[] = [
   {
     question: "Tente d'altitude ou masque : que choisir ?",
     answer: [
-      "Les deux, mais pas pour la même chose. La tente sert l'exposition longue et modérée : 8 à 10 heures par nuit entre 2 000 et 3 500 mètres, pendant que vous dormez. C'est la voie de l'acclimatation, celle qui ne coûte aucun temps de journée.",
-      "Le masque sert l'exposition courte et forte : 20 à 60 minutes entre 4 000 et 6 000 mètres, par cycles alternés, au repos ou sur home-trainer. C'est la voie du travail ventilatoire et de la VO2max.",
+      "Les deux, mais pas pour la même chose. La tente sert l'exposition longue et modérée : 12 à 14 heures par jour entre 2 100 et 2 600 mètres, pendant que vous dormez. C'est la voie de l'acclimatation, celle qui ne coûte aucun temps de journée. La littérature situe l'optimum de la réponse EPO entre 2 200 et 2 500 mètres ; au-delà de 2 600, l'architecture du sommeil se dégrade plus vite que le gain hématologique ne progresse. C'est un plafond de verre : aucun niveau de pratique ne le franchit.",
+      "Le masque sert les expositions courtes, et le palier dépend de ce que vous faites pendant. À l'effort — marche, home-trainer — on reste entre 2 500 et 3 500 mètres : au-delà, l'intensité s'effondre et la séance perd son sens. Au repos strict, assis ou allongé, on monte entre 3 500 et 5 000 mètres par cycles de quelques minutes.",
+      "La règle tient en une phrase : c'est la modalité qui fixe le palier, jamais l'objectif. Un même but se poursuit à 2 800 mètres en pédalant ou à 4 200 mètres dans un fauteuil, et ce sont deux protocoles différents.",
       "Le même générateur alimente les deux. La question n'est donc pas laquelle acheter, mais laquelle programmer selon la semaine.",
     ],
   },

@@ -73,7 +73,7 @@ L'investissement dans une solution à domicile est amorti immédiatement, tout e
 
 Le protocole *Live High, Train Low* (vivre en altitude, s'entraîner en plaine) est scientifiquement reconnu comme le modèle le plus efficace pour l'endurance :
 
-1. **La phase passive (Stimulation) :** Réalisez vos séances d'hypoxie intermittente au repos (IHT) ou de sommeil sous environnement contrôlé pour déclencher l'expression de **HIF-1α** et la libération d'EPO endogène.
+1. **La phase passive (Stimulation) :** Réalisez vos séances d'hypoxie intermittente au repos (IHE) ou de sommeil sous environnement contrôlé pour déclencher l'expression de **HIF-1α** et la libération d'EPO endogène.
 2. **La phase active (Intensité) :** Effectuez l'ensemble de vos séances qualitatives (intervalles au seuil, PMA/VMA) à l'air libre ou en normoxie pour maintenir vos allures cibles et votre gestuelle de course.
 3. **Le suivi objectif :** Mesurez votre saturation ($SpO_2$) et votre variabilité de fréquence cardiaque (VRC) chaque matin pour ajuster la charge sans risque de surentraînement.
 
@@ -85,7 +85,7 @@ Le protocole *Live High, Train Low* (vivre en altitude, s'entraîner en plaine) 
 Oui. L'utilisation de tentes à hypoxie et de générateurs d'altitude artificielle est parfaitement conforme au Code Mondial Antidopage. L'AMA autorise ces technologies qui stimulent les adaptations physiologiques naturelles de l'organisme.
 
 ### Peut-on s'entraîner directement avec le générateur ?
-Oui. Les générateurs modernes permettent à la fois des protocoles passifs au repos (IHT) et des séances actives sur home-trainer ou tapis de course grâce à des systèmes de masque respiratoire à débit continu sans résistance inspiratoire.
+Oui. Les générateurs modernes permettent à la fois des protocoles passifs au repos (IHE) et des séances actives sur home-trainer ou tapis de course grâce à des systèmes de masque respiratoire à débit continu sans résistance inspiratoire.
 
 ### Combien de cycles peut-on réaliser par an ?
 Contrairement aux stages en montagne souvent limités à un ou deux par an pour des raisons de coût et de calendrier, un générateur permet de réaliser 3 à 4 blocs ciblés dans l'année (fondation hivernale, pic de forme printanier, affûtage pré-compétition).

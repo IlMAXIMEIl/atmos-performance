@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 import {
   Droplet,
   Gauge,
+  HeartPulse,
   Moon,
+  Plane,
+  RotateCcw,
+  ShieldCheck,
   Timer,
   TrendingUp,
   Wind,
@@ -14,7 +18,7 @@ import {
 
 import { EASE, container, rise } from "@/lib/motion";
 
-type ProtocolId = "sommeil" | "entrainement";
+type ProtocolId = "sommeil" | "entrainement" | "exposition";
 
 type Protocol = {
   id: ProtocolId;
@@ -39,21 +43,22 @@ type Protocol = {
 const PROTOCOLS: Protocol[] = [
   {
     id: "sommeil",
-    eyebrow: "Mode Sommeil · Live High",
-    range: "2 000 – 3 500 m",
+    eyebrow: "Mode Sommeil · LHTL",
+    range: "2 100 – 2 600 m",
     title: "Dormir en altitude, s'entraîner au niveau de la mer",
     description:
       "Le générateur alimente une tente posée sur votre lit. L'exposition est longue et modérée : l'acclimatation s'installe pendant la nuit, sans jamais dégrader la qualité des séances du lendemain.",
     points: [
       {
         icon: Moon,
-        label: "8 à 10 h par nuit",
+        label: "12 à 14 h par jour",
         detail: "Une dose longue, à intensité faible, qui n'empiète sur rien.",
       },
       {
-        icon: Droplet,
-        label: "Acclimatation",
-        detail: "La voie la plus documentée pour préparer un séjour en altitude.",
+        icon: ShieldCheck,
+        label: "Plafond de verre à 2 600 m",
+        detail:
+          "Figé, sans exception de niveau. La réponse EPO est optimale entre 2 200 et 2 500 m ; au-delà, le sommeil se dégrade plus vite que le gain hématologique ne progresse.",
       },
       {
         icon: Gauge,
@@ -61,7 +66,7 @@ const PROTOCOLS: Protocol[] = [
         detail: "On gagne 300 à 500 mètres de palier par semaine.",
       },
     ],
-    axis: [2000, 3500],
+    axis: [2100, 2600],
     theme: {
       border: "hover:border-cyan-300/35",
       glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(56,189,248,0.16),transparent_70%)]",
@@ -73,29 +78,30 @@ const PROTOCOLS: Protocol[] = [
   },
   {
     id: "entrainement",
-    eyebrow: "Mode Entraînement · Train High / IHT",
-    range: "4 000 – 6 000 m",
-    title: "Concentrer la contrainte sur la séance",
+    eyebrow: "Mode Entraînement · IHT",
+    range: "2 500 – 3 500 m",
+    title: "Le cardio d'une séance intense, sans les chocs",
     description:
-      "Sous masque, à l'arrêt ou sur home-trainer, par alternance de cycles courts en hypoxie et de retours à l'air ambiant. L'exposition est brève et forte : elle vise la tolérance et le travail ventilatoire.",
+      "Sous masque, à l'effort sous-maximal — marche, home-trainer, rameur. Le palier reste modéré parce que l'intensité vient de l'air, pas de l'allure : on atteint la fréquence cardiaque cible sans charge mécanique.",
     points: [
       {
         icon: Timer,
-        label: "20 à 60 min",
-        detail: "Des séries courtes, à des paliers nettement plus hauts.",
+        label: "35 à 45 min",
+        detail: "Par cycles alternés, 3 à 4 fois par semaine.",
       },
       {
         icon: TrendingUp,
-        label: "VO2max",
-        detail: "Le plafond aérobie travaillé sous contrainte maximale.",
+        label: "VO2max et capillarisation",
+        detail: "Le stimulus périphérique : VEGF, angiogenèse, efficacité mitochondriale.",
       },
       {
-        icon: Wind,
-        label: "Réponse ventilatoire",
-        detail: "Un système respiratoire sollicité plus fort qu'à plat.",
+        icon: HeartPulse,
+        label: "Reprise après blessure",
+        detail:
+          "Un cran plus bas, autour de 2 400 m, pour entretenir le cardio sans solliciter la zone lésée.",
       },
     ],
-    axis: [4000, 6000],
+    axis: [2500, 3500],
     theme: {
       border: "hover:border-indigo-300/35",
       glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(129,140,248,0.16),transparent_70%)]",
@@ -105,12 +111,67 @@ const PROTOCOLS: Protocol[] = [
       segment: "from-blue-400 to-indigo-500",
     },
   },
+  {
+    id: "exposition",
+    eyebrow: "Mode Exposition · IHE",
+    range: "3 500 – 5 000 m",
+    title: "Le choc hypoxique, au repos complet",
+    description:
+      "Assis ou allongé, sans le moindre effort. Des cycles courts en hypoxie profonde alternés avec des retours à l'air ambiant : c'est le gradient répété, et non la durée, qui porte le stimulus.",
+    points: [
+      {
+        icon: Wind,
+        label: "Cycles 5 min / 5 min",
+        detail: "Cinq alternances par séance, sans jamais quitter le fauteuil.",
+      },
+      {
+        icon: Droplet,
+        label: "Mitochondries et tonus vagal",
+        detail: "La voie du biohacking : HIF-1α, PGC-1α, variabilité cardiaque, sommeil profond.",
+      },
+      {
+        icon: Gauge,
+        label: "Le palier le plus haut",
+        detail: "Réservé au repos strict : ces altitudes ne se pratiquent jamais à l'effort.",
+      },
+    ],
+    axis: [3500, 5000],
+    theme: {
+      border: "hover:border-violet-300/35",
+      glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(167,139,250,0.16),transparent_70%)]",
+      badge: "border-violet-300/25 bg-violet-400/[0.07] text-violet-100/90",
+      icon: "text-violet-300",
+      title: "from-violet-100 to-purple-300",
+      segment: "from-violet-400 to-purple-500",
+    },
+  },
+];
+
+/**
+ * Les deux usages qui encadrent un séjour en altitude réelle.
+ *
+ * Volontairement tenus en bande compacte plutôt qu'en section : ce sont des
+ * arguments d'appoint, ils n'ont pas à peser autant que les deux protocoles.
+ */
+const USE_CASES = [
+  {
+    icon: Plane,
+    title: "Avant le départ",
+    detail:
+      "Trois semaines de nuits sous tente avant un trek, un sommet ou un stage, et vous arrivez déjà acclimaté. Les premiers jours ne sont plus consacrés à s'adapter, et le risque de mal aigu des montagnes diminue.",
+  },
+  {
+    icon: RotateCcw,
+    title: "Au retour",
+    detail:
+      "Les gains d'un stage en altitude s'effacent en deux à trois semaines une fois redescendu. Quelques nuits par semaine au même palier prolongent l'adaptation au lieu de la laisser filer.",
+  },
 ];
 
 /** Repères affichés sous l'axe. */
 const MARKERS = [
   { value: 0, label: "0 m", caption: "Niveau de la mer", align: "left" },
-  { value: 3500, label: "3 500 m", caption: "Palier nocturne", align: "center" },
+  { value: 2600, label: "2 600 m", caption: "Plafond nocturne", align: "center" },
   { value: 6500, label: "6 500 m", caption: "Plafond du système", align: "right" },
 ] as const;
 
@@ -156,7 +217,7 @@ export function ProtocolsSection() {
             Un générateur,
           </span>{" "}
           <span className="bg-gradient-to-r from-cyan-200 to-indigo-300 bg-clip-text text-transparent">
-            deux protocoles d&apos;altitude.
+            trois protocoles d&apos;altitude.
           </span>
         </motion.h2>
 
@@ -165,7 +226,7 @@ export function ProtocolsSection() {
           className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
           {
-            "La dose d'altitude se joue sur deux leviers : la durée et le palier. Longue et modérée pendant la nuit, courte et élevée à l'entraînement — les deux se conduisent depuis le même appareil."
+            "La dose d'altitude se joue sur deux leviers : la durée et le palier. Longue et modérée pendant la nuit, modérée à l'effort, courte et profonde au repos. Chaque protocole a sa plage — c'est la modalité qui la fixe, jamais l'objectif — et les trois se conduisent depuis le même appareil."
           }
         </motion.p>
       </motion.div>
@@ -180,23 +241,27 @@ export function ProtocolsSection() {
         className="mt-16 hidden sm:block"
       >
         <div className="relative h-px w-full bg-white/[0.09]">
-          {PROTOCOLS.map((protocol) => {
+          {PROTOCOLS.map((protocol, index) => {
             const start = toAxis(protocol.axis[0]);
             const end = toAxis(protocol.axis[1]);
 
             return (
               <motion.span
                 key={protocol.id}
-                animate={{ opacity: hovered === protocol.id ? 1 : 0.5 }}
+                animate={{ opacity: hovered === protocol.id ? 1 : 0.45 }}
                 transition={{ duration: 0.4, ease: EASE }}
-                style={{ left: `${start}%`, width: `${end - start}%` }}
-                className={`absolute -top-[1px] h-[3px] rounded-full bg-gradient-to-r ${protocol.theme.segment}`}
+                style={{
+                  left: `${start}%`,
+                  width: `${end - start}%`,
+                  top: `${index * 7 - 1}px`,
+                }}
+                className={`absolute h-[3px] rounded-full bg-gradient-to-r ${protocol.theme.segment}`}
               />
             );
           })}
         </div>
 
-        <div className="relative mt-4 h-9">
+        <div className="relative mt-8 h-9">
           {MARKERS.map((marker) => (
             <div
               key={marker.label}
@@ -221,7 +286,7 @@ export function ProtocolsSection() {
       </motion.div>
 
       {/* ── Les deux protocoles ──────────────────────────────────────── */}
-      <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:gap-8">
+      <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:gap-6">
         {PROTOCOLS.map((protocol, index) => (
           <motion.article
             key={protocol.id}
@@ -231,7 +296,7 @@ export function ProtocolsSection() {
             transition={{ duration: 0.9, ease: EASE, delay: index * 0.12 }}
             onHoverStart={() => setHovered(protocol.id)}
             onHoverEnd={() => setHovered(null)}
-            className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 sm:p-10 ${protocol.theme.border}`}
+            className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 ${protocol.theme.border}`}
           >
             {/* Halo d'accent, révélé au survol */}
             <div
@@ -288,17 +353,55 @@ export function ProtocolsSection() {
         ))}
       </div>
 
+      {/* ── Encadrer un séjour en altitude réelle ────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.9, ease: EASE }}
+        className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-xl sm:p-10"
+      >
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <span className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+            Et autour d&apos;un séjour en altitude
+          </span>
+          <p className="text-[0.88rem] font-light text-white/50 text-pretty">
+            {
+              "La tente ne sert pas qu'à préparer une saison : elle encadre aussi les départs en montagne."
+            }
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-8 border-t border-white/[0.07] pt-8 sm:grid-cols-2 sm:gap-10">
+          {USE_CASES.map(({ icon: Icon, title, detail }) => (
+            <div key={title} className="flex items-start gap-4">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                <Icon className="h-3.5 w-3.5 text-cyan-300/80" strokeWidth={1.6} />
+              </span>
+              <div>
+                <div className="text-sm font-medium tracking-tight text-white/90">
+                  {title}
+                </div>
+                <p className="mt-1.5 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
+                  {detail}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
       {/* ── Liaison entre les deux protocoles ────────────────────────── */}
       <motion.p
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.8 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="mt-12 flex items-center justify-center gap-3 text-center text-[0.8rem] font-light tracking-[0.06em] text-white/40"
+        className="mt-10 flex items-center justify-center gap-3 text-center text-[0.8rem] font-light tracking-[0.06em] text-white/40"
       >
         <Timer className="h-3.5 w-3.5 text-white/30" strokeWidth={1.5} />
         {
-          "Les deux protocoles se combinent : nuits en tente, séances sous masque, depuis la même station."
+          "Les trois protocoles se combinent : nuits en tente, séances sous masque, expositions au repos — depuis la même station."
         }
       </motion.p>
     </section>

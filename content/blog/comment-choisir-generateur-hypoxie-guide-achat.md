@@ -49,9 +49,9 @@ Le confort respiratoire dépend directement du débit délivré par le compresse
 
 ### 2. La plage d'altitude simulée ($FiO_2$)
 Un bon générateur doit couvrir tous les spectres d'utilisation :
-* **Phase d'initiation et santé :** 15 % à 16 % d'$O_2$ (équivalent 2 000 m - 2 500 m).
-* **Performance et endurance :** 12 % à 14 % d'$O_2$ (équivalent 3 000 m - 4 200 m).
-* **Protocoles avancés et mitophagie :** 9,5 % à 11 % d'$O_2$ (équivalent 5 000 m - 6 000 m).
+* **Phase d'initiation et santé :** 15 % à 16 % d'$O_2$ (équivalent 2 200 m - 2 700 m).
+* **Performance et endurance :** 12 % à 14 % d'$O_2$ (équivalent 3 250 m - 4 450 m).
+* **Protocoles avancés et mitophagie :** 9,5 % à 11 % d'$O_2$ (équivalent 5 100 m - 6 150 m). Réservés au repos strict et aux pratiquants aguerris : à ces paliers, aucune activité n'est possible.
 
 ### 3. La filtration et la pureté de l'air
 Respirer un air appauvri en oxygène nécessite une propreté particulaire irréprochable. Vérifiez la présence d'une **triple filtration** :

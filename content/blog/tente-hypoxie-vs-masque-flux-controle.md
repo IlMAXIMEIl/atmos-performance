@@ -55,9 +55,9 @@ Le principal défi technique des tentes d'altitude réside dans le renouvellemen
 | **Précision de l'altitude ($FiO_2$)** | Approximative (dépend des ouvertures de fermeture éclair) | Ultra-précise (réglable au pourcent près) |
 | **Gestion du $CO_2$** | Risque d'accumulation si mal ventilé | Évacuation immédiate par valve expiratoire |
 | **Impact sur la vie de couple** | Bloquant (isole le dormeur) | Neutre (séance individuelle en journée) |
-| **Polyvalence d'utilisation** | Sommeil passif uniquement | Repos (IHT), travail cognitif, exercice sur home-trainer |
+| **Polyvalence d'utilisation** | Sommeil passif uniquement | Repos (IHE), travail cognitif, exercice sur home-trainer |
 | **Encombrement & Transport** | Volumineux, complexe à déplacer en voyage | Compact, facile à ranger après utilisation |
-| **Bruit durant la nuit** | Compresseur allumé pendant 8 heures | Silencieux la nuit (aucune utilisation nocturne) |
+| **Bruit durant la nuit** | Compresseur allumé pendant 12 à 14 heures | Silencieux la nuit (aucune utilisation nocturne) |
 
 ---
 
@@ -65,8 +65,9 @@ Le principal défi technique des tentes d'altitude réside dans le renouvellemen
 
 Les recherches récentes en physiologie de l'altitude montrent que le corps réagit plus fortement à un **stimulus hypoxique contrasté** qu'à une exposition modérée et continue :
 
-* En tente de nuit, pour des raisons de sécurité, l'altitude simulée dépasse rarement 2 200 m à 2 500 m.
-* Avec un masque en hypoxie intermittente (IHT), l'utilisateur peut s'exposer en toute sécurité à des altitudes de **3 500 m à 5 000 m** sur de courts cycles de 4 à 6 minutes entrecoupés de pauses à l'air libre.
+* En tente de nuit, pour des raisons de sécurité, l'altitude simulée se tient entre 2 200 m et 2 500 m — l'optimum de la réponse EPO — et ne dépasse jamais 2 600 m, plafond au-delà duquel l'architecture du sommeil se dégrade plus vite que le bénéfice ne progresse.
+* Avec un masque à l'effort (IHT), on reste entre **2 500 m et 3 500 m** : au-delà, l'intensité de la séance s'effondre et le stimulus mécanique disparaît avec elle.
+* Avec un masque au repos strict (IHE), assis ou allongé, l'utilisateur peut s'exposer en sécurité à des altitudes de **3 500 m à 5 000 m** sur de courts cycles de 4 à 6 minutes entrecoupés de pauses à l'air libre.
 
 Ce contraste d'oxygénation génère un pic d'activation de la protéine **HIF-1α** et une stimulation enzymatique plus intense sans épuiser l'organisme.
 

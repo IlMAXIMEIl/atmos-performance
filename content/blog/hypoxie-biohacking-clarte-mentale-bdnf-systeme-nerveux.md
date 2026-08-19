@@ -81,7 +81,7 @@ Pour une utilisation axée sur la vitalité cognitive et le bien-être général
 
 * **Format :** Séances passives assis dans un fauteuil confortable, dans un environnement calme ou pendant une session de lecture/méditation.
 * **Fréquence :** 2 à 3 séances de 30 à 45 minutes par semaine.
-* **Altitude simulée :** Entre 2 500 m et 3 800 m ($FiO_2$ ~ 13 % à 15 %).
+* **Altitude simulée :** Entre 3 500 m et 4 500 m ($FiO_2$ 13,6 % à 11,9 %), au repos strict. $SpO_2$ cible : **78 % à 82 %**.
 * **Saturation cible ($SpO_2$) :** Maintenue entre **84 % et 88 %**, garantissant un stimulus efficace sans aucun inconfort.
 
 ---
@@ -89,7 +89,7 @@ Pour une utilisation axée sur la vitalité cognitive et le bien-être général
 ## Foire Aux Questions (FAQ)
 
 ### L'hypoxie intermittente peut-elle déclencher des maux de tête ?
-Lors des premières séances, une sensation de légère pression temporaire peut survenir si l'altitude simulée est trop élevée ou si l'hydratation est insuffisante. En respectant une montée progressive (démarrage à 2 000 m) et en buvant un grand verre d'eau avant la séance, ce phénomène est totalement évité.
+Lors des premières séances, une sensation de légère pression temporaire peut survenir si l'altitude simulée est trop élevée ou si l'hydratation est insuffisante. En respectant une montée progressive (démarrage 400 à 600 m sous le palier visé) et en buvant un grand verre d'eau avant la séance, ce phénomène est totalement évité.
 
 ### En quoi cela diffère-t-il des exercices de respiration de type Wim Hof ?
 La méthode Wim Hof utilise l'hyperventilation forcée suivie d'apnées pour créer une hypoxie brève par vasoconstriction. Un générateur d'hypoxie normobare permet quant à lui de respirer à un rythme calme et naturel tout en délivrant une composition d'air contrôlée au pourcent près, éliminant le stress mécanique des poumons et les fluctuations brutales de CO2.
