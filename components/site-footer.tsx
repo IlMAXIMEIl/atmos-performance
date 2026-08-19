@@ -60,9 +60,9 @@ function YoutubeMark(props: ComponentProps<"svg">) {
 const NAVIGATION = [
   { label: "Produit", href: "/#produit" },
   { label: "Protocoles", href: "/#protocoles" },
-  { label: "La science", href: "/#science" },
-  { label: "La gamme", href: "/#gamme" },
   { label: "Offres", href: "/#offres" },
+  { label: "La gamme", href: "/#gamme" },
+  { label: "La science", href: "/#science" },
   { label: "FAQ", href: "/#faq" },
   { label: "Outils", href: "/outils" },
   { label: "Blog", href: "/blog" },

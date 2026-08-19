@@ -277,21 +277,28 @@ export default function Home() {
         {/* ── Section Protocoles ───────────────────────────────────────── */}
         <ProtocolsSection />
 
-        {/* ── Section Science ──────────────────────────────────────────── */}
-        <ScienceSection />
+        {/*
+          Le prix arrive ici, et pas trois sections plus bas.
 
-        {/* ── Section Offres ───────────────────────────────────────────── */}
+          À ce point le visiteur sait ce qu'est l'appareil et ce qu'on en fait :
+          il a de quoi vouloir le tarif. Le laisser descendre encore trois
+          écrans avant de le lui montrer ne le convainc pas davantage, ça
+          l'épuise. Ce qui vient après — la gamme, la science, la FAQ — sert
+          celui qui hésite encore, pas celui qui est déjà décidé.
+        */}
         <OffersSection />
 
         {/*
-          La gamme, après le prix et non avant.
+          La gamme, juste après le prix.
 
-          Rien ne doit s'intercaler entre le parcours d'achat et le tarif. Ici,
-          la section répond au doute qui suit précisément l'annonce d'un prix
-          chez une marque qu'on ne connaît pas : est-ce une maison qui construit
-          une gamme, ou un produit isolé ?
+          Elle répond au doute qui suit précisément l'annonce d'un tarif chez
+          une marque qu'on ne connaît pas : est-ce une maison qui construit une
+          gamme, ou un produit isolé ?
         */}
         <NextProductSection />
+
+        {/* ── Section Science ──────────────────────────────────────────── */}
+        <ScienceSection />
 
         {/* ── FAQ ──────────────────────────────────────────────────────── */}
         <FaqSection />
