@@ -15,6 +15,7 @@ export default function Image() {
   return ogCard({
     eyebrow: "Outils",
     title: "Les calculateurs ATMOS, en accès libre.",
-    footer: "Simulateur de protocole, conversion FiO₂ ↔ altitude, comparatif de coût",
+    footer:
+      "Simulateur de protocole, conversion FiO₂ ↔ altitude, comparatif de coût",
   });
 }

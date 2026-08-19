@@ -30,7 +30,6 @@ export function AnnouncementBanner() {
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-70" />
           <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-300" />
         </span>
-
         <span className="font-medium tracking-[0.01em] text-white/90">
           {`Lancement officiel du ${BATCH_NAME} à venir.`}
         </span>{" "}

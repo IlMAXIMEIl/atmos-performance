@@ -34,9 +34,7 @@ export default function ReservationConfirmeePage() {
         </h1>
 
         <p className="mt-6 max-w-lg text-base leading-relaxed font-light text-white/55 text-pretty">
-          {
-            `Votre précommande du ${BATCH_NAME} a bien été enregistrée. Vous recevez un récapitulatif par email dans les prochaines minutes. Notre équipe revient vers vous pour caler la date de mise en service.`
-          }
+          {`Votre précommande du ${BATCH_NAME} a bien été enregistrée. Vous recevez un récapitulatif par email dans les prochaines minutes. Notre équipe revient vers vous pour caler la date de mise en service.`}
         </p>
 
         <p className="mt-4 text-[0.82rem] font-light text-white/35">

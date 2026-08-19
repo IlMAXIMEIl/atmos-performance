@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, CreditCard, LoaderCircle, X } from "lucide-react";
 
@@ -204,7 +210,8 @@ export function WaitlistModal({ open, onClose }: Props) {
                           htmlFor="liste-prenom"
                           className="block text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase"
                         >
-                          Prénom <span className="normal-case">(facultatif)</span>
+                          Prénom{" "}
+                          <span className="normal-case">(facultatif)</span>
                         </label>
                         <input
                           id="liste-prenom"
@@ -235,9 +242,7 @@ export function WaitlistModal({ open, onClose }: Props) {
                             setError(null);
                           }}
                           aria-invalid={Boolean(error)}
-                          aria-describedby={
-                            error ? "liste-erreur" : undefined
-                          }
+                          aria-describedby={error ? "liste-erreur" : undefined}
                           className={`mt-2 ${FIELD_CLASS}`}
                         />
                       </div>

@@ -25,15 +25,19 @@ import { EASE, container, rise } from "@/lib/motion";
 import { faqPageSchema, productSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/site";
 
+/**
+ * Navigation principale, tenue au strict nécessaire.
+ *
+ * Le parcours d'achat se joue sur trois entrées : ce qu'est l'appareil, ce
+ * qu'on en fait, et l'outil qui le prouve. Les offres sont portées par le
+ * bouton d'appel, toujours visible — les y remettre en lien ferait doublon.
+ * Tout le reste — blog, glossaire, à propos, mentions — vit dans le pied de
+ * page : accessible à qui le cherche, invisible pour qui ne le cherche pas.
+ */
 const NAV_LINKS = [
   { label: "Produit", href: "#produit" },
   { label: "Protocoles", href: "#protocoles" },
-  { label: "Offres", href: "#offres" },
-  { label: "FAQ", href: "#faq" },
   { label: "Simulateur", href: "/outils/simulateur-altitude" },
-  { label: "Blog", href: "/blog" },
-  { label: "Glossaire", href: "/glossaire" },
-  { label: "À propos", href: "/a-propos" },
 ];
 
 const METRICS = [

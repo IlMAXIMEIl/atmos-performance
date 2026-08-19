@@ -143,7 +143,8 @@ function validateContact(form: FormState): FieldErrors {
     errors.email = "Cette adresse email semble incomplète.";
   }
   if (!form.phone.trim()) errors.phone = "Indiquez un téléphone.";
-  if (!form.address.trim()) errors.address = "Indiquez une adresse de livraison.";
+  if (!form.address.trim())
+    errors.address = "Indiquez une adresse de livraison.";
 
   return errors;
 }
@@ -450,8 +451,8 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                       {currentStep === "dates" && (
                         <div className="flex flex-col gap-5">
                           <p className="text-[0.88rem] leading-relaxed font-light text-white/50">
-                            La location démarre à la date de votre choix, pour une
-                            première période de {RENTAL_DAYS} jours. Elle se
+                            La location démarre à la date de votre choix, pour
+                            une première période de {RENTAL_DAYS} jours. Elle se
                             prolonge ensuite mois par mois.
                           </p>
 
@@ -470,7 +471,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                               }
                               aria-invalid={Boolean(errors.startDate)}
                               aria-describedby={
-                                errors.startDate ? "startDate-erreur" : undefined
+                                errors.startDate
+                                  ? "startDate-erreur"
+                                  : undefined
                               }
                               className={FIELD_CLASS}
                             />
@@ -482,7 +485,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             </div>
                             <div className="mt-1.5 text-[0.95rem] font-light text-white/80">
                               {form.startDate
-                                ? formatDate(addDays(form.startDate, RENTAL_DAYS))
+                                ? formatDate(
+                                    addDays(form.startDate, RENTAL_DAYS),
+                                  )
                                 : `${RENTAL_DAYS} jours après la date de début`}
                             </div>
                             <div className="mt-1 text-[0.78rem] font-light text-white/35">
@@ -503,7 +508,10 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  update("quantity", Math.max(1, form.quantity - 1))
+                                  update(
+                                    "quantity",
+                                    Math.max(1, form.quantity - 1),
+                                  )
                                 }
                                 disabled={form.quantity <= 1}
                                 aria-label="Retirer une unité"
@@ -546,7 +554,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             </legend>
                             <div className="mt-3 flex flex-col gap-2.5">
                               {OPTIONS.map((option) => {
-                                const checked = form.options.includes(option.id);
+                                const checked = form.options.includes(
+                                  option.id,
+                                );
                                 return (
                                   <label
                                     key={option.id}
@@ -570,9 +580,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                               })}
                             </div>
                             <p className="mt-3 text-[0.78rem] font-light text-white/35">
-                              Les options sont enregistrées avec votre commande et
-                              chiffrées séparément : elles ne modifient pas le
-                              montant réglé aujourd&apos;hui.
+                              Les options sont enregistrées avec votre commande
+                              et chiffrées séparément : elles ne modifient pas
+                              le montant réglé aujourd&apos;hui.
                             </p>
                           </fieldset>
                         </div>
@@ -598,13 +608,19 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 }
                                 aria-invalid={Boolean(errors.firstName)}
                                 aria-describedby={
-                                  errors.firstName ? "firstName-erreur" : undefined
+                                  errors.firstName
+                                    ? "firstName-erreur"
+                                    : undefined
                                 }
                                 className={FIELD_CLASS}
                               />
                             </Field>
 
-                            <Field id="lastName" label="Nom" error={errors.lastName}>
+                            <Field
+                              id="lastName"
+                              label="Nom"
+                              error={errors.lastName}
+                            >
                               <input
                                 id="lastName"
                                 type="text"
@@ -616,7 +632,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 }
                                 aria-invalid={Boolean(errors.lastName)}
                                 aria-describedby={
-                                  errors.lastName ? "lastName-erreur" : undefined
+                                  errors.lastName
+                                    ? "lastName-erreur"
+                                    : undefined
                                 }
                                 className={FIELD_CLASS}
                               />
@@ -624,7 +642,11 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                           </div>
 
                           <div className="grid gap-5 sm:grid-cols-2">
-                            <Field id="email" label="Email" error={errors.email}>
+                            <Field
+                              id="email"
+                              label="Email"
+                              error={errors.email}
+                            >
                               <input
                                 id="email"
                                 type="email"
@@ -642,7 +664,11 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                               />
                             </Field>
 
-                            <Field id="phone" label="Téléphone" error={errors.phone}>
+                            <Field
+                              id="phone"
+                              label="Téléphone"
+                              error={errors.phone}
+                            >
                               <input
                                 id="phone"
                                 type="tel"
@@ -757,7 +783,11 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 À régler maintenant
                               </span>
                               <span className="text-xl font-medium tracking-tight text-white">
-                                {euros(plan === "leasing" ? rentalTotal : purchaseTotal)}
+                                {euros(
+                                  plan === "leasing"
+                                    ? rentalTotal
+                                    : purchaseTotal,
+                                )}
                               </span>
                             </div>
                           </div>
@@ -781,16 +811,16 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 strokeWidth={1.5}
                               />
                               <p className="text-[0.8rem] leading-relaxed font-light text-white/45">
-                                Une empreinte de votre carte est conservée pour la
-                                caution de garantie. Aucun montant n&apos;est
+                                Une empreinte de votre carte est conservée pour
+                                la caution de garantie. Aucun montant n&apos;est
                                 débité à ce titre aujourd&apos;hui.
                               </p>
                             </div>
                           )}
 
                           <p className="text-[0.78rem] leading-relaxed font-light text-white/35">
-                            Le paiement est traité par Stripe : aucune coordonnée
-                            bancaire ne transite par ce site.
+                            Le paiement est traité par Stripe : aucune
+                            coordonnée bancaire ne transite par ce site.
                           </p>
                         </div>
                       )}
@@ -846,8 +876,8 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                 {/* Option d'achat : mention exigée sous le bouton de paiement. */}
                 {plan === "leasing" && currentStep === "paiement" && (
                   <p className="mt-5 text-center text-[0.8rem] leading-relaxed font-light text-cyan-100/60">
-                    Option d&apos;achat : 100 % de vos loyers versés sont déduits
-                    si vous décidez d&apos;acheter ATMOS ONE (
+                    Option d&apos;achat : 100 % de vos loyers versés sont
+                    déduits si vous décidez d&apos;acheter ATMOS ONE (
                     {euros(PRICES.purchaseUnit)}).
                   </p>
                 )}

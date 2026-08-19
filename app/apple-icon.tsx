@@ -21,16 +21,14 @@ export default function AppleIcon() {
   ).replace('rx="24"', 'rx="0"');
 
   return new ImageResponse(
-    (
-      <div style={{ display: "flex", width: "100%", height: "100%" }}>
-        <img
-          src={`data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`}
-          alt=""
-          width={size.width}
-          height={size.height}
-        />
-      </div>
-    ),
+    <div style={{ display: "flex", width: "100%", height: "100%" }}>
+      <img
+        src={`data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`}
+        alt=""
+        width={size.width}
+        height={size.height}
+      />
+    </div>,
     size,
   );
 }

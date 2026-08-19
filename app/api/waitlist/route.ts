@@ -53,7 +53,10 @@ const EMAIL_PATTERN =
 function sanitiseText(value: unknown): string {
   if (typeof value !== "string") return "";
   return value
-    .replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028\u2029\u202a-\u202e\ufeff]/g, "")
+    .replace(
+      /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028\u2029\u202a-\u202e\ufeff]/g,
+      "",
+    )
     .trim();
 }
 
@@ -71,14 +74,20 @@ export async function POST(request: Request) {
 
   const declaredLength = Number(request.headers.get("content-length") ?? 0);
   if (declaredLength > MAX_BODY_BYTES) {
-    return Response.json({ error: "Requête trop volumineuse." }, { status: 413 });
+    return Response.json(
+      { error: "Requête trop volumineuse." },
+      { status: 413 },
+    );
   }
 
   // Le corps est relu en texte : `content-length` peut mentir, la taille
   // réellement reçue non.
   const rawBody = await request.text();
   if (rawBody.length > MAX_BODY_BYTES) {
-    return Response.json({ error: "Requête trop volumineuse." }, { status: 413 });
+    return Response.json(
+      { error: "Requête trop volumineuse." },
+      { status: 413 },
+    );
   }
 
   let body: unknown;

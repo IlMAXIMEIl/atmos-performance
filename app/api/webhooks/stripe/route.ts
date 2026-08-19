@@ -110,6 +110,9 @@ export async function POST(request: Request) {
     // Un 500 fait réessayer Stripe : c'est le comportement voulu si
     // l'enregistrement a échoué de notre côté.
     console.error("Enregistrement de la commande impossible", error);
-    return Response.json({ error: "Enregistrement impossible." }, { status: 500 });
+    return Response.json(
+      { error: "Enregistrement impossible." },
+      { status: 500 },
+    );
   }
 }

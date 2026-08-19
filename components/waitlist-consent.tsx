@@ -15,7 +15,9 @@ import Link from "next/link";
  */
 export function WaitlistConsent({ className = "" }: { className?: string }) {
   return (
-    <p className={`text-[0.72rem] leading-relaxed font-light text-white/30 ${className}`}>
+    <p
+      className={`text-[0.72rem] leading-relaxed font-light text-white/30 ${className}`}
+    >
       En rejoignant la liste, vous acceptez de recevoir nos emails. Zéro spam,
       désinscription en un clic.{" "}
       <Link

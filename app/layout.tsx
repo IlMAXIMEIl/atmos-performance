@@ -50,10 +50,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="fr"
-      className={`${geistSans.variable} h-full antialiased`}
-    >
+    <html lang="fr" className={`${geistSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {/* Entités valables pour tout le site : les schémas de page y renvoient
             par `@id` plutôt que de redécrire la marque à chaque fois. */}

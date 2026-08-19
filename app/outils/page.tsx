@@ -75,7 +75,6 @@ export default function OutilsPage() {
 
       <PageHeader maxWidth="max-w-4xl" />
 
-
       <main className="relative z-10 mx-auto w-full max-w-4xl px-6 pb-24 lg:px-10">
         <Link
           href="/"

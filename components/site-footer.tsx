@@ -50,12 +50,19 @@ function YoutubeMark(props: ComponentProps<"svg">) {
   );
 }
 
+/**
+ * Le pied de page porte la navigation complète.
+ *
+ * Les ancres sont préfixées de `/` : en `#produit` seul, elles ne mènent nulle
+ * part depuis une page secondaire — or c'est précisément d'ici que le visiteur
+ * navigue une fois l'en-tête allégé.
+ */
 const NAVIGATION = [
-  { label: "Produit", href: "#produit" },
-  { label: "Protocoles", href: "#protocoles" },
-  { label: "La science", href: "#science" },
-  { label: "Offres", href: "#offres" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Produit", href: "/#produit" },
+  { label: "Protocoles", href: "/#protocoles" },
+  { label: "La science", href: "/#science" },
+  { label: "Offres", href: "/#offres" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Outils", href: "/outils" },
   { label: "Blog", href: "/blog" },
   { label: "Glossaire", href: "/glossaire" },

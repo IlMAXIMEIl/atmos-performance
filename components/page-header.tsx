@@ -11,11 +11,10 @@ import { WAITLIST_CTA_SHORT } from "@/lib/offering";
  * elle porte des ancres de section et un menu mobile dépliant.
  */
 
+/** Mêmes entrées que l'accueil : le reste est rangé dans le pied de page. */
 const LINKS = [
+  { label: "Produit", href: "/#produit" },
   { label: "Simulateur", href: "/outils/simulateur-altitude" },
-  { label: "Blog", href: "/blog" },
-  { label: "Glossaire", href: "/glossaire" },
-  { label: "À propos", href: "/a-propos" },
 ];
 
 export function PageHeader({ maxWidth = "max-w-4xl" }: { maxWidth?: string }) {

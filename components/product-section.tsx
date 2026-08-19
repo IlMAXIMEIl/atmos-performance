@@ -3,7 +3,13 @@
 import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { Mountain, Package, Volume2, Wind, type LucideIcon } from "lucide-react";
+import {
+  Mountain,
+  Package,
+  Volume2,
+  Wind,
+  type LucideIcon,
+} from "lucide-react";
 
 import { EASE, container, rise } from "@/lib/motion";
 
@@ -174,7 +180,11 @@ export function ProductSection() {
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1">
                 <motion.span
                   animate={{ opacity: [0.4, 1, 0.4] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                   className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_8px_2px_rgba(34,211,238,0.7)]"
                 />
                 <span className="text-[0.6rem] font-light tracking-[0.18em] text-white/45 uppercase">
@@ -194,8 +204,15 @@ export function ProductSection() {
             <div className="relative mt-6 aspect-square w-full">
               <motion.div
                 aria-hidden
-                animate={{ opacity: [0.35, 0.6, 0.35], scale: [0.96, 1.03, 0.96] }}
-                transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                animate={{
+                  opacity: [0.35, 0.6, 0.35],
+                  scale: [0.96, 1.03, 0.96],
+                }}
+                transition={{
+                  duration: 9,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
                 className="pointer-events-none absolute inset-[12%] rounded-full bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.14),transparent_70%)]"
               />
 

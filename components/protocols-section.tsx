@@ -92,7 +92,8 @@ const PROTOCOLS: Protocol[] = [
       {
         icon: TrendingUp,
         label: "VO2max et capillarisation",
-        detail: "Le stimulus périphérique : VEGF, angiogenèse, efficacité mitochondriale.",
+        detail:
+          "Le stimulus périphérique : VEGF, angiogenèse, efficacité mitochondriale.",
       },
       {
         icon: HeartPulse,
@@ -127,12 +128,14 @@ const PROTOCOLS: Protocol[] = [
       {
         icon: Droplet,
         label: "Mitochondries et tonus vagal",
-        detail: "La voie du biohacking : HIF-1α, PGC-1α, variabilité cardiaque, sommeil profond.",
+        detail:
+          "La voie du biohacking : HIF-1α, PGC-1α, variabilité cardiaque, sommeil profond.",
       },
       {
         icon: Gauge,
         label: "Le palier le plus haut",
-        detail: "Réservé au repos strict : ces altitudes ne se pratiquent jamais à l'effort.",
+        detail:
+          "Réservé au repos strict : ces altitudes ne se pratiquent jamais à l'effort.",
       },
     ],
     axis: [3500, 5000],
@@ -171,8 +174,18 @@ const USE_CASES = [
 /** Repères affichés sous l'axe. */
 const MARKERS = [
   { value: 0, label: "0 m", caption: "Niveau de la mer", align: "left" },
-  { value: 2600, label: "2 600 m", caption: "Plafond nocturne", align: "center" },
-  { value: 6500, label: "6 500 m", caption: "Plafond du système", align: "right" },
+  {
+    value: 2600,
+    label: "2 600 m",
+    caption: "Plafond nocturne",
+    align: "center",
+  },
+  {
+    value: 6500,
+    label: "6 500 m",
+    caption: "Plafond du système",
+    align: "right",
+  },
 ] as const;
 
 const AXIS_MIN = 0;
@@ -376,7 +389,10 @@ export function ProtocolsSection() {
           {USE_CASES.map(({ icon: Icon, title, detail }) => (
             <div key={title} className="flex items-start gap-4">
               <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                <Icon className="h-3.5 w-3.5 text-cyan-300/80" strokeWidth={1.6} />
+                <Icon
+                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  strokeWidth={1.6}
+                />
               </span>
               <div>
                 <div className="text-sm font-medium tracking-tight text-white/90">

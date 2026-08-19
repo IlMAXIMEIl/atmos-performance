@@ -369,6 +369,16 @@ export function OffersSection() {
                 </div>
 
                 {/*
+                  Un fait, pas un plaidoyer. Le circuit de distribution
+                  n'appelle pas de démonstration : celui qui se demande d'où
+                  vient l'écart trouve sa réponse en six mots, les autres ne
+                  s'arrêtent pas.
+                */}
+                <p className="mt-3 text-[0.82rem] font-light text-white/35">
+                  Vendu en direct, sans distributeur ni revendeur.
+                </p>
+
+                {/*
                   Sous le prix, une mention par formule — jamais les deux. Le
                   fractionnement est réservé à l'achat ; la location se règle
                   comptant et appelle une empreinte bancaire, annoncée ici en

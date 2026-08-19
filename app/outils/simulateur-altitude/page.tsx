@@ -77,7 +77,8 @@ const FAQ = [
       "Entre 2 000 et 3 000 mètres pour les premières séances à l'effort, soit 16,4 % à 14,5 % d'oxygène ; entre 3 200 et 3 800 mètres si la séance se fait au repos complet, l'organisme y étant beaucoup moins sollicité. L'objectif des deux premières semaines n'est pas la performance mais l'observation : on vérifie la tolérance, la vitesse à laquelle la saturation descend et le temps qu'elle met à remonter. Le palier de croisière ne se fixe qu'ensuite, à l'oxymètre.",
   },
   {
-    question: "Quelle saturation en oxygène viser pendant une séance d'hypoxie ?",
+    question:
+      "Quelle saturation en oxygène viser pendant une séance d'hypoxie ?",
     answer:
       "La cible dépend de ce que vous faites pendant l'exposition, pas de votre niveau. En conditionnement modéré à l'effort, on vise 91 à 94 %. En entraînement hypoxique (IHT), marche ou home-trainer, 84 à 88 %. En exposition passive au repos (IHE), la cible descend à 78 à 82 % — mais uniquement immobile, jamais en marchant ni en parlant. Sous tente la nuit, la moyenne nocturne doit rester entre 88 et 92 %. Le seuil d'arrêt suit la même logique : 80 % à l'effort, 75 % au repos strict, et 85 % de moyenne nocturne imposent de redescendre le palier de sommeil. C'est la saturation mesurée qui commande le réglage de l'appareil, jamais l'inverse : deux personnes au même palier n'auront pas la même SpO₂.",
   },
@@ -164,7 +165,6 @@ export default function SimulateurAltitudePage() {
 
       {/* ── En-tête ──────────────────────────────────────────────────── */}
       <PageHeader maxWidth="max-w-6xl" />
-
 
       <main className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 lg:px-10">
         {/* ── Chapeau ────────────────────────────────────────────────── */}
@@ -314,7 +314,10 @@ export default function SimulateurAltitudePage() {
         </section>
 
         {/* ── FAQ ────────────────────────────────────────────────────── */}
-        <section aria-labelledby="faq-titre" className="mt-20 scroll-mt-24 sm:mt-24">
+        <section
+          aria-labelledby="faq-titre"
+          className="mt-20 scroll-mt-24 sm:mt-24"
+        >
           <span className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
             Les questions
           </span>
