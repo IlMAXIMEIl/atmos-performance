@@ -87,9 +87,13 @@ const PLANS: Plan[] = [
       },
       {
         icon: ShieldCheck,
-        label: "Garantie 3 ans",
+        // Deux ans, comme la garantie légale de conformité — la seule que nous
+        // devions à ce jour. Toute durée supérieure serait une garantie
+        // commerciale : un engagement contractuel distinct, à décrire dans les
+        // CGV avant de l'annoncer ici.
+        label: "Garantie 2 ans",
         detail:
-          "Pièces et main-d'œuvre comprises, retour atelier pris en charge.",
+          "Pièces, main-d'œuvre et frais de renvoi pris en charge sur tout défaut de fabrication.",
       },
       {
         icon: InfinityIcon,
