@@ -333,6 +333,46 @@ export function ProductSection() {
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/*
+            Sur grand écran, la fiche remplit le vide laissé par la colonne de
+            droite : la carte produit est haute, le panneau descriptif court.
+            Elle y est dépliée — il y a la place, et une caractéristique qu'on
+            lit sans cliquer vaut mieux qu'une qu'on doit aller chercher.
+
+            Sous `lg`, c'est le dépliant en bas de section qui prend le relais,
+            replié pour ne pas coûter un écran de défilement. Les deux rendus
+            partagent la même table `DATASHEET` : seule la présentation change.
+          */}
+          <dl className="mt-12 hidden border-t border-white/[0.07] pt-8 lg:block">
+            <div className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+              Fiche technique
+            </div>
+
+            {/*
+              Une seule colonne, libellé à gauche et valeur à droite.
+
+              Testé en deux colonnes : sur 260 px les valeurs longues — la
+              plage d'altitude, la liste des alarmes — enveloppent sur deux ou
+              trois lignes et la fiche ne gagne pas un pixel. À hauteur égale,
+              une colonne se lit mieux.
+            */}
+            <div className="mt-5">
+              {DATASHEET.map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-baseline justify-between gap-6 border-b border-white/[0.05] py-2.5 last:border-b-0"
+                >
+                  <dt className="shrink-0 text-[0.68rem] font-light tracking-[0.14em] text-white/35 uppercase">
+                    {row.label}
+                  </dt>
+                  <dd className="text-right text-[0.85rem] font-light text-white/75 text-pretty">
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </div>
+          </dl>
         </motion.div>
       </div>
 
@@ -342,7 +382,7 @@ export function ProductSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="mt-20 border-t border-white/[0.07] pt-8"
+        className="mt-20 border-t border-white/[0.07] pt-8 lg:hidden"
       >
         {/*
           Repliée par défaut, en `<details>` natif.
