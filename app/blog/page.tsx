@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
+import { JsonLd } from "@/components/json-ld";
+import { PageHeader } from "@/components/page-header";
 import { formatPostDate, getAllPosts } from "@/lib/posts";
-import { SITE_URL } from "@/lib/site";
+import { breadcrumbSchema } from "@/lib/structured-data";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Blog — Altitude, oxygénation et performance",
@@ -13,6 +16,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: `${SITE_URL}/blog`,
+    siteName: SITE_NAME,
+    locale: "fr_FR",
+    title: "Blog ATMOS — Altitude, oxygénation et performance",
+    description:
+      "Articles de fond sur la récupération athlétique, les protocoles d'altitude et la technologie des générateurs hypoxiques.",
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "Blog ATMOS — Altitude, oxygénation et performance",
     description:
       "Articles de fond sur la récupération athlétique, les protocoles d'altitude et la technologie des générateurs hypoxiques.",
@@ -24,12 +35,21 @@ export default function BlogIndexPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Accueil", url: SITE_URL },
+          { name: "Blog" },
+        ])}
+      />
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <main className="relative z-10 mx-auto w-full max-w-4xl px-6 py-20 sm:py-28 lg:px-10">
+      <PageHeader maxWidth="max-w-4xl" />
+
+      <main className="relative z-10 mx-auto w-full max-w-4xl px-6 pt-10 pb-20 sm:pt-14 sm:pb-28 lg:px-10">
         <Link
           href="/"
           className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"

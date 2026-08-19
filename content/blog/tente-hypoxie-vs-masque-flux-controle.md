@@ -104,4 +104,4 @@ Développé pour éliminer les contraintes logistiques et thermiques des tentes 
 
 Bénéficiez de séances d'altitude programmables, d'une évacuation parfaite du $CO_2$ et d'un confort d'utilisation sans compromis.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou réservez votre unité de production.
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.

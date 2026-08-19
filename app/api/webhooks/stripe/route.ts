@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 
+import { ORDERS_OPEN } from "@/lib/offering";
 import { recordOrder, type Order } from "@/lib/orders";
 
 /**
@@ -83,6 +84,20 @@ export async function POST(request: Request) {
   } else {
     order.quantity = readMeta(session, "quantity");
     order.balanceDue = readMeta(session, "balanceDue");
+  }
+
+  // Phase de teasing : les commandes sont fermées, `/api/checkout` refuse de
+  // créer la moindre session, et aucun paiement légitime ne peut donc aboutir.
+  // Un événement reçu ici est soit un test depuis le tableau de bord, soit un
+  // reliquat — rien qui justifie d'écrire sur un disque que l'hébergement peut
+  // très bien servir en lecture seule. On accuse réception et on trace : un
+  // 4xx/5xx ferait réessayer Stripe en boucle pour un événement sans objet.
+  if (!ORDERS_OPEN) {
+    console.warn(
+      `Événement Stripe reçu alors que les commandes sont fermées — non enregistré : ${event.type} ${event.id}`,
+      JSON.stringify(order),
+    );
+    return Response.json({ received: true, handled: false });
   }
 
   try {

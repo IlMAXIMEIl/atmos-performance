@@ -7,8 +7,21 @@ import path from "node:path";
  * Implémentation volontairement minimale : un fichier JSONL local. Elle rend le
  * tunnel complet et testable, mais **ne convient pas à une mise en production**
  * sur un hébergement sans disque persistant (Vercel, Netlify…), où le fichier
- * disparaît à chaque déploiement. Le jour venu, seules `recordOrder` et
- * `listOrders` sont à réécrire vers une vraie base ou un envoi d'email.
+ * disparaît à chaque déploiement — voire refuse l'écriture. Le jour venu,
+ * seules `recordOrder` et `listOrders` sont à réécrire vers une vraie base ou
+ * un envoi d'email.
+ *
+ * ## Statut au lancement
+ *
+ * Rien de tout cela n'est exercé aujourd'hui : `ORDERS_OPEN` vaut `false`,
+ * `/api/checkout` refuse de créer une session, et le webhook Stripe accuse
+ * réception sans appeler `recordOrder`. Ce module ne peut donc ni faire échouer
+ * le build — il n'ouvre aucun fichier à l'import — ni casser l'application en
+ * production tant que la vente est fermée.
+ *
+ * En prévision de la réouverture, `recordOrder` journalise la commande
+ * complète avant de propager une erreur d'écriture : une commande payée reste
+ * ainsi récupérable dans les journaux si le disque se révèle inaccessible.
  */
 
 const ORDERS_FILE = path.join(process.cwd(), ".data", "orders.jsonl");
@@ -64,7 +77,22 @@ export async function recordOrder(
   );
   if (seen) return "deja-traitee";
 
-  await mkdir(path.dirname(ORDERS_FILE), { recursive: true });
-  await appendFile(ORDERS_FILE, `${JSON.stringify(order)}\n`, "utf8");
+  const line = JSON.stringify(order);
+
+  try {
+    await mkdir(path.dirname(ORDERS_FILE), { recursive: true });
+    await appendFile(ORDERS_FILE, `${line}\n`, "utf8");
+  } catch (error) {
+    // Disque en lecture seule, quota atteint, chemin absent : la commande est
+    // payée, elle ne doit pas disparaître avec l'erreur. On l'écrit en entier
+    // dans les journaux avant de propager — l'appelant renvoie alors un 500,
+    // que Stripe réessaiera.
+    console.error(
+      `Écriture impossible dans ${ORDERS_FILE} — commande payée à reprendre à la main :`,
+      line,
+    );
+    throw error;
+  }
+
   return "enregistree";
 }

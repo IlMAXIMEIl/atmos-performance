@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 
+import { WaitlistConsent } from "@/components/waitlist-consent";
+
 /** Inscription à l'ouverture de la location. */
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
@@ -23,7 +25,7 @@ export function WaitlistForm() {
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source: "location" }),
       });
       const data = (await response.json()) as { error?: string };
 
@@ -90,6 +92,8 @@ export function WaitlistForm() {
           )}
         </button>
       </div>
+
+      <WaitlistConsent className="mt-4 text-center" />
 
       {error && (
         <p

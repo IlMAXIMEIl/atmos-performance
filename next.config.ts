@@ -1,7 +1,82 @@
 import type { NextConfig } from "next";
 
+/**
+ * En-têtes de sécurité appliqués à toutes les réponses.
+ *
+ * Ils sont posés ici plutôt que dans un `proxy.ts` : ce sont des constantes,
+ * identiques pour chaque route, et `headers()` les fait servir par l'edge de
+ * l'hébergeur sans réveiller de fonction serveur — y compris sur les pages
+ * statiques du blog et du glossaire.
+ */
+const SECURITY_HEADERS = [
+  /**
+   * Le préchargement DNS accélère les liens sortants (Stripe, polices) au prix
+   * d'une résolution DNS révélant les domaines visités. Assumé : le site n'a
+   * pas de contenu confidentiel et le gain de latence est réel au checkout.
+   */
+  { key: "X-DNS-Prefetch-Control", value: "on" },
+
+  /**
+   * HTTPS obligatoire pendant deux ans, sous-domaines compris.
+   *
+   * Volontairement **sans** `; preload` : l'inscription sur hstspreload.org
+   * est difficile à défaire — les navigateurs refusent ensuite tout HTTP sur
+   * le domaine, radiation comprise pendant des semaines — et bloquerait un
+   * futur sous-domaine servi en HTTP. La protection pour les visiteurs est la
+   * même ; seule l'amorce du tout premier accès n'est pas couverte.
+   */
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains",
+  },
+
+  /**
+   * Aucune mise en cadre, d'où qu'elle vienne : le site n'est jamais embarqué
+   * ailleurs, et un formulaire de capture d'email en iframe est le support
+   * classique du clickjacking.
+   */
+  { key: "X-Frame-Options", value: "DENY" },
+
+  /** Interdit au navigateur de deviner un type MIME à la place du nôtre. */
+  { key: "X-Content-Type-Options", value: "nosniff" },
+
+  /**
+   * Origine seule vers les autres sites, rien du tout en HTTP : un chemin
+   * comme `/reservation/confirmee?session_id=…` ne doit pas fuiter en referer.
+   */
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+
+  /**
+   * Le site ne se sert d'aucune de ces API. Le dire coupe court à toute
+   * demande d'accès qu'un script tiers compromis pourrait déclencher.
+   */
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+  },
+];
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  /**
+   * Build autonome pour l'hébergement Node d'Hostinger (« Web Apps »).
+   *
+   * Produit `.next/standalone/`, qui embarque un `server.js` minimal et les
+   * seules dépendances réellement tracées — inutile d'installer `node_modules`
+   * sur le serveur.
+   *
+   * ⚠️ `server.js` ne sert **ni `public/` ni `.next/static/`** : ces deux
+   * dossiers ne sont pas copiés par le build et doivent l'être à la main,
+   * faute de quoi le site se charge sans styles ni images. Voir le README pour
+   * la commande de déploiement.
+   */
+  output: "standalone",
+
+  /** Rien à gagner à annoncer le framework et sa version à un scanner. */
+  poweredByHeader: false,
+
+  headers() {
+    return Promise.resolve([{ source: "/:path*", headers: SECURITY_HEADERS }]);
+  },
 };
 
 export default nextConfig;

@@ -96,4 +96,4 @@ Contrairement aux stages en montagne souvent limités à un ou deux par an pour 
 
 Développé pour allier précision des flux d'oxygène et simplicité d'utilisation à domicile, **ATMOS ONE** vous permet de calibrer vos protocoles d'altitude sur-mesure tout au long de l'année.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** et réservez votre unité de production.
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Batch n°1 : 25 unités seulement, avec paiement en 3x ou 4x à l'ouverture des commandes.

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Mail, Music2 } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
+import { CONTACT_EMAIL, SOCIAL_URLS } from "@/lib/site";
 
 /**
  * Cette version de `lucide-react` ne fournit plus d'icônes de marque
@@ -55,31 +56,31 @@ const NAVIGATION = [
   { label: "La science", href: "#science" },
   { label: "Offres", href: "#offres" },
   { label: "FAQ", href: "#faq" },
+  { label: "Outils", href: "/outils" },
   { label: "Blog", href: "/blog" },
+  { label: "Glossaire", href: "/glossaire" },
 ];
 
 const SOCIALS = [
   {
     label: "Instagram",
     handle: "@atmos_performance",
-    href: "https://www.instagram.com/atmos_performance",
+    href: SOCIAL_URLS.instagram,
     icon: InstagramMark,
   },
   {
     label: "YouTube",
     handle: "@atmos_performance",
-    href: "https://www.youtube.com/@atmos_performance",
+    href: SOCIAL_URLS.youtube,
     icon: YoutubeMark,
   },
   {
     label: "TikTok",
     handle: "@atmos_performance",
-    href: "https://www.tiktok.com/@atmos_performance",
+    href: SOCIAL_URLS.tiktok,
     icon: Music2,
   },
 ];
-
-const CONTACT_EMAIL = "contact@atmos-performance.com";
 
 /** Figé volontairement : `new Date()` diffère entre serveur et client. */
 const COPYRIGHT_YEAR = 2026;

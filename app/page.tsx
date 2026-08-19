@@ -5,26 +5,36 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Gauge, Menu, Mountain, RefreshCw, Wind, X } from "lucide-react";
 
+import { JsonLd } from "@/components/json-ld";
+import { FAQ, FaqSection } from "@/components/faq-section";
 import { OffersSection } from "@/components/offers-section";
 import { ProductSection } from "@/components/product-section";
 import { ProtocolsSection } from "@/components/protocols-section";
-import { FaqSection } from "@/components/faq-section";
 import { ScienceSection } from "@/components/science-section";
 import { SiteFooter } from "@/components/site-footer";
+import { BATCH_NAME, BATCH_UNITS, WAITLIST_CTA_SHORT } from "@/lib/offering";
 import { EASE, container, rise } from "@/lib/motion";
+import { faqPageSchema, productSchema } from "@/lib/structured-data";
+import { SITE_URL } from "@/lib/site";
 
 const NAV_LINKS = [
   { label: "Produit", href: "#produit" },
   { label: "Protocoles", href: "#protocoles" },
   { label: "Offres", href: "#offres" },
   { label: "FAQ", href: "#faq" },
+  { label: "Simulateur", href: "/outils/simulateur-altitude" },
   { label: "Blog", href: "/blog" },
+  { label: "Glossaire", href: "/glossaire" },
 ];
 
 const METRICS = [
   { icon: Mountain, value: "Jusqu'à 6 500 m", label: "d'altitude simulée" },
   { icon: Wind, value: "9 % à 20,9 % O₂", label: "réglable au mètre près" },
-  { icon: RefreshCw, value: "Vague #1 ouverte", label: "acompte de 300 € remboursable" },
+  {
+    icon: RefreshCw,
+    value: `${BATCH_NAME} · ${BATCH_UNITS} unités`,
+    label: "paiement en 3x ou 4x disponible",
+  },
 ];
 
 export default function Home() {
@@ -32,6 +42,11 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+      {/* Le générateur et les questions fréquentes, tels que cette page les
+          présente. `FAQ` est le tableau qui alimente l'accordéon plus bas :
+          balisage et affichage sortent de la même source. */}
+      <JsonLd data={[productSchema(), faqPageSchema(FAQ, SITE_URL)]} />
+
       {/* ── Atmosphère lumineuse ─────────────────────────────────────── */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         {/* Halo principal cyan, très diffus */}
@@ -70,7 +85,7 @@ export default function Home() {
             ATMOS
           </a>
 
-          <div className="hidden items-center gap-10 md:flex">
+          <div className="hidden items-center gap-6 lg:flex xl:gap-10">
             {NAV_LINKS.map((link) => {
               // Les ancres restent de simples <a> ; les routes passent par
               // <Link> pour bénéficier de la navigation client.
@@ -93,14 +108,14 @@ export default function Home() {
               href="#offres"
               className="hidden rounded-full border border-white/15 bg-white/[0.04] px-5 py-2.5 text-[0.78rem] font-medium tracking-[0.14em] text-white/90 uppercase backdrop-blur-md transition-all duration-300 hover:border-cyan-300/40 hover:bg-white/[0.08] hover:text-white sm:inline-block"
             >
-              Précommander
+              {WAITLIST_CTA_SHORT}
             </a>
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
               aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
               aria-expanded={menuOpen}
-              className="rounded-full border border-white/10 p-2.5 text-white/70 transition-colors hover:text-white md:hidden"
+              className="rounded-full border border-white/10 p-2.5 text-white/70 transition-colors hover:text-white lg:hidden"
             >
               {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -114,7 +129,7 @@ export default function Home() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.35, ease: EASE }}
-              className="overflow-hidden md:hidden"
+              className="overflow-hidden lg:hidden"
             >
               <div className="mt-6 flex flex-col gap-4 border-t border-white/10 pt-6">
                 {NAV_LINKS.map((link) => {
@@ -135,7 +150,7 @@ export default function Home() {
                   onClick={() => setMenuOpen(false)}
                   className="mt-1 text-sm font-medium tracking-[0.16em] text-cyan-200 uppercase sm:hidden"
                 >
-                  Précommander
+                  {WAITLIST_CTA_SHORT}
                 </a>
               </div>
             </motion.div>
@@ -160,7 +175,7 @@ export default function Home() {
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_2px_rgba(34,211,238,0.8)]" />
               </span>
               <span className="text-[0.68rem] font-medium tracking-[0.2em] text-cyan-100/90 uppercase">
-                Série de Lancement • Vague #1 Ouverte
+                {`Édition de Lancement • ${BATCH_NAME} • ${BATCH_UNITS} unités`}
               </span>
             </div>
           </motion.div>
@@ -198,7 +213,7 @@ export default function Home() {
               className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] sm:w-auto"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-              <span className="relative">Rejoindre la pré-vente</span>
+              <span className="relative">Rejoindre la liste prioritaire</span>
               <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
   

@@ -1,16 +1,15 @@
 import Stripe from "stripe";
 
-import { LEASING_OPEN } from "@/lib/offering";
+import { BATCH_NAME, LEASING_OPEN, ORDERS_OPEN } from "@/lib/offering";
+import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
  * Barème, en centimes. Défini ici et jamais reçu du client : un montant
  * transmis par le navigateur serait modifiable par l'utilisateur.
  */
 const PRICES = {
-  /** Prix d'achat d'une unité. */
+  /** Prix d'achat d'une unité, encaissé à la précommande. */
   purchaseUnit: 189_000,
-  /** Acompte encaissé par unité réservée ; le solde est réglé avant expédition. */
-  purchaseDeposit: 30_000,
   /** Loyer mensuel. */
   monthlyRent: 35_000,
   /** Expédition sécurisée, facturée une fois au départ de la location. */
@@ -21,6 +20,15 @@ const PRICES = {
 const RENTAL_DAYS = 30;
 
 const MAX_QUANTITY = 5;
+
+/**
+ * Quota de création de session : dix par heure et par IP.
+ *
+ * Chaque appel abouti crée un objet chez Stripe et consomme du quota d'API.
+ * Un visiteur qui hésite entre les formules en ouvre trois ou quatre ; au-delà
+ * c'est un script.
+ */
+const RATE_LIMIT = { limit: 10, windowMs: 60 * 60 * 1000 };
 
 /** Longueur maximale acceptée par champ (les métadonnées Stripe plafonnent à 500). */
 const MAX_FIELD_LENGTH = 300;
@@ -82,6 +90,13 @@ function formatDate(value: string) {
 function validate(payload: Payload) {
   if (!isPlanId(payload.plan)) return "Formule inconnue.";
 
+  // Tant que la société n'est pas immatriculée, rien n'est encaissé : les
+  // boutons du site mènent à la liste prioritaire, et un appel direct à cette
+  // route est refusé ici plutôt que de créer une session de paiement.
+  if (!ORDERS_OPEN) {
+    return "Les commandes ne sont pas encore ouvertes. Rejoignez la liste prioritaire.";
+  }
+
   // La location est présentée sur le site mais son tunnel reste fermé au
   // lancement : refuser ici évite qu'un appel direct le contourne.
   if (payload.plan === "leasing" && !LEASING_OPEN) {
@@ -122,6 +137,9 @@ function validate(payload: Payload) {
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(`checkout:${clientKey(request)}`, RATE_LIMIT);
+  if (!limited.ok) return tooManyRequests(limited.retryAfter);
+
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
     console.error("STRIPE_SECRET_KEY absent : voir .env.example");
@@ -221,21 +239,18 @@ export async function POST(request: Request) {
       },
     };
   } else {
-    const balance =
-      (PRICES.purchaseUnit - PRICES.purchaseDeposit) * payload.quantity;
-
     metadata.quantity = String(payload.quantity);
-    metadata.balanceDue = formatEuros(balance);
+    metadata.batch = BATCH_NAME;
 
     lineItems = [
       {
         quantity: payload.quantity,
         price_data: {
           currency: "eur",
-          unit_amount: PRICES.purchaseDeposit,
+          unit_amount: PRICES.purchaseUnit,
           product_data: {
-            name: "ATMOS ONE — acompte de réservation",
-            description: `Acompte par unité, déduit du prix de ${formatEuros(PRICES.purchaseUnit)}. Solde de ${formatEuros(balance)} réglé avant expédition.`,
+            name: `ATMOS ONE — précommande ${BATCH_NAME}`,
+            description: `Précommande d'une unité de l'édition de lancement, à ${formatEuros(PRICES.purchaseUnit)}. Série limitée, fabrication et expédition directe.`,
           },
         },
       },

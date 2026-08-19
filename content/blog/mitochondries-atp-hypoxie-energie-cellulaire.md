@@ -103,4 +103,4 @@ La précision des flux et la stabilité du mélange gazeux sont indispensables p
 
 **ATMOS ONE** met à votre disposition une technologie de pointe conçue pour délivrer des protocoles d'hypoxie personnalisés et reproductibles dans l'intimité de votre espace de vie.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** et précommandez votre équipement dès aujourd'hui.
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Batch n°1 : 25 unités seulement, avec paiement en 3x ou 4x à l'ouverture des commandes.

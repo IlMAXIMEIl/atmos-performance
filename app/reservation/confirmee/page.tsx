@@ -2,10 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 
+import { BATCH_NAME } from "@/lib/offering";
+import { SITE_URL } from "@/lib/site";
+
 export const metadata: Metadata = {
-  title: "Réservation confirmée — ATMOS PERFORMANCE",
-  description: "Votre acompte a bien été enregistré.",
+  title: "Précommande confirmée — ATMOS PERFORMANCE",
+  description: "Votre précommande a bien été enregistrée.",
   robots: { index: false },
+  // Sans cette ligne, la page hérite du canonique de la racine et se déclare
+  // doublon de l'accueil — signal contradictoire avec le `noindex`.
+  alternates: { canonical: `${SITE_URL}/reservation/confirmee` },
 };
 
 export default function ReservationConfirmeePage() {
@@ -23,18 +29,19 @@ export default function ReservationConfirmeePage() {
 
         <h1 className="mt-9 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl">
           <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
-            Votre place est réservée.
+            Votre unité est réservée.
           </span>
         </h1>
 
         <p className="mt-6 max-w-lg text-base leading-relaxed font-light text-white/55 text-pretty">
           {
-            "L'acompte a bien été enregistré. Vous recevez un récapitulatif par email dans les prochaines minutes. Notre équipe revient vers vous pour caler la date de mise en service."
+            `Votre précommande du ${BATCH_NAME} a bien été enregistrée. Vous recevez un récapitulatif par email dans les prochaines minutes. Notre équipe revient vers vous pour caler la date de mise en service.`
           }
         </p>
 
         <p className="mt-4 text-[0.82rem] font-light text-white/35">
-          Cet acompte reste remboursable et sera déduit du montant final.
+          Votre unité est réservée dans la série de lancement, puis fabriquée et
+          expédiée directement.
         </p>
 
         <Link

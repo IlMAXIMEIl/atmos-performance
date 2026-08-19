@@ -26,6 +26,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { BATCH_NAME, INSTALLMENTS_NOTE } from "@/lib/offering";
 import { EASE } from "@/lib/motion";
 
 export type PlanId = "achat" | "leasing";
@@ -61,7 +62,6 @@ const OPTIONS = [
  */
 const PRICES = {
   purchaseUnit: 1890,
-  purchaseDeposit: 300,
   monthlyRent: 350,
   shipping: 39,
 };
@@ -71,16 +71,16 @@ const PLAN_CONFIG: Record<
   { eyebrow: string; title: string; steps: StepId[]; submitLabel: string }
 > = {
   leasing: {
-    eyebrow: "Location · Vague #1",
+    eyebrow: `Location · ${BATCH_NAME}`,
     title: "Louer ATMOS ONE",
     steps: ["dates", "contact", "paiement"],
     submitLabel: "Régler le 1er mois",
   },
   achat: {
-    eyebrow: "Achat · Vague #1",
-    title: "Acheter ATMOS ONE",
+    eyebrow: `Édition de lancement · ${BATCH_NAME}`,
+    title: "Précommander ATMOS ONE",
     steps: ["config", "contact", "paiement"],
-    submitLabel: "Régler l'acompte",
+    submitLabel: "Payer ma précommande",
   },
 };
 
@@ -228,9 +228,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
   const currentStep = steps[step];
 
   const rentalTotal = PRICES.monthlyRent + PRICES.shipping;
-  const depositTotal = PRICES.purchaseDeposit * form.quantity;
-  const balanceTotal =
-    (PRICES.purchaseUnit - PRICES.purchaseDeposit) * form.quantity;
+  const purchaseTotal = PRICES.purchaseUnit * form.quantity;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -573,8 +571,8 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             </div>
                             <p className="mt-3 text-[0.78rem] font-light text-white/35">
                               Les options sont enregistrées avec votre commande et
-                              chiffrées séparément : elles ne modifient pas
-                              l&apos;acompte réglé aujourd&apos;hui.
+                              chiffrées séparément : elles ne modifient pas le
+                              montant réglé aujourd&apos;hui.
                             </p>
                           </fieldset>
                         </div>
@@ -748,17 +746,10 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 />
                               </>
                             ) : (
-                              <>
-                                <Amount
-                                  label={`Acompte (${form.quantity} × ${euros(PRICES.purchaseDeposit)})`}
-                                  value={euros(depositTotal)}
-                                />
-                                <Amount
-                                  label="Solde avant expédition"
-                                  value={euros(balanceTotal)}
-                                  muted
-                                />
-                              </>
+                              <Amount
+                                label={`Précommande (${form.quantity} × ${euros(PRICES.purchaseUnit)})`}
+                                value={euros(purchaseTotal)}
+                              />
                             )}
 
                             <div className="mt-1 flex items-baseline justify-between border-t border-white/[0.07] pt-4">
@@ -766,10 +757,22 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 À régler maintenant
                               </span>
                               <span className="text-xl font-medium tracking-tight text-white">
-                                {euros(plan === "leasing" ? rentalTotal : depositTotal)}
+                                {euros(plan === "leasing" ? rentalTotal : purchaseTotal)}
                               </span>
                             </div>
                           </div>
+
+                          {plan === "achat" && (
+                            <div className="flex items-start gap-3 rounded-xl border border-cyan-300/20 bg-cyan-400/[0.05] px-4 py-3.5">
+                              <CreditCard
+                                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300"
+                                strokeWidth={1.5}
+                              />
+                              <p className="text-[0.8rem] leading-relaxed font-light text-cyan-50/70">
+                                {INSTALLMENTS_NOTE}
+                              </p>
+                            </div>
+                          )}
 
                           {plan === "leasing" && (
                             <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3.5">

@@ -1,28 +1,23 @@
 @import "tailwindcss";
 
+/* Le site n'a qu'un seul thème, sombre : la bascule clair/sombre du gabarit
+   de départ laissait un fond blanc sous les pages, visible au rebond de
+   défilement et le temps du premier rendu. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0c10;
+  --foreground: #ededed;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* ── Corps d'article Markdown ──────────────────────────────────────────
@@ -69,6 +64,14 @@ body {
 }
 .article-body a:hover {
   color: rgb(165 243 252);
+}
+
+/* Lien posé automatiquement vers une fiche du glossaire : même teinte que les
+   liens de l'article, mais souligné en pointillés — le lecteur voit qu'il
+   s'agit d'une définition et non d'une source. */
+.article-body a.glossary-link {
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
 }
 
 .article-body ul,

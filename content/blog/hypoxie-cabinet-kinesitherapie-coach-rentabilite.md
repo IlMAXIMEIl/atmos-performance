@@ -118,4 +118,4 @@ Proposer une technologie d'hypoxie de référence permet de transformer l'expér
 
 Avec son design épuré, son fonctionnement silencieux et sa précision de mélange gazeux, **ATMOS ONE** s'intègre naturellement dans les cabinets et centres d'entraînement les plus exigeants.
 
-👉 **[Découvrir les offres professionnelles ATMOS ONE](/)** ou contactez notre département technique pour une étude personnalisée.
+👉 **[Découvrir les offres professionnelles ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Batch n°1 : 25 unités seulement, avec paiement en 3x ou 4x à l'ouverture des commandes.

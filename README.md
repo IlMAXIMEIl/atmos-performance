@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ATMOS ONE
 
-## Getting Started
+Site de lancement du générateur d'altitude hypoxique ATMOS ONE : page produit,
+blog, glossaire, simulateur d'altitude, et capture de la liste d'attente.
 
-First, run the development server:
+Next.js 16 (App Router), React 19, Tailwind CSS 4.
+
+## Développement
 
 ```bash
+npm install
+cp .env.example .env.local   # puis renseigner les valeurs
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Le site tourne sur http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Variables d'environnement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 
-## Learn More
+| Variable | Rôle | Obligatoire |
+| --- | --- | --- |
+| `BREVO_API_KEY` | Création des contacts de la liste d'attente | oui |
+| `BREVO_LIST_ID` | Liste Brevo du Batch n°1 (identifiant numérique) | oui |
+| `BREVO_LOCATION_LIST_ID` | Liste séparée pour les demandes de location | non |
+| `STRIPE_SECRET_KEY` | Tunnel de paiement | à l'ouverture des ventes |
+| `STRIPE_WEBHOOK_SECRET` | Vérification de signature du webhook | à l'ouverture des ventes |
+| `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 
-To learn more about Next.js, take a look at the following resources:
+Seule `NEXT_PUBLIC_SITE_URL` est exposée au navigateur. Les autres sont des
+secrets serveur : jamais de préfixe `NEXT_PUBLIC_`, jamais dans le dépôt.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Déploiement (Hostinger « Web Apps », runtime Node)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Le projet est bâti en `output: "standalone"` : le build produit un serveur
+autonome dans `.next/standalone`, sans `node_modules` à réinstaller.
 
-## Deploy on Vercel
+```bash
+npm ci && npm run build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**La copie de `public/` et `.next/static/` n'est pas optionnelle.** Le
+`server.js` généré ne les embarque pas : sans elle, le site se charge sans
+styles, sans polices et sans images.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Démarrage :
+
+```bash
+PORT=3000 HOSTNAME=0.0.0.0 node .next/standalone/server.js
+```
+
+### Les variables d'environnement se déclarent côté hébergeur
+
+Le serveur standalone lit ses fichiers `.env` **dans son propre dossier**, pas
+à la racine du projet : téléverser un `.env.local` ne suffit pas. Les valeurs
+doivent être fournies par l'environnement réel — le panneau d'Hostinger — ou
+par un `.env` déposé à côté de `server.js`.
+
+## Ouverture des ventes
+
+`ORDERS_OPEN` et `LEASING_OPEN` dans [`lib/offering.ts`](lib/offering.ts)
+pilotent l'ouverture commerciale, côté page comme côté API. Tant que
+`ORDERS_OPEN` vaut `false`, `/api/checkout` refuse toute session de paiement et
+le webhook Stripe accuse réception sans rien enregistrer.
+
+Avant de passer `ORDERS_OPEN` à `true`, remplacer le stockage fichier de
+[`lib/orders.ts`](lib/orders.ts) par une vraie base : sur un hébergement sans
+disque persistant, une commande payée serait perdue.

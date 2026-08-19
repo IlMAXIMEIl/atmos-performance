@@ -1,14 +1,16 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
+  Boxes,
   CalendarClock,
   Check,
+  CreditCard,
   Infinity as InfinityIcon,
   KeyRound,
-  PackageCheck,
   ShieldCheck,
   Sparkles,
   Truck,
@@ -16,10 +18,33 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { ReservationModal } from "@/components/reservation-modal";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { LEASING_OPEN } from "@/lib/offering";
+import { WaitlistModal } from "@/components/waitlist-modal";
+import {
+  BATCH_NAME,
+  BATCH_SCARCITY,
+  BATCH_UNITS,
+  INSTALLMENTS_NOTE,
+  LEASING_DEPOSIT_NOTE,
+  LEASING_OPEN,
+  ORDERS_OPEN,
+  PREORDER_STEPS,
+  WAITLIST_CTA,
+} from "@/lib/offering";
 import { EASE, container, rise } from "@/lib/motion";
+
+/**
+ * Le tunnel de commande est chargé à la demande.
+ *
+ * Il ne s'ouvre que si `ORDERS_OPEN` vaut `true`, mais un import statique le
+ * ferait tout de même descendre dans le bundle de la page d'accueil : le
+ * bundler ne peut pas éliminer la branche, l'import étant résolu avant que la
+ * constante ne soit connue. En `dynamic`, son morceau n'est téléchargé que
+ * lorsqu'il est réellement rendu.
+ */
+const ReservationModal = dynamic(() =>
+  import("@/components/reservation-modal").then((mod) => mod.ReservationModal),
+);
 
 type PlanId = "achat" | "leasing";
 
@@ -39,9 +64,9 @@ const PLANS: Plan[] = [
   {
     id: "achat",
     label: "Achat",
-    badge: "Vous êtes propriétaire",
+    badge: `Édition de lancement · ${BATCH_NAME}`,
     price: "1 890 €",
-    terms: "TTC · paiement unique",
+    terms: "TTC · comptant ou paiement fractionné",
     pitch:
       "L'appareil vous appartient dès la livraison. Aucune échéance, aucune condition de restitution.",
     highlights: [
@@ -61,7 +86,7 @@ const PLANS: Plan[] = [
         detail: "Nouveaux protocoles et évolutions logicielles inclus.",
       },
     ],
-    cta: "Acheter ATMOS ONE",
+    cta: ORDERS_OPEN ? "Précommander ATMOS ONE" : WAITLIST_CTA,
   },
   {
     id: "leasing",
@@ -103,15 +128,40 @@ const INCLUDED = [
   "Accompagnement au démarrage",
 ];
 
-/** Le premier élément dépend de la formule : caution en location, acompte à l'achat. */
+/** Le premier élément dépend de la formule ; ces deux-là ne varient pas. */
 const ASSURANCES = [
   { icon: Truck, text: "Livraison estimée au premier trimestre 2027" },
-  { icon: CalendarClock, text: "Vague #1 limitée à 100 unités" },
+  { icon: CalendarClock, text: `${BATCH_NAME} : ${BATCH_UNITS} unités, puis série suivante` },
 ];
 
 /** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
 const CTA_CLASS =
   "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none";
+
+/**
+ * Le simulateur d'altitude renvoie vers `/?reserver=achat#offres` avec la
+ * configuration du visiteur : la modale d'achat — ou, tant que les commandes
+ * sont fermées, celle de la liste prioritaire — s'ouvre alors d'elle-même,
+ * plutôt que de le laisser rechercher le bouton.
+ *
+ * L'URL est un état extérieur à React, d'où `useSyncExternalStore` : un effet
+ * appellerait `setState` en cascade, et `useSearchParams` ferait sortir toute
+ * la page d'accueil du prérendu — trop cher pour la page la plus référencée du
+ * site. Seul l'achat est concerné, la location n'ouvrant qu'après le Batch n°1.
+ */
+function subscribeToHistory(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
+
+function readRequestedPlan() {
+  return new URLSearchParams(window.location.search).get("reserver");
+}
+
+/** Côté serveur il n'y a pas d'URL à lire : le rendu initial reste fermé. */
+function readNothing() {
+  return null;
+}
 
 const swap = {
   initial: { opacity: 0, y: 12, filter: "blur(6px)" },
@@ -123,9 +173,24 @@ const swap = {
 export function OffersSection() {
   const [planId, setPlanId] = useState<PlanId>("achat");
   const [modalOpen, setModalOpen] = useState(false);
+  const [invitationDeclined, setInvitationDeclined] = useState(false);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const plan = PLANS.find((item) => item.id === planId) ?? PLANS[0];
+
+  // Une invitation venue de l'URL ne vaut qu'une fois : refermer la modale ne
+  // doit pas la faire réapparaître au rendu suivant.
+  const requestedPlan = useSyncExternalStore(
+    subscribeToHistory,
+    readRequestedPlan,
+    readNothing,
+  );
+  const invited = requestedPlan === "achat" && !invitationDeclined;
+
+  function closeModal() {
+    setModalOpen(false);
+    setInvitationDeclined(true);
+  }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     const step =
@@ -178,7 +243,7 @@ export function OffersSection() {
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed font-light text-white/55 text-pretty"
         >
           {
-            "La vague #1 ouvre la pré-vente à l'achat ferme. La location suivra : laissez votre email pour être prévenu de son ouverture."
+            `L'édition de lancement ouvre la précommande à l'achat ferme, en série limitée. ${BATCH_SCARCITY}. La location suivra : laissez votre email pour être prévenu de son ouverture.`
           }
         </motion.p>
 
@@ -262,6 +327,28 @@ export function OffersSection() {
                   {plan.terms}
                 </div>
 
+                {/*
+                  Sous le prix, une mention par formule — jamais les deux. Le
+                  fractionnement est réservé à l'achat ; la location se règle
+                  comptant et appelle une empreinte bancaire, annoncée ici en
+                  retrait plutôt qu'au moment de payer.
+                */}
+                {plan.id === "achat" ? (
+                  <div className="mt-5 flex items-start gap-3 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] px-4 py-3.5">
+                    <CreditCard
+                      className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300"
+                      strokeWidth={1.5}
+                    />
+                    <p className="text-[0.82rem] leading-relaxed font-light text-cyan-50/70 text-pretty">
+                      {INSTALLMENTS_NOTE}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+                    {LEASING_DEPOSIT_NOTE}
+                  </p>
+                )}
+
                 <p className="mt-7 max-w-md text-[0.95rem] leading-relaxed font-light text-white/55 text-pretty">
                   {plan.pitch}
                 </p>
@@ -332,8 +419,10 @@ export function OffersSection() {
               {plan.id === "leasing"
                 ? LEASING_OPEN
                   ? "1er mois et expédition réglés en ligne, caution par simple empreinte bancaire."
-                  : "La location ouvrira après la première vague. Laissez votre email pour être prévenu."
-                : "Acompte de 300 € à la réservation, solde de 1 590 € avant expédition."}
+                  : `La location ouvrira après le ${BATCH_NAME}. Laissez votre email pour être prévenu.`
+                : ORDERS_OPEN
+                  ? "Paiement sécurisé à la précommande, au comptant ou fractionné."
+                  : "Aucun paiement aujourd'hui : vous rejoignez la liste prioritaire, prévenue en premier à l'ouverture."}
             </p>
           </div>
         </div>
@@ -349,11 +438,11 @@ export function OffersSection() {
       >
         {[
           {
-            icon: PackageCheck,
+            icon: Boxes,
             text:
               plan.id === "leasing"
-                ? "Ouverture de la location après la vague #1"
-                : "Acompte de 300 € par unité, déduit du prix",
+                ? `Ouverture de la location après le ${BATCH_NAME}`
+                : BATCH_SCARCITY,
           },
           ...ASSURANCES,
         ].map(({ icon: Icon, text }) => (
@@ -372,6 +461,52 @@ export function OffersSection() {
           </motion.li>
         ))}
       </motion.ul>
+
+      {/* ── Déroulé de la précommande ────────────────────────────────── */}
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.25 }}
+        aria-labelledby="precommande-titre"
+        className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-7 py-10 backdrop-blur-md sm:px-10"
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
+        />
+
+        <div className="relative">
+          <motion.h3
+            variants={rise}
+            id="precommande-titre"
+            className="text-center text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
+          >
+            Comment se passe la précommande
+          </motion.h3>
+
+          <motion.ol
+            variants={container}
+            className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+          >
+            {PREORDER_STEPS.map((step, index) => (
+              <motion.li key={step.title} variants={rise} className="relative">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-400/[0.08] text-[0.8rem] font-medium text-cyan-200">
+                  {index + 1}
+                </span>
+
+                <div className="mt-4 text-[0.92rem] leading-snug font-medium tracking-tight text-white/90 text-pretty">
+                  {step.title}
+                </div>
+
+                <p className="mt-2 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
+                  {step.detail}
+                </p>
+              </motion.li>
+            ))}
+          </motion.ol>
+        </div>
+      </motion.div>
 
       {/* ── Teaser : prochain produit de la gamme ────────────────────── */}
       <motion.aside
@@ -403,11 +538,20 @@ export function OffersSection() {
         </div>
       </motion.aside>
 
-      <ReservationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        plan={plan.id}
-      />
+      {/*
+        Tant que les commandes ne sont pas ouvertes, les boutons d'action
+        mènent à la liste prioritaire plutôt qu'au tunnel de paiement : la
+        société n'est pas encore immatriculée, rien ne peut être encaissé.
+      */}
+      {ORDERS_OPEN ? (
+        <ReservationModal
+          open={modalOpen || invited}
+          onClose={closeModal}
+          plan={plan.id}
+        />
+      ) : (
+        <WaitlistModal open={modalOpen || invited} onClose={closeModal} />
+      )}
     </section>
   );
 }

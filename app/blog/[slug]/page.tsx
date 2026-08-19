@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
+import { JsonLd } from "@/components/json-ld";
+import { PageHeader } from "@/components/page-header";
 import { formatPostDate, getAllPosts, getPost } from "@/lib/posts";
+import { breadcrumbSchema } from "@/lib/structured-data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -71,20 +74,24 @@ export default async function BlogPostPage({ params }: Props) {
     },
   };
 
+  const breadcrumb = breadcrumbSchema([
+    { name: "Accueil", url: SITE_URL },
+    { name: "Blog", url: `${SITE_URL}/blog` },
+    { name: post.title },
+  ]);
+
   return (
     <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
-      <script
-        type="application/ld+json"
-        // Contenu maîtrisé, sérialisé depuis nos propres données.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={[jsonLd, breadcrumb]} />
 
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <main className="relative z-10 mx-auto w-full max-w-2xl px-6 py-20 sm:py-28 lg:px-10">
+      <PageHeader maxWidth="max-w-2xl" />
+
+      <main className="relative z-10 mx-auto w-full max-w-2xl px-6 pt-10 pb-20 sm:pt-14 sm:pb-28 lg:px-10">
         <Link
           href="/blog"
           className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"

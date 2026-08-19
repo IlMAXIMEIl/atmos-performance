@@ -106,4 +106,4 @@ Développé pour répondre aux exigences des athlètes d'élite et des professio
 
 Bénéficiez d'un contrôle absolu de votre fraction d'oxygène, d'une filtration médicale certifiée et d'un confort d'inhalation optimal.
 
-👉 **[Découvrir les caractéristiques complètes d'ATMOS ONE](/)** ou planifiez votre réservation avec la garantie d'acompte.
+👉 **[Découvrir les caractéristiques complètes d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.

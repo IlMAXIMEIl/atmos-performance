@@ -2,10 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import { SITE_NAME, SITE_URL } from "@/lib/site";
+
+const PAGE_URL = `${SITE_URL}/mentions-legales`;
+const DESCRIPTION =
+  "Mentions légales du site ATMOS PERFORMANCE : éditeur, hébergeur et conditions d'utilisation.";
+
 export const metadata: Metadata = {
   title: "Mentions légales — ATMOS PERFORMANCE",
-  description:
-    "Mentions légales du site ATMOS PERFORMANCE : éditeur, hébergeur et conditions d'utilisation.",
+  description: DESCRIPTION,
+  alternates: { canonical: PAGE_URL },
+  openGraph: {
+    type: "website",
+    url: PAGE_URL,
+    siteName: SITE_NAME,
+    locale: "fr_FR",
+    title: "Mentions légales — ATMOS PERFORMANCE",
+    description: DESCRIPTION,
+  },
 };
 
 /**

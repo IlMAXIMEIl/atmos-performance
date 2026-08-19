@@ -108,4 +108,4 @@ Que ce soit pour optimiser la régénération entre deux séances exigeantes ou 
 
 Le générateur **ATMOS ONE** délivre un flux d'air hypoxique régulé pour accompagner les sportifs exigeants dans chaque phase de leur préparation et de leur récupération.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou planifiez votre réservation pour sécuriser votre unité.
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Batch n°1 : 25 unités seulement, avec paiement en 3x ou 4x à l'ouverture des commandes.

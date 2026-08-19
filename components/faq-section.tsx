@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
+import { BATCH_NAME, BATCH_SCARCITY, INSTALLMENTS_NOTE } from "@/lib/offering";
 import { EASE, container, rise } from "@/lib/motion";
+import type { FaqEntry } from "@/lib/structured-data";
 
 /**
  * Structure modulaire : pour modifier la FAQ, il suffit d'éditer ce tableau.
  * Chaque réponse est un tableau de paragraphes, ce qui évite d'injecter du
  * balisage tout en autorisant des réponses longues.
+ *
+ * Exporté : `app/page.tsx` en dérive le balisage `FAQPage`. Les deux ne
+ * peuvent donc pas diverger, ce que Google exige — un balisage qui annonce
+ * une réponse absente de la page est un motif de sanction.
  */
-const FAQ: { question: string; answer: string[] }[] = [
+export const FAQ: FaqEntry[] = [
   {
     question: "Faut-il un avis médical avant de commencer ?",
     answer: [
@@ -24,6 +30,14 @@ const FAQ: { question: string; answer: string[] }[] = [
     answer: [
       "Les premières adaptations mesurables demandent généralement trois semaines d'exposition régulière. La régularité compte davantage que l'altitude atteinte : quelques nuits isolées à un palier élevé produisent moins qu'une exposition quotidienne modérée.",
       "La réponse varie fortement d'une personne à l'autre. C'est pourquoi les paliers se règlent séance après séance plutôt qu'une fois pour toutes.",
+    ],
+  },
+  {
+    question: "Tente d'altitude ou masque : que choisir ?",
+    answer: [
+      "Les deux, mais pas pour la même chose. La tente sert l'exposition longue et modérée : 8 à 10 heures par nuit entre 2 000 et 3 500 mètres, pendant que vous dormez. C'est la voie de l'acclimatation, celle qui ne coûte aucun temps de journée.",
+      "Le masque sert l'exposition courte et forte : 20 à 60 minutes entre 4 000 et 6 000 mètres, par cycles alternés, au repos ou sur home-trainer. C'est la voie du travail ventilatoire et de la VO2max.",
+      "Le même générateur alimente les deux. La question n'est donc pas laquelle acheter, mais laquelle programmer selon la semaine.",
     ],
   },
   {
@@ -47,10 +61,11 @@ const FAQ: { question: string; answer: string[] }[] = [
     ],
   },
   {
-    question: "Comment se passe la réservation ?",
+    question: "Comment se passe la précommande ?",
     answer: [
-      "Un acompte de 300 € par unité réserve votre place dans la vague de lancement. Il est déduit du prix d'achat, le solde étant réglé avant expédition.",
-      "Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.",
+      `En quatre temps. Vous vous inscrivez d'abord sur la liste prioritaire, sans engagement et sans paiement. Vous recevez ensuite un accès exclusif à l'ouverture du ${BATCH_NAME}, dont les stocks sont très limités. Le paiement sécurisé — au comptant ou fractionné — n'intervient qu'à cette ouverture. La fabrication et l'expédition directe suivent.`,
+      `L'édition de lancement est une série fermée : ${BATCH_SCARCITY.toLowerCase()}. Passé ce volume, les commandes basculent sur la série suivante.`,
+      `${INSTALLMENTS_NOTE}. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.`,
     ],
   },
 ];
@@ -144,32 +159,38 @@ export function FaqSection() {
                 </button>
               </h3>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    key="reponse"
-                    id={`faq-reponse-${index}`}
-                    role="region"
-                    aria-labelledby={`faq-question-${index}`}
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: EASE }}
-                    className="overflow-hidden"
-                  >
-                    <div className="flex flex-col gap-4 px-6 pb-6 sm:px-7 sm:pb-7">
-                      {item.answer.map((paragraph) => (
-                        <p
-                          key={paragraph}
-                          className="max-w-2xl text-[0.92rem] leading-relaxed font-light text-white/50 text-pretty"
-                        >
-                          {paragraph}
-                        </p>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/*
+                La réponse reste montée en permanence, repliée par sa hauteur,
+                au lieu d'être démontée à la fermeture. Sans cela, une seule
+                réponse figurerait dans le HTML servi et le balisage `FAQPage`
+                annoncerait cinq réponses introuvables sur la page.
+
+                `initial={false}` fait démarrer l'élément à son état replié
+                sans l'animer : pas de dépliage parasite au chargement.
+                `inert` le sort du parcours clavier et de l'arbre
+                d'accessibilité tant qu'il est fermé, sans le retirer du HTML.
+              */}
+              <motion.div
+                id={`faq-reponse-${index}`}
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
+                initial={false}
+                animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+                inert={!isOpen}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-col gap-4 px-6 pb-6 sm:px-7 sm:pb-7">
+                  {item.answer.map((paragraph) => (
+                    <p
+                      key={paragraph}
+                      className="max-w-2xl text-[0.92rem] leading-relaxed font-light text-white/50 text-pretty"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
             </motion.div>
           );
         })}
