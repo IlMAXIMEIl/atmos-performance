@@ -27,6 +27,7 @@ Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 | `STRIPE_SECRET_KEY` | Tunnel de paiement | à l'ouverture des ventes |
 | `STRIPE_WEBHOOK_SECRET` | Vérification de signature du webhook | à l'ouverture des ventes |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Payment Element du tunnel d'achat intégré | à l'ouverture des ventes |
+| `DATABASE_URL` | Base MySQL où le webhook enregistre les commandes | à l'ouverture des ventes |
 | `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 
 Seules les variables préfixées `NEXT_PUBLIC_` sont exposées au navigateur — l'URL du site et la clé **publiable** de Stripe, qui est faite pour ça. Les autres sont des
@@ -74,6 +75,16 @@ pilotent l'ouverture commerciale, côté page comme côté API. Tant que
 `ORDERS_OPEN` vaut `false`, `/api/checkout` refuse toute session de paiement et
 le webhook Stripe accuse réception sans rien enregistrer.
 
-Avant de passer `ORDERS_OPEN` à `true`, remplacer le stockage fichier de
-[`lib/orders.ts`](lib/orders.ts) par une vraie base : sur un hébergement sans
-disque persistant, une commande payée serait perdue.
+Les commandes sont enregistrées en **MySQL** par
+[`lib/orders.ts`](lib/orders.ts), sur la base incluse dans l'hébergement.
+L'application tourne sur le même serveur : l'hôte est `localhost`, sans
+traversée de réseau ni démarrage à froid. Le schéma est créé au premier
+enregistrement (`CREATE TABLE IF NOT EXISTS`), il n'y a pas de migration à
+lancer au déploiement.
+
+L'idempotence repose sur une contrainte d'unicité `event_id`, et non sur une
+relecture applicative : entre un `SELECT` et un `INSERT`, deux livraisons
+simultanées du même événement Stripe passeraient toutes les deux.
+
+**Stripe reste la source de vérité.** Cette table en est une copie
+interrogeable ; la perdre ne perd aucune commande.
