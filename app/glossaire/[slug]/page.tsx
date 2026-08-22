@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Gauge } from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
-import { PageHeader } from "@/components/page-header";
+import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
   getAllGlossaryEntries,
@@ -102,7 +102,7 @@ export default async function GlossaryTermPage({ params }: Props) {
   ];
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <JsonLd data={jsonLd} />
 
       <div
@@ -110,12 +110,12 @@ export default async function GlossaryTermPage({ params }: Props) {
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <PageHeader maxWidth="max-w-2xl" />
+      <SiteHeader maxWidth="max-w-2xl" />
 
       <main className="relative z-10 mx-auto w-full max-w-2xl px-6 pt-10 pb-20 sm:pt-14 sm:pb-28 lg:px-10">
         <Link
           href={GLOSSARY_PATH}
-          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -126,25 +126,25 @@ export default async function GlossaryTermPage({ params }: Props) {
 
         <article className="mt-10">
           {entry.category && (
-            <span className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] px-3 py-1 text-[0.62rem] font-medium tracking-[0.16em] text-cyan-100/90 uppercase">
+            <span className="font-mono inline-flex rounded-full border border-accent/40 bg-accent/[0.07] px-3 py-1 text-[0.62rem] tracking-[0.16em] text-accent uppercase">
               {entry.category}
             </span>
           )}
 
           <h1 className="mt-6 text-[1.9rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-4xl">
-            <span className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
+            <span className="text-ink">
               {entry.term}
             </span>
           </h1>
 
           {entry.aliases.length > 0 && (
-            <p className="mt-3 text-[0.85rem] font-light text-white/35 text-pretty">
+            <p className="mt-3 text-[0.85rem] font-light text-dimmer text-pretty">
               Aussi appelé {entry.aliases.join(", ")}
             </p>
           )}
 
           {/* La définition courte, celle que reprend `DefinedTerm`. */}
-          <p className="mt-8 border-l-2 border-cyan-300/30 pl-5 text-[1rem] leading-relaxed font-light text-white/65 text-pretty">
+          <p className="mt-8 border-l-2 border-accent/40 pl-5 text-[1rem] leading-relaxed font-light text-dim text-pretty">
             {entry.definition}
           </p>
 
@@ -157,18 +157,18 @@ export default async function GlossaryTermPage({ params }: Props) {
         </article>
 
         {/* ── Passage à l'acte ─────────────────────────────────────────── */}
-        <aside className="relative mt-16 overflow-hidden rounded-[1.75rem] border border-cyan-300/20 bg-gradient-to-b from-cyan-400/[0.06] to-white/[0.015] p-7 backdrop-blur-xl sm:p-9">
+        <aside className="relative mt-16 overflow-hidden rounded-xl border border-accent/40 bg-gradient-to-b from-accent/[0.06] to-white/[0.015] p-7 backdrop-blur-xl sm:p-9">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.16),transparent_70%)]"
           />
 
           <div className="relative">
-            <h2 className="text-lg font-medium tracking-[-0.02em] text-balance text-white sm:text-xl">
+            <h2 className="text-lg font-medium tracking-[-0.02em] text-balance text-ink sm:text-xl">
               De la théorie au réglage
             </h2>
 
-            <p className="mt-3 max-w-lg text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty">
+            <p className="mt-3 max-w-lg text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
               {
                 "Le simulateur traduit ces notions en paramètres concrets : palier d'altitude, structure de cycles et plage de SpO₂ à tenir. Gratuit, sans inscription."
               }
@@ -177,7 +177,7 @@ export default async function GlossaryTermPage({ params }: Props) {
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`${TOOLS_PATH}/simulateur-altitude`}
-                className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-7 py-3.5 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] sm:w-auto"
+                className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-sm font-semibold tracking-[0.04em] text-void shadow-[0_10px_40px_-12px_var(--accent)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_46px_-12px_var(--accent)] sm:w-auto"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
                 <span className="relative">Ouvrir le simulateur</span>
@@ -186,9 +186,9 @@ export default async function GlossaryTermPage({ params }: Props) {
 
               <Link
                 href="/#produit"
-                className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-7 py-3.5 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] px-7 py-3.5 text-sm font-medium tracking-[0.04em] text-ink backdrop-blur-md transition-all duration-300 hover:border-line-strong hover:bg-white/[0.07] hover:text-ink sm:w-auto"
               >
-                <Gauge className="h-4 w-4 text-cyan-300/80" strokeWidth={1.6} />
+                <Gauge className="h-4 w-4 text-accent" strokeWidth={1.6} />
                 Découvrir ATMOS ONE
               </Link>
             </div>
@@ -197,8 +197,8 @@ export default async function GlossaryTermPage({ params }: Props) {
 
         {/* ── Maillage : fiches voisines ───────────────────────────────── */}
         {related.length > 0 && (
-          <section className="mt-16 border-t border-white/[0.07] pt-10">
-            <h2 className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+          <section className="mt-16 border-t border-line pt-10">
+            <h2 className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
               Notions liées
             </h2>
             <div className="mt-6 flex flex-col gap-3">
@@ -206,12 +206,12 @@ export default async function GlossaryTermPage({ params }: Props) {
                 <Link
                   key={item.slug}
                   href={`${GLOSSARY_PATH}/${item.slug}`}
-                  className="group flex items-center justify-between gap-6 rounded-2xl border border-white/[0.07] px-5 py-4 transition-colors duration-300 hover:border-cyan-300/25"
+                  className="group flex items-center justify-between gap-6 rounded-2xl border border-line px-5 py-4 transition-colors duration-300 hover:border-accent/40"
                 >
-                  <span className="text-[0.9rem] font-light text-white/70 text-pretty group-hover:text-white">
+                  <span className="text-[0.9rem] font-light text-dim text-pretty group-hover:text-ink">
                     {item.term}
                   </span>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-cyan-300/60 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>
@@ -221,7 +221,7 @@ export default async function GlossaryTermPage({ params }: Props) {
         {/* ── Maillage : articles de fond ──────────────────────────────── */}
         {articles.length > 0 && (
           <section className="mt-12">
-            <h2 className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+            <h2 className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
               Pour approfondir
             </h2>
             <div className="mt-6 flex flex-col gap-3">
@@ -229,12 +229,12 @@ export default async function GlossaryTermPage({ params }: Props) {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group flex items-start justify-between gap-6 rounded-2xl border border-white/[0.07] px-5 py-4 transition-colors duration-300 hover:border-cyan-300/25"
+                  className="group flex items-start justify-between gap-6 rounded-2xl border border-line px-5 py-4 transition-colors duration-300 hover:border-accent/40"
                 >
-                  <span className="text-[0.9rem] leading-relaxed font-light text-white/70 text-pretty group-hover:text-white">
+                  <span className="text-[0.9rem] leading-relaxed font-light text-dim text-pretty group-hover:text-ink">
                     {post.title}
                   </span>
-                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-cyan-300/60 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>

@@ -46,14 +46,24 @@ const PILLARS: {
   },
 ];
 
-export function ScienceSection() {
+/**
+ * @param heading Rendre l'en-tête de la section.
+ *
+ * Sur `/la-science`, la page porte déjà le même surtitre et le même titre —
+ * en `h1`, comme il se doit pour le titre d'une page. Les répéter ici
+ * donnerait deux fois « Rien de magique. De la physiologie. » à la suite, et
+ * un plan de document à deux têtes.
+ */
+export function ScienceSection({ heading = true }: { heading?: boolean }) {
   return (
     <section
       id="science"
-      aria-labelledby="science-titre"
-      className="relative z-20 mx-auto w-full max-w-7xl scroll-mt-24 px-6 py-24 sm:py-32 lg:px-10"
+      aria-labelledby={heading ? "science-titre" : undefined}
+      aria-label={heading ? undefined : "La science"}
+      className={`relative z-20 mx-auto w-full max-w-7xl scroll-mt-24 px-6 pb-24 sm:pb-32 lg:px-10 ${heading ? "pt-24 sm:pt-32" : "pt-12"}`}
     >
       {/* ── En-tête de section ───────────────────────────────────────── */}
+      {heading && (
       <motion.div
         variants={container}
         initial="hidden"
@@ -63,7 +73,7 @@ export function ScienceSection() {
       >
         <motion.span
           variants={rise}
-          className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
+          className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase"
         >
           La science
         </motion.span>
@@ -73,23 +83,24 @@ export function ScienceSection() {
           id="science-titre"
           className="mt-5 text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl"
         >
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Rien de magique.
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-accent">
             De la physiologie.
           </span>
         </motion.h2>
 
         <motion.p
           variants={rise}
-          className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
+          className="mt-6 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty"
         >
           {
             "L'altitude simulée n'est pas un raccourci : c'est une contrainte que le corps apprend à absorber, sur des durées connues et à des doses mesurées. Voici ce que cela suppose."
           }
         </motion.p>
       </motion.div>
+      )}
 
       {/* ── Chiffres clés ────────────────────────────────────────────── */}
       <motion.dl
@@ -97,7 +108,7 @@ export function ScienceSection() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.3 }}
-        className="mt-16 grid grid-cols-1 divide-y divide-white/[0.07] border-y border-white/[0.07] sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0"
+        className={`grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0 ${heading ? "mt-16" : ""}`}
       >
         {FIGURES.map((figure) => (
           <motion.div
@@ -107,10 +118,10 @@ export function ScienceSection() {
             // restent alignés sur les marges de la section.
             className="px-0 py-8 sm:px-6 lg:first:pl-0 lg:last:pr-0"
           >
-            <dt className="text-2xl font-medium tracking-[-0.025em] text-white sm:text-[1.7rem]">
+            <dt className="text-2xl font-medium tracking-[-0.025em] text-ink sm:text-[1.7rem]">
               {figure.value}
             </dt>
-            <dd className="mt-2.5 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
+            <dd className="mt-2.5 text-[0.85rem] leading-relaxed font-light text-dim text-pretty">
               {figure.label}
             </dd>
           </motion.div>
@@ -126,7 +137,7 @@ export function ScienceSection() {
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.9, ease: EASE, delay: index * 0.1 }}
-            className="group relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-8 backdrop-blur-xl transition-colors duration-500 hover:border-cyan-300/25"
+            className="group relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-8 backdrop-blur-xl transition-colors duration-500 hover:border-accent/40"
           >
             {/* Halo discret au survol */}
             <div
@@ -135,19 +146,19 @@ export function ScienceSection() {
             />
 
             <div className="relative">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]">
-                <Icon className="h-4 w-4 text-cyan-300/85" strokeWidth={1.5} />
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-line bg-white/[0.03]">
+                <Icon className="h-4 w-4 text-accent" strokeWidth={1.5} />
               </span>
 
-              <div className="mt-7 text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+              <div className="font-mono mt-7 text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
                 {eyebrow}
               </div>
 
-              <h3 className="mt-3 text-lg font-medium tracking-tight text-white text-balance sm:text-xl">
+              <h3 className="mt-3 text-lg font-medium tracking-tight text-ink text-balance sm:text-xl">
                 {title}
               </h3>
 
-              <p className="mt-4 text-[0.9rem] leading-relaxed font-light text-white/50 text-pretty">
+              <p className="mt-4 text-[0.9rem] leading-relaxed font-light text-dim text-pretty">
                 {description}
               </p>
             </div>
@@ -161,7 +172,7 @@ export function ScienceSection() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.8 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="mx-auto mt-14 max-w-2xl text-center text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty"
+        className="mx-auto mt-14 max-w-2xl text-center text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty"
       >
         {
           "Ces informations sont données à titre indicatif et ne constituent pas un avis médical. En cas de pathologie cardiaque ou respiratoire, un avis médical est nécessaire avant toute exposition."

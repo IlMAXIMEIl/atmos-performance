@@ -68,12 +68,12 @@ const PROTOCOLS: Protocol[] = [
     ],
     axis: [2100, 2600],
     theme: {
-      border: "hover:border-cyan-300/35",
+      border: "hover:border-accent/40",
       glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(56,189,248,0.16),transparent_70%)]",
-      badge: "border-cyan-300/25 bg-cyan-400/[0.07] text-cyan-100/90",
-      icon: "text-cyan-300",
-      title: "from-cyan-100 to-sky-300",
-      segment: "from-cyan-300 to-sky-500",
+      badge: "border-accent/40 bg-accent/[0.07] text-accent",
+      icon: "text-accent",
+      title: "text-accent",
+      segment: "bg-accent",
     },
   },
   {
@@ -108,8 +108,8 @@ const PROTOCOLS: Protocol[] = [
       glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(129,140,248,0.16),transparent_70%)]",
       badge: "border-indigo-300/25 bg-indigo-400/[0.07] text-indigo-100/90",
       icon: "text-indigo-300",
-      title: "from-indigo-100 to-blue-300",
-      segment: "from-blue-400 to-indigo-500",
+      title: "text-indigo-200",
+      segment: "bg-indigo-400",
     },
   },
   {
@@ -144,8 +144,8 @@ const PROTOCOLS: Protocol[] = [
       glow: "bg-[radial-gradient(circle_at_50%_0%,rgba(167,139,250,0.16),transparent_70%)]",
       badge: "border-violet-300/25 bg-violet-400/[0.07] text-violet-100/90",
       icon: "text-violet-300",
-      title: "from-violet-100 to-purple-300",
-      segment: "from-violet-400 to-purple-500",
+      title: "text-violet-200",
+      segment: "bg-violet-400",
     },
   },
 ];
@@ -216,7 +216,7 @@ export function ProtocolsSection() {
       >
         <motion.span
           variants={rise}
-          className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
+          className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase"
         >
           Les protocoles
         </motion.span>
@@ -226,17 +226,17 @@ export function ProtocolsSection() {
           id="protocoles-titre"
           className="mt-5 text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl"
         >
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Un générateur,
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-indigo-300 bg-clip-text text-transparent">
+          <span className="text-accent">
             trois protocoles d&apos;altitude.
           </span>
         </motion.h2>
 
         <motion.p
           variants={rise}
-          className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
+          className="mt-6 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty"
         >
           {
             "La dose d'altitude se joue sur deux leviers : la durée et le palier. Longue et modérée pendant la nuit, modérée à l'effort, courte et profonde au repos. Chaque protocole a sa plage — c'est la modalité qui la fixe, jamais l'objectif — et les trois se conduisent depuis le même appareil."
@@ -268,7 +268,7 @@ export function ProtocolsSection() {
                   width: `${end - start}%`,
                   top: `${index * 7 - 1}px`,
                 }}
-                className={`absolute h-[3px] rounded-full bg-gradient-to-r ${protocol.theme.segment}`}
+                className={`absolute h-[3px] rounded-full ${protocol.theme.segment}`}
               />
             );
           })}
@@ -287,10 +287,10 @@ export function ProtocolsSection() {
                     : "-translate-x-1/2"
               }`}
             >
-              <div className="text-[0.72rem] font-medium tracking-tight text-white/70">
+              <div className="text-[0.72rem] font-medium tracking-tight text-dim">
                 {marker.label}
               </div>
-              <div className="mt-0.5 text-[0.6rem] font-light tracking-[0.14em] text-white/35 uppercase">
+              <div className="font-mono mt-0.5 text-[0.6rem] tracking-[0.14em] text-dimmer uppercase">
                 {marker.caption}
               </div>
             </div>
@@ -309,7 +309,7 @@ export function ProtocolsSection() {
             transition={{ duration: 0.9, ease: EASE, delay: index * 0.12 }}
             onHoverStart={() => setHovered(protocol.id)}
             onHoverEnd={() => setHovered(null)}
-            className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-7 backdrop-blur-xl transition-colors duration-500 sm:p-8 ${protocol.theme.border}`}
+            className={`group relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-7 backdrop-blur-xl transition-colors duration-500 sm:p-8 ${protocol.theme.border}`}
           >
             {/* Halo d'accent, révélé au survol */}
             <div
@@ -319,7 +319,7 @@ export function ProtocolsSection() {
 
             <div className="relative">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+                <span className="font-mono text-[0.66rem] tracking-[0.24em] text-dim uppercase">
                   {protocol.eyebrow}
                 </span>
                 <span
@@ -331,13 +331,13 @@ export function ProtocolsSection() {
 
               <h3 className="mt-7 text-2xl font-medium tracking-[-0.02em] text-balance sm:text-[1.75rem]">
                 <span
-                  className={`bg-gradient-to-r bg-clip-text text-transparent ${protocol.theme.title}`}
+                  className={protocol.theme.title}
                 >
                   {protocol.title}
                 </span>
               </h3>
 
-              <p className="mt-4 text-[0.95rem] leading-relaxed font-light text-white/55 text-pretty">
+              <p className="mt-4 text-[0.95rem] leading-relaxed font-light text-dim text-pretty">
                 {protocol.description}
               </p>
 
@@ -347,7 +347,7 @@ export function ProtocolsSection() {
                 détail à la ligne — coûtait trois lignes par puce sur
                 téléphone, soit près d'un écran et demi pour les trois cartes.
               */}
-              <ul className="mt-7 flex flex-col gap-3.5 border-t border-white/[0.07] pt-6">
+              <ul className="mt-7 flex flex-col gap-3.5 border-t border-line pt-6">
                 {protocol.points.map(({ icon: Icon, label, detail }) => (
                   <li key={label} className="flex items-start gap-3">
                     <Icon
@@ -355,10 +355,10 @@ export function ProtocolsSection() {
                       strokeWidth={1.6}
                     />
                     <p className="text-[0.85rem] leading-relaxed text-pretty">
-                      <span className="font-medium tracking-tight text-white/85">
+                      <span className="font-medium tracking-tight text-ink">
                         {label}
                       </span>{" "}
-                      <span className="font-light text-white/45">
+                      <span className="font-light text-dim">
                         — {detail}
                       </span>
                     </p>
@@ -376,33 +376,33 @@ export function ProtocolsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-xl sm:p-10"
+        className="mt-10 rounded-xl border border-line bg-white/[0.02] p-8 backdrop-blur-xl sm:p-10"
       >
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-          <span className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+          <span className="font-mono text-[0.66rem] tracking-[0.24em] text-dim uppercase">
             Et autour d&apos;un séjour en altitude
           </span>
-          <p className="text-[0.88rem] font-light text-white/50 text-pretty">
+          <p className="text-[0.88rem] font-light text-dim text-pretty">
             {
               "La tente ne sert pas qu'à préparer une saison : elle encadre aussi les départs en montagne."
             }
           </p>
         </div>
 
-        <div className="mt-8 grid gap-8 border-t border-white/[0.07] pt-8 sm:grid-cols-2 sm:gap-10">
+        <div className="mt-8 grid gap-8 border-t border-line pt-8 sm:grid-cols-2 sm:gap-10">
           {USE_CASES.map(({ icon: Icon, title, detail }) => (
             <div key={title} className="flex items-start gap-4">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-line bg-white/[0.03]">
                 <Icon
-                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  className="h-3.5 w-3.5 text-accent"
                   strokeWidth={1.6}
                 />
               </span>
               <div>
-                <div className="text-sm font-medium tracking-tight text-white/90">
+                <div className="text-sm font-medium tracking-tight text-ink">
                   {title}
                 </div>
-                <p className="mt-1.5 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
+                <p className="mt-1.5 text-[0.85rem] leading-relaxed font-light text-dim text-pretty">
                   {detail}
                 </p>
               </div>
@@ -417,9 +417,9 @@ export function ProtocolsSection() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.8 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="mt-10 flex items-center justify-center gap-3 text-center text-[0.8rem] font-light tracking-[0.06em] text-white/40"
+        className="mt-10 flex items-center justify-center gap-3 text-center text-[0.8rem] font-light tracking-[0.06em] text-dimmer"
       >
-        <Timer className="h-3.5 w-3.5 text-white/30" strokeWidth={1.5} />
+        <Timer className="h-3.5 w-3.5 text-dimmer" strokeWidth={1.5} />
         {
           "Les trois protocoles se combinent : nuits en tente, séances sous masque, expositions au repos — depuis la même station."
         }

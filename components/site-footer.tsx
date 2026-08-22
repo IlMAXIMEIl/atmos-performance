@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Mail, Music2 } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
+import { FOOTER_GROUPS, LEGAL_LINKS } from "@/lib/navigation";
 import { CONTACT_EMAIL, SOCIAL_URLS } from "@/lib/site";
 
 /**
@@ -50,26 +51,6 @@ function YoutubeMark(props: ComponentProps<"svg">) {
   );
 }
 
-/**
- * Le pied de page porte la navigation complète.
- *
- * Les ancres sont préfixées de `/` : en `#produit` seul, elles ne mènent nulle
- * part depuis une page secondaire — or c'est précisément d'ici que le visiteur
- * navigue une fois l'en-tête allégé.
- */
-const NAVIGATION = [
-  { label: "Produit", href: "/#produit" },
-  { label: "Protocoles", href: "/#protocoles" },
-  { label: "Offres", href: "/#offres" },
-  { label: "La gamme", href: "/#gamme" },
-  { label: "La science", href: "/#science" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "Outils", href: "/outils" },
-  { label: "Blog", href: "/blog" },
-  { label: "Glossaire", href: "/glossaire" },
-  { label: "À propos", href: "/a-propos" },
-];
-
 const SOCIALS = [
   {
     label: "Instagram",
@@ -96,119 +77,110 @@ const COPYRIGHT_YEAR = 2026;
 
 export function SiteFooter() {
   return (
-    <footer className="relative z-20 mt-8 border-t border-white/[0.07]">
+    <footer className="relative z-20 mt-8 border-t border-line">
       <div className="mx-auto w-full max-w-7xl px-6 py-16 sm:py-20 lg:px-10">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, ease: EASE }}
-          className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16"
+          className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-[1.5fr_repeat(3,1fr)] lg:gap-x-12"
         >
           {/* ── Marque ─────────────────────────────────────────────── */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <a
               href="#"
-              className="text-[1.05rem] font-medium tracking-[0.42em] text-white/95 transition-colors hover:text-white"
+              className="font-mono text-[0.95rem] tracking-[0.28em] text-ink transition-colors hover:text-accent"
             >
               ATMOS
             </a>
 
-            <p className="mt-5 max-w-sm text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
+            <p className="mt-5 max-w-sm text-[0.9rem] leading-relaxed font-light text-dim text-pretty">
               ATMOS ONE, générateur d&apos;altitude hypoxique. De 0 à 6 500
               mètres simulés, pour la performance et l&apos;acclimatation.
             </p>
 
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="group mt-7 inline-flex items-center gap-2.5 text-[0.9rem] font-light text-white/65 transition-colors hover:text-white"
+              className="group mt-7 inline-flex items-center gap-2.5 text-[0.9rem] font-light text-dim transition-colors hover:text-ink"
             >
               <Mail
-                className="h-4 w-4 text-cyan-300/70 transition-colors group-hover:text-cyan-300"
+                className="h-4 w-4 text-accent/70 transition-colors group-hover:text-accent"
                 strokeWidth={1.5}
               />
               {CONTACT_EMAIL}
             </a>
-          </div>
 
-          {/* ── Navigation ─────────────────────────────────────────── */}
-          <nav aria-label="Pied de page">
-            <h2 className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
-              Navigation
-            </h2>
-            <ul className="mt-6 flex flex-col gap-3.5">
-              {NAVIGATION.map((link) => (
-                <li key={link.label}>
-                  {link.href.startsWith("/") ? (
-                    <Link
-                      href={link.href}
-                      className="text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      className="text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* ── Réseaux ────────────────────────────────────────────── */}
-          <div>
-            <h2 className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
-              Nous suivre
-            </h2>
-            <ul className="mt-6 flex flex-col gap-3.5">
+            {/* Une rangée d'icônes plutôt qu'une colonne de pseudonymes : le
+                pseudonyme est le même sur les trois réseaux, l'écrire trois
+                fois occupait une colonne entière pour ne rien apprendre. */}
+            <ul className="mt-8 flex items-center gap-3">
               {SOCIALS.map(({ label, handle, href, icon: Icon }) => (
                 <li key={label}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="group inline-flex items-center gap-3 text-[0.9rem] font-light text-white/55 transition-colors hover:text-white"
+                    aria-label={`${label} — ${handle}`}
+                    className="group flex h-10 w-10 items-center justify-center rounded-lg border border-line bg-white/[0.03] transition-colors duration-300 hover:border-accent/40"
                   >
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] transition-colors duration-300 group-hover:border-cyan-300/30">
-                      <Icon
-                        className="h-3.5 w-3.5 text-white/60 transition-colors duration-300 group-hover:text-cyan-300"
-                        strokeWidth={1.5}
-                      />
-                    </span>
-                    <span>
-                      <span className="sr-only">{label} — </span>
-                      {handle}
-                    </span>
+                    <Icon
+                      className="h-4 w-4 text-dim transition-colors duration-300 group-hover:text-accent"
+                      strokeWidth={1.5}
+                    />
                   </a>
                 </li>
               ))}
             </ul>
           </div>
+
+          {/*
+            Les trois mêmes groupes que le volet en tête de page.
+
+            Une colonne unique de treize entrées se lisait comme une liste de
+            courses : rien n'y disait ce qui relevait du produit, de la
+            documentation ou de la maison. Les colonnes tiennent le même
+            nombre de liens sur un tiers de la hauteur.
+          */}
+          {FOOTER_GROUPS.map((group) => (
+            <nav key={group.title} aria-label={group.title}>
+              <h2 className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
+                {group.title}
+              </h2>
+
+              <ul className="mt-6 flex flex-col gap-3.5">
+                {group.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-[0.9rem] font-light text-dim transition-colors hover:text-ink"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
         </motion.div>
 
         {/* ── Barre légale ─────────────────────────────────────────── */}
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/[0.07] pt-8 sm:flex-row">
-          <p className="text-[0.78rem] font-light text-white/35">
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 sm:flex-row">
+          <p className="text-[0.78rem] font-light text-dimmer">
             © {COPYRIGHT_YEAR} ATMOS PERFORMANCE. Tous droits réservés.
           </p>
 
           <div className="flex items-center gap-5">
-            <Link
-              href="/cgv"
-              className="text-[0.78rem] font-light text-white/45 transition-colors hover:text-white"
-            >
-              CGV
-            </Link>
-            <Link
-              href="/mentions-legales"
-              className="text-[0.78rem] font-light text-white/45 transition-colors hover:text-white"
-            >
-              Mentions légales
-            </Link>
+            {LEGAL_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-[0.78rem] font-light text-dim transition-colors hover:text-ink"
+              >
+                {link.short ?? link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

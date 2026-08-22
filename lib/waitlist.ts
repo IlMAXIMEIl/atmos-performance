@@ -12,7 +12,7 @@
  */
 
 /** Origine de l'inscription : intention d'achat, ou demande d'information. */
-export type WaitlistSource = "batch-1" | "location";
+export type WaitlistSource = "drop-1" | "location";
 
 const API_ROOT = "https://api.brevo.com/v3";
 
@@ -38,7 +38,7 @@ type BrevoConfig = { apiKey: string; listId: number };
  * transmise en chaîne, et l'erreur qu'elle renvoie alors n'est pas parlante.
  * Autant échouer tout de suite, avec un message qui dit quoi corriger.
  *
- * La location et le Batch n°1 ne se relancent pas de la même façon : si
+ * La location et le Drop n°1 ne se relancent pas de la même façon : si
  * `BREVO_LOCATION_LIST_ID` est définie, les demandes d'information y vont.
  * Sinon tout arrive dans `BREVO_LIST_ID` — configuration minimale, quitte à
  * mélanger les deux intentions dans une seule liste.

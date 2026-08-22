@@ -11,7 +11,7 @@ export const LEASING_OPEN = false;
  * Ouverture de l'encaissement.
  *
  * Tant que la société n'est pas immatriculée, aucun paiement n'est encaissé :
- * les boutons d'action ouvrent la liste prioritaire du Batch n°1 au lieu du
+ * les boutons d'action ouvrent la liste prioritaire du Drop n°1 au lieu du
  * tunnel de commande, et le serveur refuse toute session de paiement. Même
  * parti pris que `LEASING_OPEN` : une constante, honorée des deux côtés, pour
  * que la page et l'API ne puissent pas diverger.
@@ -25,9 +25,9 @@ export const ORDERS_OPEN = false;
  * quantité annoncée est celle réellement fabriquée pour la France. Source
  * unique des mentions de rareté, page d'accueil comme modales.
  */
-export const BATCH_NAME = "Batch n°1";
-export const BATCH_UNITS = 25;
-export const BATCH_SCARCITY = `Seulement ${BATCH_UNITS} unités disponibles pour la France`;
+export const DROP_NAME = "Drop n°1";
+export const DROP_UNITS = 25;
+export const DROP_SCARCITY = `Seulement ${DROP_UNITS} unités disponibles pour la France`;
 
 /**
  * Prix d'achat d'une unité, en euros TTC.
@@ -40,17 +40,21 @@ export const BATCH_SCARCITY = `Seulement ${BATCH_UNITS} unités disponibles pour
 export const PURCHASE_PRICE_EUR = 1890;
 
 /**
- * Facilités de paiement annoncées sous le prix.
+ * Moyens de paiement annoncés sous le prix.
  *
- * Réservées à l'achat : la location se règle comptant, mois par mois, et
+ * Réservés à l'achat : la location se règle comptant, mois par mois, et
  * n'ouvre droit à aucun fractionnement. Toute reprise de cette constante doit
  * donc rester derrière une condition sur la formule d'achat.
  *
- * Les prestataires ne sont pas encore contractualisés : la mention le dit,
- * plutôt que de laisser croire à un moyen de paiement déjà disponible.
+ * **N'énumérer ici que ce que Stripe propose réellement.** Cette phrase paraît
+ * sur la carte de prix publique et dans la FAQ, dont dérive le balisage
+ * `FAQPage` : elle est indexée, et c'est un engagement tarifaire. Deux
+ * mentions ont été retirées pour cette raison — le 10x, que Klarna ne propose
+ * pas via Stripe, et Alma, qui n'y est pas distribué du tout et demanderait
+ * une intégration séparée.
  */
 export const INSTALLMENTS_NOTE =
-  "Paiement sécurisé en 3x, 4x ou 10x avec nos partenaires (à venir : PayPal, Klarna, Alma)";
+  "Carte bancaire, PayPal, ou paiement en 3x avec Klarna";
 
 /**
  * Contrepartie de la location : pas de fractionnement, mais une empreinte
@@ -61,7 +65,7 @@ export const LEASING_DEPOSIT_NOTE =
   "*Une empreinte bancaire sera demandée pour la caution matérielle.";
 
 /** Titre et accroche du formulaire de capture, partagés modale et section. */
-export const WAITLIST_TITLE = `Rejoindre la liste d'attente prioritaire du ${BATCH_NAME}`;
+export const WAITLIST_TITLE = `Rejoindre la liste d'attente prioritaire du ${DROP_NAME}`;
 export const WAITLIST_SUBTITLE = "Ouverture des commandes imminente";
 
 /**
@@ -104,8 +108,8 @@ export const PREORDER_STEPS = [
     detail: "Sans engagement : un email suffit, aucun paiement n'est demandé.",
   },
   {
-    title: `Accès exclusif à l'ouverture du ${BATCH_NAME}`,
-    detail: `Stocks très limités. ${BATCH_SCARCITY}.`,
+    title: `Accès exclusif à l'ouverture du ${DROP_NAME}`,
+    detail: `Stocks très limités. ${DROP_SCARCITY}.`,
   },
   {
     title: "Paiement sécurisé à l'ouverture",

@@ -100,10 +100,10 @@ const PRESETS = [
 const SLIDER_CLASS =
   "relative z-10 h-6 w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none " +
   "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent " +
-  "[&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-white/40 [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-white [&::-webkit-slider-thumb]:to-cyan-200 [&::-webkit-slider-thumb]:shadow-[0_0_18px_-2px_rgba(56,189,248,0.9)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110 " +
+  "[&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-line-strong [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-white [&::-webkit-slider-thumb]:to-accent [&::-webkit-slider-thumb]:shadow-[0_0_18px_-2px_var(--accent)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110 " +
   "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent " +
-  "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-white/40 [&::-moz-range-thumb]:bg-cyan-200 [&::-moz-range-thumb]:shadow-[0_0_18px_-2px_rgba(56,189,248,0.9)] " +
-  "focus-visible:[&::-webkit-slider-thumb]:ring-2 focus-visible:[&::-webkit-slider-thumb]:ring-cyan-200";
+  "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-white/40 [&::-moz-range-thumb]:bg-accent [&::-moz-range-thumb]:shadow-[0_0_18px_-2px_rgba(56,189,248,0.9)] " +
+  "focus-visible:[&::-webkit-slider-thumb]:ring-2 focus-visible:[&::-webkit-slider-thumb]:ring-accent";
 
 /** Arrondi au dixième : une largeur en pourcentage doit rester déterministe. */
 function percent(value: number, min: number, max: number) {
@@ -121,16 +121,16 @@ function Step({ index, title, question, children }: StepProps) {
   return (
     <motion.section variants={rise} aria-labelledby={`etape-${index}`}>
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-400/[0.07] text-[0.72rem] font-medium text-cyan-100/90">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-accent/[0.07] text-[0.72rem] font-medium text-accent">
           {index}
         </span>
         <h3
           id={`etape-${index}`}
-          className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase"
+          className="font-mono text-[0.66rem] tracking-[0.24em] text-dim uppercase"
         >
           {title}
         </h3>
-        <p className="text-[0.9rem] font-light text-white/60">{question}</p>
+        <p className="text-[0.9rem] font-light text-dim">{question}</p>
       </div>
 
       <div className="mt-5">{children}</div>
@@ -158,10 +158,10 @@ function Option({
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none ${
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${
         selected
-          ? "border-cyan-300/45 bg-cyan-400/[0.07] shadow-[0_0_32px_-12px_rgba(56,189,248,0.7)]"
-          : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]"
+          ? "border-accent/40 bg-accent/[0.07] shadow-[0_0_32px_-12px_rgba(56,189,248,0.7)]"
+          : "border-line bg-white/[0.02] hover:border-line-strong hover:bg-white/[0.04]"
       }`}
     >
       {selected && (
@@ -175,8 +175,8 @@ function Option({
         <Icon
           className={`h-4 w-4 shrink-0 transition-colors duration-300 ${
             selected
-              ? "text-cyan-300"
-              : "text-white/40 group-hover:text-white/70"
+              ? "text-accent"
+              : "text-dimmer group-hover:text-dim"
           }`}
           strokeWidth={1.6}
         />
@@ -184,25 +184,25 @@ function Option({
           aria-hidden
           className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
             selected
-              ? "border-cyan-300/60 bg-cyan-300/20"
-              : "border-white/15 group-hover:border-white/30"
+              ? "border-accent/40 bg-accent/20"
+              : "border-line-strong group-hover:border-line-strong"
           }`}
         >
           {selected && (
-            <Check className="h-2.5 w-2.5 text-cyan-200" strokeWidth={3} />
+            <Check className="h-2.5 w-2.5 text-accent" strokeWidth={3} />
           )}
         </span>
       </span>
 
       <span
         className={`relative mt-4 block text-[0.92rem] font-medium tracking-tight text-balance transition-colors duration-300 ${
-          selected ? "text-white" : "text-white/80"
+          selected ? "text-ink" : "text-ink"
         }`}
       >
         {label}
       </span>
 
-      <span className="relative mt-1.5 block text-[0.78rem] leading-relaxed font-light text-white/40 text-pretty">
+      <span className="relative mt-1.5 block text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
         {detail}
       </span>
     </button>
@@ -222,19 +222,19 @@ function Spec({
   hint?: string;
 }) {
   return (
-    <div className="flex items-start gap-4 border-t border-white/[0.07] py-5 first:border-t-0 first:pt-0">
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-        <Icon className="h-3.5 w-3.5 text-cyan-300" strokeWidth={1.6} />
+    <div className="flex items-start gap-4 border-t border-line py-5 first:border-t-0 first:pt-0">
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-line bg-white/[0.03]">
+        <Icon className="h-3.5 w-3.5 text-accent" strokeWidth={1.6} />
       </span>
       <div className="min-w-0">
-        <div className="text-[0.66rem] font-medium tracking-[0.2em] text-white/40 uppercase">
+        <div className="text-[0.66rem] font-medium tracking-[0.2em] text-dimmer uppercase">
           {label}
         </div>
-        <div className="mt-1.5 text-[0.98rem] font-medium tracking-tight text-white/90 text-pretty">
+        <div className="mt-1.5 text-[0.98rem] font-medium tracking-tight text-ink text-pretty">
           {value}
         </div>
         {hint && (
-          <div className="mt-1 text-[0.8rem] leading-relaxed font-light text-white/40 text-pretty">
+          <div className="mt-1 text-[0.8rem] leading-relaxed font-light text-dimmer text-pretty">
             {hint}
           </div>
         )}
@@ -299,7 +299,7 @@ export function AltitudeSimulator() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-6 backdrop-blur-xl sm:p-9"
+        className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-6 backdrop-blur-xl sm:p-9"
       >
         <div
           aria-hidden
@@ -315,7 +315,7 @@ export function AltitudeSimulator() {
               {[profileLabel, goalLabel, levelLabel].map((chip) => (
                 <span
                   key={chip}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[0.7rem] font-light text-white/55"
+                  className="rounded-full border border-line bg-white/[0.03] px-3 py-1 text-[0.7rem] font-light text-dim"
                 >
                   {chip}
                 </span>
@@ -326,7 +326,7 @@ export function AltitudeSimulator() {
               <button
                 type="button"
                 onClick={reset}
-                className="group inline-flex items-center gap-2 text-[0.75rem] font-light text-white/40 transition-colors hover:text-white/80"
+                className="group inline-flex items-center gap-2 text-[0.75rem] font-light text-dimmer transition-colors hover:text-ink"
               >
                 <RotateCcw
                   className="h-3 w-3 transition-transform duration-500 group-hover:-rotate-180"
@@ -399,7 +399,7 @@ export function AltitudeSimulator() {
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.9, ease: EASE }}
         aria-live="polite"
-        className="relative overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-gradient-to-b from-cyan-400/[0.06] to-white/[0.015] backdrop-blur-xl"
+        className="relative overflow-hidden rounded-xl border border-accent/40 bg-gradient-to-b from-accent/[0.06] to-white/[0.015] backdrop-blur-xl"
       >
         <div
           aria-hidden
@@ -408,10 +408,10 @@ export function AltitudeSimulator() {
 
         <div className="relative p-6 sm:p-9 lg:p-11">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-[0.66rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
+            <span className="font-mono text-[0.66rem] tracking-[0.24em] text-accent uppercase">
               Votre protocole recommandé
             </span>
-            <span className="rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] px-3.5 py-1 text-[0.68rem] font-medium tracking-[0.08em] text-cyan-100/90">
+            <span className="rounded-full border border-accent/40 bg-accent/[0.07] px-3.5 py-1 text-[0.68rem] font-medium tracking-[0.08em] text-accent">
               {protocol.protocolTitle}
             </span>
           </div>
@@ -419,27 +419,27 @@ export function AltitudeSimulator() {
           <div className="mt-9 grid gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
             {/* Palier de croisière */}
             <div>
-              <div className="text-[0.66rem] font-medium tracking-[0.2em] text-white/40 uppercase">
+              <div className="text-[0.66rem] font-medium tracking-[0.2em] text-dimmer uppercase">
                 Altitude simulée optimale
               </div>
 
               <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2">
-                <span className="text-[3.4rem] leading-none font-medium tracking-[-0.04em] text-white tabular-nums sm:text-7xl">
+                <span className="text-[3.4rem] leading-none font-medium tracking-[-0.04em] text-ink tabular-nums sm:text-7xl">
                   {formatNumber(protocol.targetAltitudeMeters)}
                 </span>
-                <span className="text-2xl font-light text-white/50">m</span>
+                <span className="text-2xl font-light text-dim">m</span>
 
-                <span className="ml-auto rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-center">
-                  <span className="block text-[0.6rem] font-medium tracking-[0.16em] text-white/40 uppercase">
+                <span className="ml-auto rounded-xl border border-line bg-white/[0.03] px-4 py-2 text-center">
+                  <span className="font-mono block text-[0.6rem] tracking-[0.16em] text-dimmer uppercase">
                     FiO₂
                   </span>
-                  <span className="mt-0.5 block text-xl font-medium tracking-tight text-cyan-200 tabular-nums">
+                  <span className="mt-0.5 block text-xl font-medium tracking-tight text-accent tabular-nums">
                     {formatDecimal(protocol.fio2EquivalentPercent)} %
                   </span>
                 </span>
               </div>
 
-              <p className="mt-4 text-[0.85rem] font-light text-white/45">
+              <p className="mt-4 text-[0.85rem] font-light text-dim">
                 {landmarkFor(protocol.targetAltitudeMeters)}
               </p>
 
@@ -447,7 +447,7 @@ export function AltitudeSimulator() {
               <div className="mt-9" aria-hidden>
                 <div className="relative h-1.5 w-full rounded-full bg-white/[0.08]">
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-cyan-300 to-blue-500"
+                    className="absolute inset-y-0 left-0 rounded-full bg-accent"
                     style={{
                       width: `${percent(protocol.targetAltitudeMeters, 0, MAX_ALTITUDE)}%`,
                     }}
@@ -459,7 +459,7 @@ export function AltitudeSimulator() {
                     }}
                   />
                 </div>
-                <div className="mt-3 flex justify-between text-[0.65rem] font-light tracking-[0.1em] text-white/30 uppercase">
+                <div className="mt-3 flex justify-between text-[0.65rem] font-light tracking-[0.1em] text-dimmer uppercase">
                   <span>Niveau de la mer</span>
                   <span>
                     {formatNumber(MAX_ALTITUDE)} m · plafond ATMOS ONE
@@ -467,10 +467,10 @@ export function AltitudeSimulator() {
                 </div>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-                <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+              <div className="mt-8 rounded-2xl border border-line bg-white/[0.02] p-5">
+                <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                   <TrendingUp
-                    className="h-3.5 w-3.5 text-cyan-300/80"
+                    className="h-3.5 w-3.5 text-accent"
                     strokeWidth={1.6}
                   />
                   Montée en charge
@@ -480,11 +480,11 @@ export function AltitudeSimulator() {
                     <li key={step} className="flex items-start gap-3">
                       <span
                         aria-hidden
-                        className="mt-[0.1rem] flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] text-[0.6rem] font-medium text-cyan-100/80 tabular-nums"
+                        className="mt-[0.1rem] flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-accent/[0.07] text-[0.6rem] font-medium text-accent tabular-nums"
                       >
                         {index + 1}
                       </span>
-                      <span className="text-[0.85rem] leading-relaxed font-light text-white/55 text-pretty">
+                      <span className="text-[0.85rem] leading-relaxed font-light text-dim text-pretty">
                         {step}
                       </span>
                     </li>
@@ -494,7 +494,7 @@ export function AltitudeSimulator() {
             </div>
 
             {/* Structure de la séance */}
-            <div className="lg:border-l lg:border-white/[0.07] lg:pl-14">
+            <div className="lg:border-l lg:border-line lg:pl-14">
               <Spec
                 icon={Repeat}
                 label="Format de cycle"
@@ -545,15 +545,15 @@ export function AltitudeSimulator() {
             </div>
           </div>
 
-          <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
-            <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+          <div className="mt-10 rounded-2xl border border-line bg-white/[0.02] p-5 sm:p-6">
+            <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
               <Wind
-                className="h-3.5 w-3.5 text-cyan-300/80"
+                className="h-3.5 w-3.5 text-accent"
                 strokeWidth={1.6}
               />
               Pourquoi ce protocole
             </div>
-            <p className="mt-3 text-[0.88rem] leading-relaxed font-light text-white/55 text-pretty">
+            <p className="mt-3 text-[0.88rem] leading-relaxed font-light text-dim text-pretty">
               {protocol.physiologicalRationale}
             </p>
           </div>
@@ -580,7 +580,7 @@ export function AltitudeSimulator() {
                     aria-hidden
                     className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-amber-200/70"
                   />
-                  <span className="text-[0.86rem] leading-relaxed font-light text-white/60 text-pretty">
+                  <span className="text-[0.86rem] leading-relaxed font-light text-dim text-pretty">
                     {rule}
                   </span>
                 </li>
@@ -588,7 +588,7 @@ export function AltitudeSimulator() {
             </ul>
           </div>
 
-          <p className="mt-6 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+          <p className="mt-6 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
             {protocol.disclaimerLegal}
           </p>
 
@@ -596,7 +596,7 @@ export function AltitudeSimulator() {
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <Link
               href={reservationHref}
-              className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:outline-none sm:w-auto"
+              className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-8 py-4 text-sm font-semibold tracking-[0.04em] text-void shadow-[0_10px_40px_-12px_var(--accent)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_46px_-12px_var(--accent)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none sm:w-auto"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
               <span className="relative">{WAITLIST_CTA}</span>
@@ -605,14 +605,14 @@ export function AltitudeSimulator() {
 
             <Link
               href="/#produit"
-              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-white/85 backdrop-blur-md transition-all duration-300 hover:border-white/30 hover:bg-white/[0.07] hover:text-white sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-ink backdrop-blur-md transition-all duration-300 hover:border-line-strong hover:bg-white/[0.07] hover:text-ink sm:w-auto"
             >
-              <Gauge className="h-4 w-4 text-cyan-300/80" strokeWidth={1.6} />
+              <Gauge className="h-4 w-4 text-accent" strokeWidth={1.6} />
               Découvrir le générateur
             </Link>
           </div>
 
-          <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+          <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
             {`Votre configuration — ${profileLabel.toLowerCase()}, ${goalLabel.toLowerCase()}, ${levelLabel.toLowerCase()} — est transmise avec votre précommande. Paiement en 3x ou 4x disponible.`}
           </p>
         </div>
@@ -626,9 +626,9 @@ export function AltitudeSimulator() {
         transition={{ duration: 0.9, ease: EASE }}
         aria-labelledby="convertisseur-titre"
         id="convertisseur"
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 backdrop-blur-xl scroll-mt-24 sm:p-9 lg:p-11"
+        className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 backdrop-blur-xl scroll-mt-24 sm:p-9 lg:p-11"
       >
-        <span className="text-[0.66rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
+        <span className="font-mono text-[0.66rem] tracking-[0.24em] text-accent uppercase">
           Convertisseur
         </span>
 
@@ -636,15 +636,15 @@ export function AltitudeSimulator() {
           id="convertisseur-titre"
           className="mt-4 text-2xl font-medium tracking-[-0.02em] text-balance sm:text-3xl"
         >
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             FiO₂ et altitude simulée,
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-accent">
             dans les deux sens.
           </span>
         </h2>
 
-        <p className="mt-4 max-w-2xl text-[0.92rem] leading-relaxed font-light text-white/50 text-pretty">
+        <p className="mt-4 max-w-2xl text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
           {
             "Un générateur d'hypoxie ne déplace pas la pression : il abaisse la fraction d'oxygène de l'air inspiré. Les deux curseurs ci-dessous sont les deux lectures d'une même réalité — déplacez l'un, l'autre suit."
           }
@@ -657,12 +657,12 @@ export function AltitudeSimulator() {
               htmlFor="curseur-altitude"
               className="flex flex-wrap items-baseline justify-between gap-3"
             >
-              <span className="text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+              <span className="text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                 Altitude simulée
               </span>
-              <span className="text-3xl font-medium tracking-[-0.03em] text-white tabular-nums">
+              <span className="text-3xl font-medium tracking-[-0.03em] text-ink tabular-nums">
                 {formatNumber(altitude)}
-                <span className="ml-1.5 text-base font-light text-white/45">
+                <span className="ml-1.5 text-base font-light text-dim">
                   m
                 </span>
               </span>
@@ -674,7 +674,7 @@ export function AltitudeSimulator() {
                 className="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-white/[0.08]"
               >
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-blue-500"
+                  className="h-full rounded-full bg-accent"
                   style={{ width: `${percent(altitude, 0, MAX_ALTITUDE)}%` }}
                 />
               </div>
@@ -690,7 +690,7 @@ export function AltitudeSimulator() {
               />
             </div>
 
-            <div className="mt-2 flex justify-between text-[0.68rem] font-light text-white/30 tabular-nums">
+            <div className="mt-2 flex justify-between text-[0.68rem] font-light text-dimmer tabular-nums">
               <span>0 m</span>
               <span>{formatNumber(MAX_ALTITUDE)} m</span>
             </div>
@@ -702,12 +702,12 @@ export function AltitudeSimulator() {
               htmlFor="curseur-fio2"
               className="flex flex-wrap items-baseline justify-between gap-3"
             >
-              <span className="text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+              <span className="text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                 Fraction d&apos;oxygène (FiO₂)
               </span>
-              <span className="text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
+              <span className="text-3xl font-medium tracking-[-0.03em] text-accent tabular-nums">
                 {formatDecimal(fio2)}
-                <span className="ml-1.5 text-base font-light text-white/45">
+                <span className="ml-1.5 text-base font-light text-dim">
                   %
                 </span>
               </span>
@@ -719,7 +719,7 @@ export function AltitudeSimulator() {
                 className="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-white/[0.08]"
               >
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300"
+                  className="h-full rounded-full bg-accent/70"
                   style={{
                     width: `${percent(fio2, MIN_FIO2, SEA_LEVEL_FIO2)}%`,
                   }}
@@ -737,16 +737,16 @@ export function AltitudeSimulator() {
               />
             </div>
 
-            <div className="mt-2 flex justify-between text-[0.68rem] font-light text-white/30 tabular-nums">
+            <div className="mt-2 flex justify-between text-[0.68rem] font-light text-dimmer tabular-nums">
               <span>{formatDecimal(MIN_FIO2)} % · plafond</span>
               <span>{formatDecimal(SEA_LEVEL_FIO2)} % · air ambiant</span>
             </div>
           </div>
         </div>
 
-        <p className="mt-9 flex items-center gap-2.5 text-[0.85rem] font-light text-white/45">
+        <p className="mt-9 flex items-center gap-2.5 text-[0.85rem] font-light text-dim">
           <Mountain
-            className="h-3.5 w-3.5 shrink-0 text-cyan-300/70"
+            className="h-3.5 w-3.5 shrink-0 text-accent"
             strokeWidth={1.6}
           />
           {landmarkFor(altitude)}
@@ -758,14 +758,14 @@ export function AltitudeSimulator() {
               key={preset.label}
               type="button"
               onClick={() => pickAltitude(preset.metres)}
-              className={`rounded-full border px-4 py-2 text-[0.76rem] font-light transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none ${
+              className={`rounded-full border px-4 py-2 text-[0.76rem] font-light transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${
                 altitude === preset.metres
-                  ? "border-cyan-300/45 bg-cyan-400/[0.08] text-cyan-100"
-                  : "border-white/10 bg-white/[0.02] text-white/55 hover:border-white/25 hover:text-white/85"
+                  ? "border-accent/40 bg-accent/[0.08] text-accent"
+                  : "border-line bg-white/[0.02] text-dim hover:border-line-strong hover:text-ink"
               }`}
             >
               {preset.label}
-              <span className="ml-2 text-white/30 tabular-nums">
+              <span className="ml-2 text-dimmer tabular-nums">
                 {formatNumber(preset.metres)} m
               </span>
             </button>
@@ -780,7 +780,7 @@ export function AltitudeSimulator() {
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.9, ease: EASE }}
         aria-labelledby="comparatif-titre"
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 backdrop-blur-xl sm:p-9 lg:p-11"
+        className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-6 backdrop-blur-xl sm:p-9 lg:p-11"
       >
         <div
           aria-hidden
@@ -788,7 +788,7 @@ export function AltitudeSimulator() {
         />
 
         <div className="relative">
-          <span className="text-[0.66rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
+          <span className="font-mono text-[0.66rem] tracking-[0.24em] text-accent uppercase">
             Le comparatif
           </span>
 
@@ -796,60 +796,60 @@ export function AltitudeSimulator() {
             id="comparatif-titre"
             className="mt-4 text-2xl font-medium tracking-[-0.02em] text-balance sm:text-3xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Ce que coûte
             </span>{" "}
-            <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               la même dose d&apos;altitude.
             </span>
           </h2>
 
           <div className="mt-10 grid gap-4 lg:grid-cols-2">
             {/* Le stage */}
-            <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] p-6 sm:p-7">
+            <div className="rounded-[1.5rem] border border-line bg-white/[0.02] p-6 sm:p-7">
               <div className="flex items-center gap-2.5">
                 <Plane
-                  className="h-3.5 w-3.5 text-white/40"
+                  className="h-3.5 w-3.5 text-dimmer"
                   strokeWidth={1.6}
                 />
-                <span className="text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+                <span className="text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                   Stage en altitude
                 </span>
               </div>
 
-              <div className="mt-6 text-4xl font-medium tracking-[-0.03em] text-white/85 tabular-nums">
+              <div className="mt-6 text-4xl font-medium tracking-[-0.03em] text-ink tabular-nums">
                 {formatNumber(savings.campTotal)} €
               </div>
-              <div className="mt-2 text-[0.78rem] font-light text-white/35">
+              <div className="mt-2 text-[0.78rem] font-light text-dimmer">
                 par cycle, et autant au suivant
               </div>
 
-              <dl className="mt-7 flex flex-col gap-3 border-t border-white/[0.07] pt-6 text-[0.85rem] font-light">
+              <dl className="mt-7 flex flex-col gap-3 border-t border-line pt-6 text-[0.85rem] font-light">
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-white/45">
+                  <dt className="text-dim">
                     {`Hébergement en centre d'altitude, ${CAMP.nights} nuits`}
                   </dt>
-                  <dd className="shrink-0 text-white/70 tabular-nums">
+                  <dd className="shrink-0 text-dim tabular-nums">
                     {formatNumber(savings.campLodging)} €
                   </dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-white/45">Transport aller-retour</dt>
-                  <dd className="shrink-0 text-white/70 tabular-nums">
+                  <dt className="text-dim">Transport aller-retour</dt>
+                  <dd className="shrink-0 text-dim tabular-nums">
                     {formatNumber(CAMP.travel)} €
                   </dd>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">
-                  <dt className="text-white/45">
+                  <dt className="text-dim">
                     Trois semaines hors de chez vous
                   </dt>
-                  <dd className="shrink-0 text-white/40">non chiffré</dd>
+                  <dd className="shrink-0 text-dimmer">non chiffré</dd>
                 </div>
               </dl>
             </div>
 
             {/* ATMOS ONE */}
-            <div className="relative overflow-hidden rounded-[1.5rem] border border-cyan-300/25 bg-cyan-400/[0.05] p-6 sm:p-7">
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-accent/40 bg-accent/[0.05] p-6 sm:p-7">
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
@@ -858,39 +858,39 @@ export function AltitudeSimulator() {
               <div className="relative">
                 <div className="flex items-center gap-2.5">
                   <Wind
-                    className="h-3.5 w-3.5 text-cyan-300"
+                    className="h-3.5 w-3.5 text-accent"
                     strokeWidth={1.6}
                   />
-                  <span className="text-[0.66rem] font-medium tracking-[0.2em] text-cyan-100/80 uppercase">
+                  <span className="text-[0.66rem] font-medium tracking-[0.2em] text-accent uppercase">
                     ATMOS ONE
                   </span>
                 </div>
 
-                <div className="mt-6 text-4xl font-medium tracking-[-0.03em] text-white tabular-nums">
+                <div className="mt-6 text-4xl font-medium tracking-[-0.03em] text-ink tabular-nums">
                   {formatNumber(ATMOS_PRICE)} €
                 </div>
-                <div className="mt-2 text-[0.78rem] font-light text-cyan-100/50">
+                <div className="mt-2 text-[0.78rem] font-light text-accent">
                   une fois, puis l&apos;électricité
                 </div>
 
-                <dl className="mt-7 flex flex-col gap-3 border-t border-white/[0.07] pt-6 text-[0.85rem] font-light">
+                <dl className="mt-7 flex flex-col gap-3 border-t border-line pt-6 text-[0.85rem] font-light">
                   <div className="flex items-baseline justify-between gap-4">
-                    <dt className="text-white/45">Générateur, achat ferme</dt>
-                    <dd className="shrink-0 text-white/70 tabular-nums">
+                    <dt className="text-dim">Générateur, achat ferme</dt>
+                    <dd className="shrink-0 text-dim tabular-nums">
                       {formatNumber(ATMOS_PRICE)} €
                     </dd>
                   </div>
                   <div className="flex items-baseline justify-between gap-4">
-                    <dt className="text-white/45">
+                    <dt className="text-dim">
                       {`Électricité du cycle, ${formatNumber(savings.hours)} h de fonctionnement`}
                     </dt>
-                    <dd className="shrink-0 text-white/70 tabular-nums">
+                    <dd className="shrink-0 text-dim tabular-nums">
                       {formatDecimal(savings.energyCost)} €
                     </dd>
                   </div>
                   <div className="flex items-baseline justify-between gap-4">
-                    <dt className="text-white/45">Nuits passées chez vous</dt>
-                    <dd className="shrink-0 text-cyan-200/70">toutes</dd>
+                    <dt className="text-dim">Nuits passées chez vous</dt>
+                    <dd className="shrink-0 text-accent">toutes</dd>
                   </div>
                 </dl>
               </div>
@@ -899,43 +899,43 @@ export function AltitudeSimulator() {
 
           {/* L'écart */}
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] px-6 py-7">
-              <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+            <div className="rounded-[1.5rem] border border-line bg-white/[0.02] px-6 py-7">
+              <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                 <Zap
-                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  className="h-3.5 w-3.5 text-accent"
                   strokeWidth={1.6}
                 />
                 Dès le premier cycle
               </div>
-              <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
+              <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-accent tabular-nums">
                 {formatNumber(savings.firstCycle)} € économisés
               </div>
-              <p className="mt-2 text-[0.8rem] font-light text-white/40 text-pretty">
+              <p className="mt-2 text-[0.8rem] font-light text-dimmer text-pretty">
                 Appareil compris, sur les{" "}
                 {protocol.weeklyDose.totalWeeksRecommended} semaines de votre
                 protocole.
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] border border-white/[0.09] bg-white/[0.02] px-6 py-7">
-              <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+            <div className="rounded-[1.5rem] border border-line bg-white/[0.02] px-6 py-7">
+              <div className="flex items-center gap-2.5 text-[0.66rem] font-medium tracking-[0.2em] text-dim uppercase">
                 <Repeat
-                  className="h-3.5 w-3.5 text-cyan-300/80"
+                  className="h-3.5 w-3.5 text-accent"
                   strokeWidth={1.6}
                 />
                 À chaque cycle suivant
               </div>
-              <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-cyan-200 tabular-nums">
+              <div className="mt-4 text-3xl font-medium tracking-[-0.03em] text-accent tabular-nums">
                 {formatNumber(savings.nextCycle)} € économisés
               </div>
-              <p className="mt-2 text-[0.8rem] font-light text-white/40 text-pretty">
+              <p className="mt-2 text-[0.8rem] font-light text-dimmer text-pretty">
                 L&apos;appareil est payé : il ne reste que la consommation
                 électrique.
               </p>
             </div>
           </div>
 
-          <p className="mt-7 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+          <p className="mt-7 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
             {`Référence de comparaison : un stage classique de ${CAMP.nights} nuits en centre d'altitude à ${CAMP.nightlyRate} € la nuit, transport compris. Électricité estimée à 0,25 € le kWh pour un appareil de 550 W. Ces montants sont des ordres de grandeur de marché, pas un devis.`}
           </p>
         </div>

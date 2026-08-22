@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
-import { PageHeader } from "@/components/page-header";
+import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
   GLOSSARY_PATH,
@@ -69,7 +69,7 @@ export default function GlossaireIndexPage() {
   ];
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <JsonLd data={jsonLd} />
 
       <div
@@ -77,12 +77,12 @@ export default function GlossaireIndexPage() {
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <PageHeader maxWidth="max-w-4xl" />
+      <SiteHeader maxWidth="max-w-4xl" />
 
       <main className="relative z-10 mx-auto w-full max-w-4xl px-6 pt-10 pb-20 sm:pt-14 sm:pb-28 lg:px-10">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -91,20 +91,20 @@ export default function GlossaireIndexPage() {
           Retour à l&apos;accueil
         </Link>
 
-        <span className="mt-10 block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
+        <span className="font-mono mt-10 block text-[0.68rem] tracking-[0.28em] text-accent uppercase">
           Le glossaire
         </span>
 
         <h1 className="mt-5 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl">
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Le vocabulaire de
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-accent">
             l&apos;hypoxie, au clair.
           </span>
         </h1>
 
-        <p className="mt-6 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty">
+        <p className="mt-6 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty">
           {
             "Les termes qui reviennent dans la littérature sur l'altitude, définis sans jargon et sans raccourci. Une fiche par notion, à lire en deux minutes."
           }
@@ -115,31 +115,31 @@ export default function GlossaireIndexPage() {
             <article key={entry.slug}>
               <Link
                 href={`${GLOSSARY_PATH}/${entry.slug}`}
-                className="group block rounded-[1.75rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-7 backdrop-blur-xl transition-colors duration-500 hover:border-cyan-300/25 sm:p-9"
+                className="group block rounded-xl border border-line bg-gradient-to-b from-white/[0.05] to-white/[0.01] p-7 backdrop-blur-xl transition-colors duration-500 hover:border-accent/40 sm:p-9"
               >
                 <div className="flex flex-wrap items-center gap-3">
                   {entry.category && (
-                    <span className="rounded-full border border-white/10 px-3 py-1 text-[0.62rem] font-medium tracking-[0.16em] text-white/45 uppercase">
+                    <span className="font-mono rounded-full border border-line px-3 py-1 text-[0.62rem] tracking-[0.16em] text-dim uppercase">
                       {entry.category}
                     </span>
                   )}
                 </div>
 
-                <h2 className="mt-5 text-xl font-medium tracking-[-0.02em] text-balance text-white transition-colors group-hover:text-cyan-100 sm:text-2xl">
+                <h2 className="mt-5 text-xl font-medium tracking-[-0.02em] text-balance text-ink transition-colors group-hover:text-accent sm:text-2xl">
                   {entry.term}
                 </h2>
 
                 {entry.aliases.length > 0 && (
-                  <p className="mt-2 text-[0.8rem] font-light text-white/35 text-pretty">
+                  <p className="mt-2 text-[0.8rem] font-light text-dimmer text-pretty">
                     {entry.aliases.join(" · ")}
                   </p>
                 )}
 
-                <p className="mt-3.5 text-[0.92rem] leading-relaxed font-light text-white/50 text-pretty">
+                <p className="mt-3.5 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                   {entry.definition}
                 </p>
 
-                <span className="mt-6 inline-flex items-center gap-2 text-[0.8rem] font-medium text-cyan-200/80">
+                <span className="mt-6 inline-flex items-center gap-2 text-[0.8rem] font-medium text-accent">
                   Lire la fiche
                   <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>

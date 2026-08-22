@@ -9,20 +9,20 @@ import Link from "next/link";
  * choses utiles — ce qu'on envoie, à quelle fréquence, comment en sortir — et
  * renvoie aux mentions légales pour le reste.
  *
- * Composant partagé plutôt que dupliqué : la modale du Batch n°1 et le
+ * Composant partagé plutôt que dupliqué : la modale du Drop n°1 et le
  * formulaire de la location doivent afficher exactement la même chose, et deux
  * copies divergeraient au premier ajustement de formulation.
  */
 export function WaitlistConsent({ className = "" }: { className?: string }) {
   return (
     <p
-      className={`text-[0.72rem] leading-relaxed font-light text-white/30 ${className}`}
+      className={`text-[0.72rem] leading-relaxed font-light text-dimmer ${className}`}
     >
       En rejoignant la liste, vous acceptez de recevoir nos emails. Zéro spam,
       désinscription en un clic.{" "}
       <Link
         href="/mentions-legales"
-        className="underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/55 hover:decoration-white/40"
+        className="underline decoration-white/20 underline-offset-2 transition-colors hover:text-dim hover:decoration-white/40"
       >
         Vos données
       </Link>

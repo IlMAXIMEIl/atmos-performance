@@ -22,13 +22,14 @@ Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 | Variable | Rôle | Obligatoire |
 | --- | --- | --- |
 | `BREVO_API_KEY` | Création des contacts de la liste d'attente | oui |
-| `BREVO_LIST_ID` | Liste Brevo du Batch n°1 (identifiant numérique) | oui |
+| `BREVO_LIST_ID` | Liste Brevo du Drop n°1 (identifiant numérique) | oui |
 | `BREVO_LOCATION_LIST_ID` | Liste séparée pour les demandes de location | non |
 | `STRIPE_SECRET_KEY` | Tunnel de paiement | à l'ouverture des ventes |
 | `STRIPE_WEBHOOK_SECRET` | Vérification de signature du webhook | à l'ouverture des ventes |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Payment Element du tunnel d'achat intégré | à l'ouverture des ventes |
 | `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 
-Seule `NEXT_PUBLIC_SITE_URL` est exposée au navigateur. Les autres sont des
+Seules les variables préfixées `NEXT_PUBLIC_` sont exposées au navigateur — l'URL du site et la clé **publiable** de Stripe, qui est faite pour ça. Les autres sont des
 secrets serveur : jamais de préfixe `NEXT_PUBLIC_`, jamais dans le dépôt.
 
 ## Déploiement (Hostinger « Web Apps », runtime Node)

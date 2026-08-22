@@ -12,12 +12,90 @@ import { recordOrder, type Order } from "@/lib/orders";
  * ré-sérialiser le corps invaliderait la signature.
  */
 
+/**
+ * Les deux tunnels n'émettent pas le même événement.
+ *
+ * - `checkout.session.completed` : tunnel hébergé (`/api/checkout`), le
+ *   visiteur part chez Stripe et revient.
+ * - `payment_intent.succeeded` : tunnel intégré (`/api/payment-intent`), le
+ *   Payment Element confirme depuis la page.
+ *
+ * Oublier le second reviendrait à encaisser sans jamais enregistrer la
+ * commande — la panne la plus coûteuse et la plus silencieuse qui soit.
+ */
 const HANDLED_EVENTS = new Set<Stripe.Event.Type>([
   "checkout.session.completed",
+  "payment_intent.succeeded",
 ]);
 
-function readMeta(session: Stripe.Checkout.Session, key: string) {
-  return session.metadata?.[key] ?? "";
+function readMeta(
+  source: Stripe.Checkout.Session | Stripe.PaymentIntent,
+  key: string,
+) {
+  return source.metadata?.[key] ?? "";
+}
+
+/**
+ * Ramène les deux formes d'événement à la même commande.
+ *
+ * Une session porte `amount_total` et `customer_email` ; une intention porte
+ * `amount` et `receipt_email`, et son état vaut « paid » par construction —
+ * `payment_intent.succeeded` ne se déclenche pas autrement.
+ */
+function toOrder(
+  event: Stripe.Event,
+): Order & { plan: string } {
+  const base = {
+    eventId: event.id,
+    receivedAt: new Date().toISOString(),
+  };
+
+  if (event.type === "payment_intent.succeeded") {
+    const intent = event.data.object as Stripe.PaymentIntent;
+    return {
+      ...base,
+      sessionId: intent.id,
+      // Le tunnel intégré ne sert que l'achat ; la location garde le tunnel
+      // hébergé, son empreinte bancaire exigeant une session Checkout.
+      plan: readMeta(intent, "plan") || "purchase",
+      paymentStatus: "paid",
+      amountTotal: intent.amount_received || intent.amount,
+      currency: intent.currency,
+      email: intent.receipt_email ?? readMeta(intent, "email"),
+      firstName: readMeta(intent, "firstName"),
+      lastName: readMeta(intent, "lastName"),
+      phone: readMeta(intent, "phone"),
+      address: readMeta(intent, "address"),
+      options: readMeta(intent, "options"),
+      quantity: readMeta(intent, "quantity"),
+    };
+  }
+
+  const session = event.data.object as Stripe.Checkout.Session;
+  const order: Order & { plan: string } = {
+    ...base,
+    sessionId: session.id,
+    plan: readMeta(session, "plan"),
+    paymentStatus: session.payment_status,
+    amountTotal: session.amount_total ?? 0,
+    currency: session.currency ?? "eur",
+    email: session.customer_email ?? session.customer_details?.email ?? "",
+    firstName: readMeta(session, "firstName"),
+    lastName: readMeta(session, "lastName"),
+    phone: readMeta(session, "phone"),
+    address: readMeta(session, "address"),
+    options: readMeta(session, "options"),
+  };
+
+  if (order.plan === "leasing") {
+    order.startDate = readMeta(session, "startDate");
+    order.endDate = readMeta(session, "endDate");
+  } else {
+    order.quantity = readMeta(session, "quantity");
+    order.balanceDue = readMeta(session, "balanceDue");
+  }
+
+  return order;
 }
 
 export async function POST(request: Request) {
@@ -60,31 +138,7 @@ export async function POST(request: Request) {
     return Response.json({ received: true, handled: false });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
-
-  const order: Order = {
-    eventId: event.id,
-    sessionId: session.id,
-    receivedAt: new Date().toISOString(),
-    plan: readMeta(session, "plan"),
-    paymentStatus: session.payment_status,
-    amountTotal: session.amount_total ?? 0,
-    currency: session.currency ?? "eur",
-    email: session.customer_email ?? session.customer_details?.email ?? "",
-    firstName: readMeta(session, "firstName"),
-    lastName: readMeta(session, "lastName"),
-    phone: readMeta(session, "phone"),
-    address: readMeta(session, "address"),
-    options: readMeta(session, "options"),
-  };
-
-  if (order.plan === "leasing") {
-    order.startDate = readMeta(session, "startDate");
-    order.endDate = readMeta(session, "endDate");
-  } else {
-    order.quantity = readMeta(session, "quantity");
-    order.balanceDue = readMeta(session, "balanceDue");
-  }
+  const order = toOrder(event);
 
   // Phase de teasing : les commandes sont fermées, `/api/checkout` refuse de
   // créer la moindre session, et aucun paiement légitime ne peut donc aboutir.
@@ -93,15 +147,21 @@ export async function POST(request: Request) {
   // très bien servir en lecture seule. On accuse réception et on trace : un
   // 4xx/5xx ferait réessayer Stripe en boucle pour un événement sans objet.
   if (!ORDERS_OPEN) {
+    // Seuls les identifiants et le montant sont tracés. La commande complète
+    // porte nom, téléphone et adresse : les déverser dans les journaux à
+    // chaque événement en ferait une base de données personnelles parallèle,
+    // conservée sans durée ni contrôle d'accès.
     console.warn(
-      `Événement Stripe reçu alors que les commandes sont fermées — non enregistré : ${event.type} ${event.id}`,
-      JSON.stringify(order),
+      `Événement Stripe reçu alors que les commandes sont fermées — non enregistré : ${event.type} ${event.id} (${order.sessionId}, ${order.amountTotal / 100} ${order.currency})`,
     );
     return Response.json({ received: true, handled: false });
   }
 
   try {
     const result = await recordOrder(order);
+    // L'adresse email reste, elle : c'est la clé qui permet de retrouver une
+    // commande dans le tableau de bord Stripe en cas de réclamation. Le reste
+    // des coordonnées n'a rien à faire ici.
     console.log(
       `Commande ${result} — ${order.plan} — ${(order.amountTotal / 100).toFixed(2)} ${order.currency.toUpperCase()} — ${order.email}`,
     );

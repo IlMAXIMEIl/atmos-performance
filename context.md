@@ -3,31 +3,58 @@
 ## Positionnement & Brand
 - Marque : ATMOS PERFORMANCE (atmos-performance.com)
 - Produit phare : **ATMOS ONE**, générateur d'altitude hypoxique. Il abaisse la fraction d'oxygène de 20,9 % à 9 %, soit 0 à 6 500 m simulés (21 330 ft). Usage : performance sportive, VO2max, acclimatation.
-- Specs constructeur (valeurs réelles, reprises dans la fiche technique de la section Produit) : débit 100 L/min, sonore ≤ 50 dB, consommation ≤ 550 W, poids 27 kg, dimensions 365 × 375 × 600 mm, alarmes coupure d'alimentation et pression haute / basse, options oxymètre de pouls et système de monitoring.
+- Specs constructeur (valeurs réelles) : débit 100 L/min, sonore ≤ 50 dB, consommation ≤ 550 W, poids 27 kg, dimensions 365 × 375 × 600 mm, alarmes coupure d'alimentation et pression haute / basse, options oxymètre de pouls et système de monitoring. **Source unique : `DATASHEET` dans `lib/product.ts`**, lue par la scène produit et par le volet de fiche technique.
 - **L'appareil ne fait que de l'hypoxie.** Ne jamais le présenter comme un générateur d'hyperoxie ni comme un caisson hyperbare.
-- Produit à venir, distinct : **ATMOS Chamber**, caisson de régénération hyperbare. Mentionné uniquement en teaser en bas de la section Offres.
+- Produit à venir, distinct : **ATMOS Chamber**, caisson de régénération hyperbare. Mentionné uniquement en teaser dans la section « La gamme ».
 - Style : Premium, scientifique, minimaliste (type Apple / Rolex / Canyon).
 - Offre : Pré-ventes avec option d'Achat direct et Leasing (Location).
+- **La série de lancement s'appelle « Drop n°1 » (25 unités).** Le terme « Batch » est abandonné partout, y compris dans les articles de blog. Source unique : `DROP_NAME`, `DROP_UNITS`, `DROP_SCARCITY` dans `lib/offering.ts`.
+
+## Direction artistique
+Refonte « nuit d'altitude », dérivée d'une maquette et appliquée à l'ensemble du site.
+
+- **Palette en jetons**, déclarés dans `app/globals.css` et exposés au thème Tailwind : `void` `deep` `elev` `elev-2` (fonds), `ink` `dim` `dimmer` (encres), `accent` `#3B9EFF` (seul accent), `warm` (contrepoint), `line` `line-strong` (filets). Écrire `text-dim`, `border-line`, `bg-accent/[0.06]` — plus de `text-white/55` ni de `cyan-*`.
+- **Deux polices** : Geist (texte) et Geist Mono (surtitres, relevés chiffrés, étiquettes en capitales espacées, fiches techniques). Toute étiquette `uppercase` avec du `tracking` passe en `font-mono`.
+- **Titres bicolores** : première moitié en `text-ink`, seconde en `text-accent`. Plus de dégradés `bg-clip-text`.
+- **Composants partagés** : `components/ui/eyebrow.tsx` (surtitre à filet, accepte `as="h2" | "h3"` quand le surtitre *est* le titre de section) et `components/ui/button-link.tsx` (plein accent, ou fantôme cerné).
+- **Révélations au défilement** : poser `data-reveal` (montée + fondu) ou `data-reveal-line` (volet masqué, pour les titres) sur un élément suffit — `components/scroll-reveal.tsx` balaie le document et les anime. L'état caché est posé en CSS, pas en JavaScript, pour qu'aucune image ne montre le contenu en clair avant l'hydratation ; `app/layout.tsx` le lève dans un `<noscript>`. Une section qui orchestre elle-même ses entrées se marque `data-reveal-scope` et le moteur global la laisse tranquille.
 
 ## Arborescence du Site
-Toutes les sections sont construites. Une section = un composant dans `components/`, assemblé dans `app/page.tsx`.
+Une section = un composant dans `components/`, assemblé dans `app/page.tsx`, dans cet ordre.
 
-1. Header : Logo ATMOS, Liens (Produit, Protocoles, Offres), Bouton Pill 'Précommander'. — `app/page.tsx`
-2. Hero Section. — `app/page.tsx`
-3. Section Produit : photo du générateur (`public/generator.png`) et pilules interactives. — `product-section.tsx`
-4. Section Protocoles d'Altitude : Mode Sommeil / tente d'altitude (Live High, 2 000–3 500 m) et Mode Entraînement sous masque (Train High / IHT, 4 000–6 000 m), situés sur un axe d'altitude 0–6 500 m. Ces deux plages sont des recommandations de protocole, pas des limites de l'appareil. — `protocols-section.tsx`
-5. Section Science : Chiffres clés et réassurance (études, fer, adaptation). — `science-section.tsx`
-6. Section Offres : Toggle interactif Achat vs Location, puis teaser ATMOS Chamber. — `offers-section.tsx`. Les deux CTA ouvrent la modale — `reservation-modal.tsx` — qui redirige vers Stripe Checkout via `app/api/checkout/route.ts`, puis retombe sur `/reservation/confirmee`.
-   - **Achat ferme** : 1 890 € l'unité. Étapes : configuration (quantité 1 à 5 + options), coordonnées, paiement. Acompte de **300 € par unité** encaissé en ligne ; solde (1 590 € par unité) réglé avant expédition.
-   - **Au lancement, seul l'achat ferme est ouvert.** La carte Location reste affichée en « Bientôt disponible » avec un formulaire de liste d'attente (`components/waitlist-form.tsx` → `/api/waitlist`). Bascule unique : `LEASING_OPEN` dans `lib/offering.ts`, respectée par la page **et** par la route de paiement.
+1. Bandeau d'annonce, au-dessus de tout, sur **toutes** les pages. — `announcement-banner.tsx`, monté dans `app/layout.tsx`
+2. Header : identique sur toutes les pages, page d'accueil comprise. Trois liens en clair (Produit, Protocoles, Simulateur), un bouton d'appel, et un **volet de navigation** qui range le reste du site en trois groupes. Le plan vit dans `lib/navigation.ts` et **le pied de page le lit aussi** : une page ajoutée y apparaît des deux côtés. — `site-header.tsx`
+3. Hero : ciel peint au `<canvas>`, titre en volets masqués, parallaxe au départ du défilement. — `hero/hero-section.tsx`, `hero/sky-canvas.tsx`
+4. Scène Ascension : scène épinglée, l'altitude monte avec le défilement palier par palier. **La fraction d'oxygène affichée sort de `fio2AtAltitude` (`lib/altitude.ts`), jamais d'une interpolation locale** — une approximation linéaire entre 20,9 % et 9,1 % se trompe de près d'un point en milieu de plage. — `ascension/ascension-section.tsx`
+5. Scène Produit : dessin technique annoté du générateur, épinglé, dont les légendes s'allument une à une au défilement. Suivie du volet de fiche technique, replié par défaut. — `product/product-scene.tsx`, `product/generator-drawing.tsx`, `product/datasheet-panel.tsx`, données dans `lib/product.ts`
+6. Section Protocoles d'Altitude : trois modes d'exposition, situés sur un axe d'altitude 0–6 500 m. — `protocols-section.tsx`
+   - **Mode Sommeil · LHTL — 2 100 – 2 600 m.** Le générateur alimente une tente posée sur le lit. Exposition longue et modérée, 12 à 14 h par jour, à intensité faible. Le plafond de 2 600 m est **figé, sans exception de niveau** : la réponse EPO est optimale entre 2 200 et 2 500 m, au-delà le sommeil se dégrade plus vite que le gain hématologique ne progresse. Montée de 300 à 500 m de palier par semaine.
+   - **Mode Entraînement · IHT — 2 500 – 3 500 m.** Sous masque, à l'effort sous-maximal (marche, home-trainer, rameur). 35 à 45 min par cycles alternés, 3 à 4 fois par semaine. Le palier reste modéré parce que l'intensité vient de l'air, pas de l'allure : on atteint la fréquence cardiaque cible sans charge mécanique. Cible VO2max, capillarisation, efficacité mitochondriale. Reprise après blessure un cran plus bas, autour de 2 400 m.
+   - **Mode Exposition · IHE — 3 500 – 5 000 m.** Au repos strict, assis ou allongé, sans le moindre effort. Cycles 5 min / 5 min, cinq alternances par séance : c'est le gradient répété, et non la durée, qui porte le stimulus. Voie mitochondriale et tonus vagal (HIF-1α, PGC-1α, VFC). **Ces altitudes ne se pratiquent jamais à l'effort.**
+   - Ces trois plages sont des **recommandations de protocole, pas des limites de l'appareil** : l'ATMOS ONE couvre 0 à 6 500 m en continu.
+   - **Source de vérité : le tableau `PROTOCOLS` en haut de `protocols-section.tsx`** (champ `range` pour l'affichage, `axis` pour la position sur l'axe). La scène d'ascension reprend les mêmes paliers en quatre chapitres : elle réunit IHT et IHE sous un seul (« au-delà de 2 500 m, la séance change de nature ») parce que la distinction se lit bien mieux ici, et son chapitre LHTL s'arrête à 2 500 m plutôt qu'à 2 600 m pour que la montée reste monotone.
+7. Section Offres : Toggle interactif Achat vs Location, puis le déroulé de la précommande en quatre étapes reliées par un fil qui se trace. — `offers-section.tsx`, `offers/preorder-steps.tsx`
+   - **Tant que `ORDERS_OPEN` vaut `false`, aucun paiement n'est encaissé** : les boutons d'action ouvrent la liste prioritaire (`waitlist-modal.tsx` → `/api/waitlist` → Brevo) au lieu du tunnel de commande, et le serveur refuse toute session de paiement. Le reste de ce point décrit le comportement une fois la constante passée à `true`.
+   - **Deux tunnels, selon la formule.**
+     - *Achat* : paiement intégré. La modale rend le **Stripe Payment Element** (`components/checkout/payment-form.tsx`), alimenté par `app/api/payment-intent/route.ts`. Carte et Apple Pay se règlent sans quitter la page ; Klarna et PayPal passent par leur domaine puis reviennent — c'est leur fonctionnement, aucune intégration ne le contourne.
+     - *Location* : tunnel hébergé. Elle redirige vers Stripe Checkout via `app/api/checkout/route.ts`, son empreinte de caution exigeant une session Checkout.
+   - Les deux retombent sur `/reservation/confirmee`, qui **interroge Stripe avant d'afficher quoi que ce soit**. Le `redirect_status` de l'URL n'est jamais consulté : c'est une chaîne dans la barre d'adresse, remplaçable par `succeeded` en une seconde. Le `client_secret` de l'URL est comparé à celui de l'intention retrouvée, sans quoi un identifiant `pi_…` deviné donnerait l'état du paiement d'autrui. Un échec avéré renvoie sur `/?paiement=echec#offres`, où `components/offers/payment-failed-notice.tsx` affiche le message.
+   - **Le webhook écoute les deux formes** : `checkout.session.completed` pour le tunnel hébergé, `payment_intent.succeeded` pour le tunnel intégré. Oublier le second reviendrait à encaisser sans jamais enregistrer la commande.
+   - **Achat ferme** : 1 890 € l'unité, **encaissés en totalité à la commande** — il n'y a pas d'acompte. Étapes : configuration (quantité 1 à 5 + options), coordonnées, paiement.
+   - **Au lancement, seul l'achat ferme est prévu.** La carte Location reste affichée en « Bientôt disponible » avec un formulaire de liste d'attente (`components/waitlist-form.tsx` → `/api/waitlist`). Bascule unique : `LEASING_OPEN` dans `lib/offering.ts`, respectée par la page **et** par la route de paiement.
    - **Location (fermée pour l'instant)** : 350 €/mois, 1 mois minimum. Étapes : date de début, coordonnées, paiement. Encaissement du 1er mois **+ 39 € d'expédition = 389 €**, et **empreinte bancaire** conservée pour la caution (aucun débit à ce titre). Mention obligatoire sous le bouton : 100 % des loyers versés sont déduits en cas d'achat.
    - La durée de location est verrouillée à 30 jours : la date de fin est **recalculée par le serveur**, jamais reprise du navigateur. Idem pour tous les montants.
    - L'empreinte bancaire passe par `setup_future_usage: "off_session"` sur la session Checkout (plus `customer_creation: "always"`), et non par un SetupIntent séparé : Stripe n'autorise pas un paiement et un SetupIntent dans une même session.
    - Les options (oxymètre, monitoring) sont enregistrées en métadonnées mais **non tarifées** : elles ne modifient pas le montant encaissé.
-7. Section FAQ : accordéons interactifs, avant le footer. Tableau `FAQ` modulaire en haut de `faq-section.tsx` — éditer ce tableau suffit.
-8. Footer : Mentions légales, contact@atmos-performance.com, Instagram (@atmos_performance), Youtube (@atmos_performance), Tiktok (@atmos_performance). — `site-footer.tsx`
+   - **Jamais de jauge de remplissage.** Sur un achat à quatre chiffres, un compteur qui monte se lit comme une pression de vente. Seul le nombre d'unités disponibles est annoncé.
+8. Section La gamme : teaser ATMOS Chamber, juste après le prix — elle répond au doute qui suit l'annonce d'un tarif chez une marque inconnue. — `next-product-section.tsx`
+9. Section FAQ : accordéons interactifs, avant le footer. Tableau `FAQ` modulaire en haut de `faq-section.tsx` — éditer ce tableau suffit, le balisage `FAQPage` en dérive.
+10. Footer : navigation complète en trois colonnes (lue depuis `lib/navigation.ts`), contact, réseaux, barre légale. — `site-footer.tsx`
 
-Pages annexes : `/mentions-legales`, `/reservation/confirmee`, et le blog.
+**La section Science n'est plus sur la page d'accueil.** Elle occupait l'écran juste avant la FAQ, c'est-à-dire juste avant l'endroit où tombent les dernières objections : le visiteur décidé la traversait sans la lire, l'hésitant y arrivait fatigué. Elle vit désormais à `/la-science`, entière. `science-section.tsx` accepte `heading={false}` pour que la page porte le `h1` sans que la section le répète.
+
+### Pages annexes
+`/accessoires` (masque, filtre, tente, oxymètre — données dans `lib/accessories.ts`, visuels en attente), `/la-science`, `/outils`, `/outils/simulateur-altitude`, `/blog`, `/blog/[slug]`, `/glossaire`, `/glossaire/[slug]`, `/a-propos`, `/cgv`, `/mentions-legales`, `/reservation/confirmee`.
 
 ## Blog & SEO
 - `/blog` liste les articles, `/blog/[slug]` les affiche. **Les articles sont des fichiers Markdown dans `content/blog/`** : pour publier, déposer un `.md` et rebuilder. `lib/posts.ts` les lit au build (gray-matter + marked).
@@ -35,29 +62,38 @@ Pages annexes : `/mentions-legales`, `/reservation/confirmee`, et le blog.
 - Le H1 d'ouverture du Markdown est retiré automatiquement : le titre est déjà rendu par la page, deux H1 nuiraient au SEO. Écrire le corps en `##` et `###`.
 - Les fragments LaTeX fréquents dans les rédactions IA sont convertis : indices (`$SpO_2$` → SpO₂), exposants (`$H^+$` → H⁺), `\text{}`, et retrait de la notation autour des expressions sans symbole (`$ml/kg/min$`). Un caractère sans équivalent Unicode fait retomber le fragment en texte simple plutôt qu'en charabia à moitié converti.
 - Deux articles ne peuvent pas partager le même slug : le build échoue avec un message explicite.
-- La mise en forme du corps est dans `.article-body` (`app/globals.css`) : titres, listes, citations, tableaux (défilement horizontal propre).
+- La mise en forme du corps est dans `.article-body` (`app/globals.css`) : titres, listes, citations, tableaux (défilement horizontal propre). Elle utilise les mêmes jetons de couleur que le reste du site.
 - Chaque article génère title, description, canonical, OpenGraph article (dates, tags), Twitter card et un JSON-LD `Article` (Schema.org).
-- `app/sitemap.ts` et `app/robots.ts` sont générés depuis les mêmes données. `metadataBase` est défini dans `app/layout.tsx` à partir de `lib/site.ts`.
-- Lien « Blog » présent dans la navigation du header et du footer pour le maillage interne.
+- **Une page qui déclare son propre bloc `openGraph` doit avoir un fichier `opengraph-image.tsx` dans son segment** : ce bloc remplace entièrement celui hérité de la racine, image comprise.
+- `app/sitemap.ts` et `app/robots.ts` sont générés depuis les mêmes données. `metadataBase` est défini dans `app/layout.tsx` à partir de `lib/site.ts`. **Toute page ajoutée doit être déclarée dans `app/sitemap.ts`.**
+- Maillage interne : le volet de navigation du header et le pied de page couvrent tous deux le plan complet.
 - **`SITE_URL` vaut `https://atmos-performance.com` par défaut** (`lib/site.ts`) : à surcharger via `NEXT_PUBLIC_SITE_URL` si le domaine change, sinon canonical et sitemap pointeront au mauvais endroit.
 
 ## À compléter avant publication
-- Les specs du générateur et les prix (1 890 € à l'achat, 350 €/mois + 39 € d'expédition en location, acompte 300 €) sont des valeurs réelles. Restent des valeurs de remplissage : chiffres de la section Science, date de livraison, taille de la vague #1.
+- **La photographie réelle du générateur (`public/generator.png`) n'est plus affichée** : la scène produit utilise le dessin technique. Elle sert encore d'image au balisage produit et aux cartes de partage. À replacer quelque part — un acheteur voudra voir la vraie machine.
+- **Visuels des accessoires manquants.** Les emplacements occupent déjà leur cadre et leur format dans `/accessoires`, et les textes alternatifs sont rédigés dans `lib/accessories.ts` : poser les images suffira, la page ne bougera pas.
+- Les prix (1 890 € à l'achat encaissés en totalité, 350 €/mois + 39 € d'expédition en location) et les specs du générateur sont des valeurs réelles. Restent à confirmer : les chiffres de la section Science et la date de livraison.
+- Les accessoires n'ont ni prix ni conditionnement arrêtés — la page le dit plutôt que d'annoncer un tarif à corriger ensuite.
 - Le montant de la caution de location n'est pas défini : seule l'empreinte est prise. Il faudra le fixer avant tout prélèvement hors session.
 - Les options d'équipement ne sont pas tarifées.
 - Champs `[À COMPLÉTER]` de la page mentions légales (identité de l'éditeur, hébergeur).
+- **Alias temporaire à retirer** : `app/api/waitlist/route.ts` accepte encore `source: "batch-1"` en plus de `"drop-1"`, le temps qu'un déploiement se propage aux pages en cache. À supprimer dans quelques semaines.
 - Clés Stripe : copier `.env.example` en `.env.local` et renseigner `STRIPE_SECRET_KEY`. **Vérifié en mode test : les deux tunnels créent bien leur session Checkout.** Une clé absente ou refusée donne le même message côté visiteur (« Le paiement n'est pas encore configuré sur ce site »).
 - Une clé secrète Stripe valide ne contient que deux tirets bas (`sk_test_` puis une seule chaîne). Trois épisodes de gabarit résiduel ont été perdus sur ce point.
 - Webhook branché : `app/api/webhooks/stripe/route.ts` écoute `checkout.session.completed`, vérifie la signature sur le corps brut et enregistre la commande via `lib/orders.ts`. Idempotent sur l'identifiant d'événement. Nécessite `STRIPE_WEBHOOK_SECRET`.
 - **Décision assumée : pas de base de données.** Le suivi des commandes se fait par les emails automatiques de Stripe et l'historique du Dashboard. Le fichier JSONL local (`.data/orders.jsonl`, gitignoré) ne sert qu'aux tests et n'a pas vocation à survivre à un déploiement.
+- La liste d'attente, elle, va directement dans Brevo (`lib/waitlist.ts`) : segmentation et désinscription y sont natives. Nécessite `BREVO_API_KEY` et `BREVO_LIST_ID`.
 - Le site n'envoie aucun email lui-même ; la page `/reservation/confirmee` reste déclarative. Les emails de reçu doivent être activés dans Stripe (Paramètres > Emails aux clients > Paiements réussis).
 - L'empreinte carte de la location n'est observable qu'après un paiement réel : Stripe ne crée le PaymentIntent qu'au moment où le client règle.
 - Icônes de marque du footer (Instagram, YouTube, TikTok) : redessinées à la main, à remplacer par les marques officielles.
 
 ## Instructions pour l'IA
 - Travailler section par section.
-- Utiliser Tailwind CSS, Framer Motion et Lucide-React.
-- Conserver le thème sombre (#0B0C10) sur tout le site.
-- Variants d'animation partagés dans `lib/motion.ts` : réutiliser `EASE`, `container` et `rise` plutôt que de les redéclarer.
+- **Tailwind CSS v4**, avec les jetons de `app/globals.css`. Ne pas réintroduire `cyan-*`, `sky-*` ni `text-white/xx` : la palette est nommée.
+- **Deux moteurs d'animation, chacun son domaine.** GSAP + `@gsap/react` (`useGSAP`, ScrollTrigger) pour les scènes de la page d'accueil pilotées par le défilement ; Framer Motion pour tout le reste, avec les variants partagés de `lib/motion.ts` (`EASE`, `container`, `rise`) plutôt que redéclarés. Ne pas mélanger les deux sur un même élément.
+- **Épinglage : `position: sticky`, jamais le `pin` de ScrollTrigger.** Et **ne jamais poser `overflow-hidden` sur un conteneur de page** : il en fait un conteneur de défilement, et tout `sticky` en dessous cesse d'adhérer sans rien signaler. Utiliser `overflow-x-clip`, qui rogne sans créer ce conteneur.
+- Une scène pilotée par le défilement n'écrit pas dans l'état React : elle écrit dans le DOM via des refs, sinon c'est un rendu par image.
+- **Cadence des scènes épinglées : ~450 px de défilement par chapitre**, sur les deux scènes de l'accueil. C'est un plancher assumé — un geste franc de trackpad couvre 300 à 500 px, donc un geste avance d'un chapitre ; en descendant plus bas, un seul mouvement en sauterait un. Corollaire : **une phrase par chapitre, pas trois lignes.** Une scène épinglée impose son rythme au lecteur, et allonger la piste ne donne pas plus de temps de lecture — ça oblige seulement à pousser plus de pixels avant de pouvoir s'arrêter.
 - Cette version de `lucide-react` ne fournit aucune icône de marque (`Instagram`, `Youtube`… sont absents) : vérifier qu'une icône existe avant de l'importer.
-- Ne pas calculer de valeurs de rendu avec `Math.cos`/`Math.sin` ni `new Date()` : les écarts serveur / client provoquent des erreurs d'hydratation. Pré-calculer et arrondir.
+- Ne pas calculer de **valeurs rendues** avec `Math.pow`, `Intl` ou `new Date()` : les écarts serveur / client provoquent des erreurs d'hydratation. `lib/altitude.ts` tabule sa courbe et formate les nombres à la main pour cette raison — `toLocaleString` sépare les milliers différemment selon la version d'ICU. Le calcul d'animation côté client (canvas, `requestAnimationFrame`) n'est pas concerné : il ne produit pas de balisage.
+- Respecter `prefers-reduced-motion` : toute scène doit avoir un repli statique lisible, pas seulement une animation désactivée.

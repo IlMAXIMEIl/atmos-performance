@@ -6,6 +6,7 @@ import {
   useSyncExternalStore,
   type KeyboardEvent,
 } from "react";
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -29,17 +30,18 @@ import Link from "next/link";
 import { WaitlistForm } from "@/components/waitlist-form";
 import { WaitlistModal } from "@/components/waitlist-modal";
 import {
-  BATCH_NAME,
-  BATCH_SCARCITY,
-  BATCH_UNITS,
+  DROP_NAME,
+  DROP_SCARCITY,
+  DROP_UNITS,
   INCLUDED_ITEMS,
   INSTALLMENTS_NOTE,
   LEASING_DEPOSIT_NOTE,
   LEASING_OPEN,
   ORDERS_OPEN,
-  PREORDER_STEPS,
   WAITLIST_CTA,
 } from "@/lib/offering";
+import { PaymentFailedNotice } from "@/components/offers/payment-failed-notice";
+import { PreorderSteps } from "@/components/offers/preorder-steps";
 import { EASE, container, rise } from "@/lib/motion";
 
 /**
@@ -73,7 +75,7 @@ const PLANS: Plan[] = [
   {
     id: "achat",
     label: "Achat",
-    badge: `Édition de lancement · ${BATCH_NAME}`,
+    badge: `Édition de lancement · ${DROP_NAME}`,
     price: "1 890 €",
     terms: "TTC · comptant ou paiement fractionné",
     pitch:
@@ -140,7 +142,7 @@ const ASSURANCES = [
   { icon: Truck, text: "Livraison estimée au premier trimestre 2027" },
   {
     icon: CalendarClock,
-    text: `${BATCH_NAME} : ${BATCH_UNITS} unités, puis série suivante`,
+    text: `${DROP_NAME} : ${DROP_UNITS} unités, puis série suivante`,
   },
 ];
 
@@ -177,7 +179,7 @@ const AFTER_SALE = [
 
 /** Partagé par les deux CTA, qui ne diffèrent que par la balise rendue. */
 const CTA_CLASS =
-  "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-8 py-4 text-sm font-semibold tracking-[0.04em] text-[#04070D] shadow-[0_0_36px_-6px_rgba(56,189,248,0.65)] transition-all duration-300 hover:shadow-[0_0_54px_-4px_rgba(56,189,248,0.9)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none";
+  "group relative mt-11 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-8 py-4 text-sm font-semibold tracking-[0.04em] text-void shadow-[0_10px_40px_-12px_var(--accent)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_46px_-12px_var(--accent)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none";
 
 /**
  * Le simulateur d'altitude renvoie vers `/?reserver=achat#offres` avec la
@@ -188,7 +190,7 @@ const CTA_CLASS =
  * L'URL est un état extérieur à React, d'où `useSyncExternalStore` : un effet
  * appellerait `setState` en cascade, et `useSearchParams` ferait sortir toute
  * la page d'accueil du prérendu — trop cher pour la page la plus référencée du
- * site. Seul l'achat est concerné, la location n'ouvrant qu'après le Batch n°1.
+ * site. Seul l'achat est concerné, la location n'ouvrant qu'après le Drop n°1.
  */
 function subscribeToHistory(onChange: () => void) {
   window.addEventListener("popstate", onChange);
@@ -251,6 +253,12 @@ export function OffersSection() {
       aria-labelledby="offres-titre"
       className="relative z-20 mx-auto w-full max-w-7xl scroll-mt-24 px-6 py-24 sm:py-32 lg:px-10"
     >
+      {/* `useSearchParams` force le rendu dynamique de tout ce qui l'entoure :
+          la frontière `Suspense` cantonne cet effet à ce seul message. */}
+      <Suspense fallback={null}>
+        <PaymentFailedNotice />
+      </Suspense>
+
       {/* ── En-tête de section ───────────────────────────────────────── */}
       <motion.div
         variants={container}
@@ -261,7 +269,7 @@ export function OffersSection() {
       >
         <motion.span
           variants={rise}
-          className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
+          className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase"
         >
           Les offres
         </motion.span>
@@ -271,19 +279,19 @@ export function OffersSection() {
           id="offres-titre"
           className="mt-5 text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl"
         >
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Une machine.
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-accent">
             Deux façons d&apos;y accéder.
           </span>
         </motion.h2>
 
         <motion.p
           variants={rise}
-          className="mx-auto mt-6 max-w-xl text-base leading-relaxed font-light text-white/55 text-pretty"
+          className="mx-auto mt-6 max-w-xl text-base leading-relaxed font-light text-dim text-pretty"
         >
-          {`L'édition de lancement ouvre la précommande à l'achat ferme, en série limitée. ${BATCH_SCARCITY}. La location suivra : laissez votre email pour être prévenu de son ouverture.`}
+          {`L'édition de lancement ouvre la précommande à l'achat ferme, en série limitée. ${DROP_SCARCITY}. La location suivra : laissez votre email pour être prévenu de son ouverture.`}
         </motion.p>
 
         {/* Bascule Achat / Leasing */}
@@ -292,7 +300,7 @@ export function OffersSection() {
           role="tablist"
           aria-label="Choix de la formule"
           onKeyDown={handleKeyDown}
-          className="mx-auto mt-12 inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1.5 backdrop-blur-md"
+          className="mx-auto mt-12 inline-flex rounded-full border border-line bg-white/[0.03] p-1.5 backdrop-blur-md"
         >
           {PLANS.map((item) => {
             const isActive = item.id === plan.id;
@@ -310,17 +318,17 @@ export function OffersSection() {
                 aria-controls={`offre-${item.id}`}
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => setPlanId(item.id)}
-                className={`relative rounded-full px-7 py-2.5 text-[0.82rem] font-medium tracking-[0.06em] transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none ${
+                className={`relative rounded-full px-7 py-2.5 text-[0.82rem] font-medium tracking-[0.06em] transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${
                   isActive
-                    ? "text-[#04070D]"
-                    : "text-white/55 hover:text-white/85"
+                    ? "text-void"
+                    : "text-dim hover:text-ink"
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="formule-active"
                     transition={{ duration: 0.45, ease: EASE }}
-                    className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 shadow-[0_0_28px_-6px_rgba(56,189,248,0.8)]"
+                    className="absolute inset-0 rounded-full bg-accent shadow-[0_8px_28px_-10px_var(--accent)]"
                   />
                 )}
                 <span className="relative">{item.label}</span>
@@ -336,7 +344,7 @@ export function OffersSection() {
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.9, ease: EASE }}
-        className="relative mt-14 overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.015] backdrop-blur-xl"
+        className="relative mt-14 overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.07] to-white/[0.015] backdrop-blur-xl"
       >
         <div
           aria-hidden
@@ -354,17 +362,17 @@ export function OffersSection() {
           <div>
             <AnimatePresence mode="wait">
               <motion.div key={plan.id} {...swap}>
-                <span className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] px-3.5 py-1 text-[0.66rem] font-medium tracking-[0.16em] text-cyan-100/90 uppercase">
+                <span className="font-mono inline-flex rounded-full border border-accent/40 bg-accent/[0.07] px-3.5 py-1 text-[0.66rem] tracking-[0.16em] text-accent uppercase">
                   {plan.badge}
                 </span>
 
                 <div className="mt-8 flex items-baseline gap-3">
-                  <span className="text-5xl font-medium tracking-[-0.04em] text-white sm:text-6xl">
+                  <span className="text-5xl font-medium tracking-[-0.04em] text-ink sm:text-6xl">
                     {plan.price}
                   </span>
                 </div>
 
-                <div className="mt-3 text-[0.8rem] font-light tracking-[0.1em] text-white/45 uppercase">
+                <div className="mt-3 text-[0.8rem] font-light tracking-[0.1em] text-dim uppercase">
                   {plan.terms}
                 </div>
 
@@ -374,7 +382,7 @@ export function OffersSection() {
                   vient l'écart trouve sa réponse en six mots, les autres ne
                   s'arrêtent pas.
                 */}
-                <p className="mt-3 text-[0.82rem] font-light text-white/35">
+                <p className="mt-3 text-[0.82rem] font-light text-dimmer">
                   Vendu en direct, sans distributeur ni revendeur.
                 </p>
 
@@ -385,39 +393,39 @@ export function OffersSection() {
                   retrait plutôt qu'au moment de payer.
                 */}
                 {plan.id === "achat" ? (
-                  <div className="mt-5 flex items-start gap-3 rounded-2xl border border-cyan-300/20 bg-cyan-400/[0.05] px-4 py-3.5">
+                  <div className="mt-5 flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/[0.05] px-4 py-3.5">
                     <CreditCard
-                      className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                       strokeWidth={1.5}
                     />
-                    <p className="text-[0.82rem] leading-relaxed font-light text-cyan-50/70 text-pretty">
+                    <p className="text-[0.82rem] leading-relaxed font-light text-accent text-pretty">
                       {INSTALLMENTS_NOTE}
                     </p>
                   </div>
                 ) : (
-                  <p className="mt-4 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+                  <p className="mt-4 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
                     {LEASING_DEPOSIT_NOTE}
                   </p>
                 )}
 
-                <p className="mt-7 max-w-md text-[0.95rem] leading-relaxed font-light text-white/55 text-pretty">
+                <p className="mt-7 max-w-md text-[0.95rem] leading-relaxed font-light text-dim text-pretty">
                   {plan.pitch}
                 </p>
 
                 <ul className="mt-10 flex flex-col gap-5">
                   {plan.highlights.map(({ icon: Icon, label, detail }) => (
                     <li key={label} className="flex items-start gap-4">
-                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-line bg-white/[0.03]">
                         <Icon
-                          className="h-3.5 w-3.5 text-cyan-300"
+                          className="h-3.5 w-3.5 text-accent"
                           strokeWidth={1.6}
                         />
                       </span>
                       <div>
-                        <div className="text-sm font-medium tracking-tight text-white/90">
+                        <div className="text-sm font-medium tracking-tight text-ink">
                           {label}
                         </div>
-                        <div className="mt-1 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
+                        <div className="mt-1 text-[0.85rem] leading-relaxed font-light text-dim text-pretty">
                           {detail}
                         </div>
                       </div>
@@ -429,8 +437,8 @@ export function OffersSection() {
           </div>
 
           {/* Contenu de la livraison, identique aux deux formules */}
-          <div className="lg:border-l lg:border-white/[0.07] lg:pl-16">
-            <div className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+          <div className="lg:border-l lg:border-line lg:pl-16">
+            <div className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
               Dans les deux cas
             </div>
 
@@ -438,10 +446,10 @@ export function OffersSection() {
               {INCLUDED_ITEMS.map((item) => (
                 <li key={item} className="flex items-start gap-3.5">
                   <Check
-                    className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                     strokeWidth={2}
                   />
-                  <span className="text-[0.92rem] leading-relaxed font-light text-white/70 text-pretty">
+                  <span className="text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                     {item}
                   </span>
                 </li>
@@ -466,11 +474,11 @@ export function OffersSection() {
               </button>
             )}
 
-            <p className="mt-5 text-center text-[0.78rem] font-light text-white/35">
+            <p className="mt-5 text-center text-[0.78rem] font-light text-dimmer">
               {plan.id === "leasing"
                 ? LEASING_OPEN
                   ? "1er mois et expédition réglés en ligne, caution par simple empreinte bancaire."
-                  : `La location ouvrira après le ${BATCH_NAME}. Laissez votre email pour être prévenu.`
+                  : `La location ouvrira après le ${DROP_NAME}. Laissez votre email pour être prévenu.`
                 : ORDERS_OPEN
                   ? "Paiement sécurisé à la précommande, au comptant ou fractionné."
                   : "Aucun paiement aujourd'hui : vous rejoignez la liste prioritaire, prévenue en premier à l'ouverture."}
@@ -492,21 +500,21 @@ export function OffersSection() {
             icon: Boxes,
             text:
               plan.id === "leasing"
-                ? `Ouverture de la location après le ${BATCH_NAME}`
-                : BATCH_SCARCITY,
+                ? `Ouverture de la location après le ${DROP_NAME}`
+                : DROP_SCARCITY,
           },
           ...ASSURANCES,
         ].map(({ icon: Icon, text }) => (
           <motion.li
             key={text}
             variants={rise}
-            className="flex items-center justify-center gap-3 rounded-2xl border border-white/[0.07] px-5 py-4 text-center"
+            className="flex items-center justify-center gap-3 rounded-2xl border border-line px-5 py-4 text-center"
           >
             <Icon
-              className="h-3.5 w-3.5 shrink-0 text-cyan-300/70"
+              className="h-3.5 w-3.5 shrink-0 text-accent"
               strokeWidth={1.5}
             />
-            <span className="text-[0.8rem] font-light text-white/45 text-pretty">
+            <span className="text-[0.8rem] font-light text-dim text-pretty">
               {text}
             </span>
           </motion.li>
@@ -519,20 +527,20 @@ export function OffersSection() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.3 }}
-        className="mt-8 rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-7 py-7 sm:px-9"
+        className="mt-8 rounded-xl border border-line bg-white/[0.02] px-7 py-7 sm:px-9"
       >
         <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
           {AFTER_SALE.map(({ icon: Icon, title, body }) => (
             <motion.div key={title} variants={rise} className="flex gap-3.5">
               <Icon
-                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
+                className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                 strokeWidth={1.6}
               />
               <div>
-                <div className="text-[0.85rem] font-medium tracking-tight text-white/85">
+                <div className="text-[0.85rem] font-medium tracking-tight text-ink">
                   {title}
                 </div>
-                <p className="mt-1.5 text-[0.8rem] leading-relaxed font-light text-white/40 text-pretty">
+                <p className="mt-1.5 text-[0.8rem] leading-relaxed font-light text-dimmer text-pretty">
                   {body}
                 </p>
               </div>
@@ -542,12 +550,12 @@ export function OffersSection() {
 
         <motion.p
           variants={rise}
-          className="mt-7 border-t border-white/[0.07] pt-5 text-[0.78rem] font-light text-white/30"
+          className="mt-7 border-t border-line pt-5 text-[0.78rem] font-light text-dimmer"
         >
           Conditions détaillées dans nos{" "}
           <Link
             href="/cgv"
-            className="text-white/50 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+            className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
           >
             conditions générales de vente
           </Link>
@@ -555,51 +563,11 @@ export function OffersSection() {
         </motion.p>
       </motion.div>
 
-      {/* ── Déroulé de la précommande ────────────────────────────────── */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.25 }}
-        aria-labelledby="precommande-titre"
-        className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-white/[0.02] px-7 py-10 backdrop-blur-md sm:px-10"
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
-        />
-
-        <div className="relative">
-          <motion.h3
-            variants={rise}
-            id="precommande-titre"
-            className="text-center text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
-          >
-            Comment se passe la précommande
-          </motion.h3>
-
-          <motion.ol
-            variants={container}
-            className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
-          >
-            {PREORDER_STEPS.map((step, index) => (
-              <motion.li key={step.title} variants={rise} className="relative">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-400/[0.08] text-[0.8rem] font-medium text-cyan-200">
-                  {index + 1}
-                </span>
-
-                <div className="mt-4 text-[0.92rem] leading-snug font-medium tracking-tight text-white/90 text-pretty">
-                  {step.title}
-                </div>
-
-                <p className="mt-2 text-[0.85rem] leading-relaxed font-light text-white/45 text-pretty">
-                  {step.detail}
-                </p>
-              </motion.li>
-            ))}
-          </motion.ol>
-        </div>
-      </motion.div>
+      {/* ── Déroulé de la précommande ──────────────────────────────────
+          Sorti du caisson qui l'enfermait : le fil qui relie les quatre
+          étapes a besoin d'air pour se lire, et le bloc « Après l'achat »
+          juste au-dessus garde son cadre — le contraste sépare les deux. */}
+      <PreorderSteps />
 
       {/*
         Tant que les commandes ne sont pas ouvertes, les boutons d'action

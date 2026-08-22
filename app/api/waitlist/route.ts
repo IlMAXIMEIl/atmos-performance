@@ -22,10 +22,23 @@ const MAX_BODY_BYTES = 2_000;
  */
 const RATE_LIMIT = { limit: 5, windowMs: 15 * 60 * 1000 };
 
-const SOURCES: readonly WaitlistSource[] = ["batch-1", "location"];
+const SOURCES: readonly WaitlistSource[] = ["drop-1", "location"];
 
-function isSource(value: string): value is WaitlistSource {
-  return (SOURCES as readonly string[]).includes(value);
+/**
+ * Anciennes valeurs d'origine, encore acceptées.
+ *
+ * Le « Batch n°1 » s'appelle désormais « Drop n°1 ». Le temps qu'un
+ * déploiement se propage, une page servie depuis un cache continue de poster
+ * l'ancien libellé : la refuser reviendrait à perdre des inscriptions pour
+ * une question de vocabulaire.
+ */
+const LEGACY_SOURCES: Record<string, WaitlistSource> = { "batch-1": "drop-1" };
+
+function normaliseSource(value: string): WaitlistSource | null {
+  const canonical = LEGACY_SOURCES[value] ?? value;
+  return (SOURCES as readonly string[]).includes(canonical)
+    ? (canonical as WaitlistSource)
+    : null;
 }
 
 /**
@@ -106,9 +119,10 @@ export async function POST(request: Request) {
   const raw = body as Record<string, unknown>;
   const email = sanitiseText(raw.email);
   const firstName = sanitiseText(raw.firstName);
-  // Les inscriptions antérieures à la liste du Batch n°1 n'envoyaient pas
+  // Les inscriptions antérieures à la liste du Drop n°1 n'envoyaient pas
   // d'origine : la location reste la valeur par défaut.
   const rawSource = typeof raw.source === "string" ? raw.source : "location";
+  const source = normaliseSource(rawSource);
 
   if (!email) {
     return Response.json({ error: "Indiquez votre email." }, { status: 400 });
@@ -125,14 +139,14 @@ export async function POST(request: Request) {
   if (firstName.length > MAX_NAME_LENGTH) {
     return Response.json({ error: "Prénom trop long." }, { status: 400 });
   }
-  if (!isSource(rawSource)) {
+  if (!source) {
     return Response.json({ error: "Origine inconnue." }, { status: 400 });
   }
 
   try {
     const result = await addToWaitlist(email, {
       firstName: firstName || undefined,
-      source: rawSource,
+      source,
     });
 
     // Réponse volontairement identique que l'adresse ait été créée ou qu'elle
@@ -140,7 +154,7 @@ export async function POST(request: Request) {
     // oracle : un curieux y testerait si telle adresse est inscrite. Le
     // détail reste dans les journaux, où il n'apprend rien à personne.
     if (result === "deja-inscrit") {
-      console.info(`Liste d'attente : adresse déjà connue (${rawSource})`);
+      console.info(`Liste d'attente : adresse déjà connue (${source})`);
     }
     return Response.json({ ok: true });
   } catch (error) {

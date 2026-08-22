@@ -26,7 +26,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { BATCH_NAME, INSTALLMENTS_NOTE } from "@/lib/offering";
+import { DROP_NAME, INSTALLMENTS_NOTE } from "@/lib/offering";
+import { PaymentForm } from "@/components/checkout/payment-form";
 import { EASE } from "@/lib/motion";
 
 export type PlanId = "achat" | "leasing";
@@ -71,13 +72,13 @@ const PLAN_CONFIG: Record<
   { eyebrow: string; title: string; steps: StepId[]; submitLabel: string }
 > = {
   leasing: {
-    eyebrow: `Location · ${BATCH_NAME}`,
+    eyebrow: `Location · ${DROP_NAME}`,
     title: "Louer ATMOS ONE",
     steps: ["dates", "contact", "paiement"],
     submitLabel: "Régler le 1er mois",
   },
   achat: {
-    eyebrow: `Édition de lancement · ${BATCH_NAME}`,
+    eyebrow: `Édition de lancement · ${DROP_NAME}`,
     title: "Précommander ATMOS ONE",
     steps: ["config", "contact", "paiement"],
     submitLabel: "Payer ma précommande",
@@ -99,7 +100,7 @@ type FormState = typeof EMPTY_FORM;
 type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 const FIELD_CLASS =
-  "w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-[0.95rem] font-light text-white placeholder:text-white/25 transition-colors duration-300 [color-scheme:dark] focus:border-cyan-300/50 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-300/20";
+  "w-full rounded-xl border border-line bg-white/[0.03] px-4 py-3 text-[0.95rem] font-light text-ink placeholder:text-dimmer transition-colors duration-300 [color-scheme:dark] focus:border-accent/40 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-accent";
 
 function todayISO() {
   const now = new Date();
@@ -164,7 +165,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="block text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase"
+        className="font-mono block text-[0.68rem] tracking-[0.16em] text-dim uppercase"
       >
         {label}
       </label>
@@ -195,12 +196,12 @@ function Amount({
   return (
     <div className="flex items-baseline justify-between gap-6">
       <span
-        className={`text-[0.85rem] font-light ${muted ? "text-white/35" : "text-white/60"}`}
+        className={`text-[0.85rem] font-light ${muted ? "text-dimmer" : "text-dim"}`}
       >
         {label}
       </span>
       <span
-        className={`text-[0.9rem] ${muted ? "font-light text-white/35" : "font-medium text-white/85"}`}
+        className={`text-[0.9rem] ${muted ? "font-light text-dimmer" : "font-medium text-ink"}`}
       >
         {value}
       </span>
@@ -306,6 +307,12 @@ export function ReservationModal({ open, onClose, plan }: Props) {
       return setStep(step + 1);
     }
 
+    // L'achat ne passe plus par ici : le Payment Element rendu à cette étape
+    // confirme lui-même l'intention, sans quitter la modale. Seule la location
+    // conserve le tunnel hébergé, son empreinte de caution exigeant une
+    // session Checkout.
+    if (plan === "achat") return;
+
     setSubmitting(true);
     setServerError(null);
 
@@ -346,7 +353,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
       ref={dialogRef}
       onClick={handleBackdropClick}
       aria-labelledby="reservation-titre"
-      className="m-auto w-[min(34rem,calc(100vw-2rem))] bg-transparent p-0 text-white backdrop:bg-black/75 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(34rem,calc(100vw-2rem))] bg-transparent p-0 text-ink backdrop:bg-black/75 backdrop:backdrop-blur-sm"
     >
       <AnimatePresence
         onExitComplete={() => {
@@ -365,7 +372,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.45, ease: EASE }}
-            className="relative max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain rounded-[2rem] border border-white/10 bg-[#0B0C10] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)]"
+            className="relative max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain rounded-xl border border-line bg-void shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)]"
           >
             <div
               aria-hidden
@@ -375,12 +382,12 @@ export function ReservationModal({ open, onClose, plan }: Props) {
             <div className="relative p-7 sm:p-9">
               <div className="flex items-start justify-between gap-6">
                 <div>
-                  <span className="text-[0.62rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
+                  <span className="font-mono text-[0.62rem] tracking-[0.24em] text-accent uppercase">
                     {config.eyebrow}
                   </span>
                   <h2
                     id="reservation-titre"
-                    className="mt-2.5 text-xl font-medium tracking-[-0.02em] text-white sm:text-2xl"
+                    className="mt-2.5 text-xl font-medium tracking-[-0.02em] text-ink sm:text-2xl"
                   >
                     {config.title}
                   </h2>
@@ -390,7 +397,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                   type="button"
                   onClick={onClose}
                   aria-label="Fermer"
-                  className="-mt-1 rounded-full border border-white/10 p-2 text-white/50 transition-colors hover:border-white/25 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none"
+                  className="-mt-1 rounded-full border border-line p-2 text-dim transition-colors hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -409,10 +416,10 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                         <span
                           className={`flex h-7 w-7 items-center justify-center rounded-full border transition-colors duration-500 ${
                             done
-                              ? "border-cyan-300/40 bg-cyan-400/15 text-cyan-200"
+                              ? "border-accent/40 bg-accent/15 text-accent"
                               : current
-                                ? "border-cyan-300/60 bg-cyan-400/10 text-cyan-200"
-                                : "border-white/10 text-white/30"
+                                ? "border-accent/40 bg-accent/10 text-accent"
+                                : "border-line text-dimmer"
                           }`}
                         >
                           {done ? (
@@ -423,7 +430,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                         </span>
                         <span
                           className={`hidden text-[0.7rem] font-light tracking-[0.12em] uppercase transition-colors duration-500 sm:block ${
-                            current ? "text-white/85" : "text-white/35"
+                            current ? "text-ink" : "text-dimmer"
                           }`}
                         >
                           {STEP_META[stepId].label}
@@ -438,7 +445,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                     initial={false}
                     animate={{ scaleX: (step + 1) / steps.length }}
                     transition={{ duration: 0.5, ease: EASE }}
-                    className="h-px w-full origin-left bg-gradient-to-r from-cyan-300 to-blue-500"
+                    className="h-px w-full origin-left bg-accent"
                   />
                 </div>
               </div>
@@ -450,7 +457,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                       {/* ── Étape Dates (location) ──────────────────── */}
                       {currentStep === "dates" && (
                         <div className="flex flex-col gap-5">
-                          <p className="text-[0.88rem] leading-relaxed font-light text-white/50">
+                          <p className="text-[0.88rem] leading-relaxed font-light text-dim">
                             La location démarre à la date de votre choix, pour
                             une première période de {RENTAL_DAYS} jours. Elle se
                             prolonge ensuite mois par mois.
@@ -479,18 +486,18 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             />
                           </Field>
 
-                          <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3.5">
-                            <div className="text-[0.68rem] font-medium tracking-[0.16em] text-white/40 uppercase">
+                          <div className="rounded-xl border border-line bg-white/[0.02] px-4 py-3.5">
+                            <div className="font-mono text-[0.68rem] tracking-[0.16em] text-dimmer uppercase">
                               Fin de la première période
                             </div>
-                            <div className="mt-1.5 text-[0.95rem] font-light text-white/80">
+                            <div className="mt-1.5 text-[0.95rem] font-light text-ink">
                               {form.startDate
                                 ? formatDate(
                                     addDays(form.startDate, RENTAL_DAYS),
                                   )
                                 : `${RENTAL_DAYS} jours après la date de début`}
                             </div>
-                            <div className="mt-1 text-[0.78rem] font-light text-white/35">
+                            <div className="mt-1 text-[0.78rem] font-light text-dimmer">
                               Durée minimale d&apos;un mois, non modifiable.
                             </div>
                           </div>
@@ -501,7 +508,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                       {currentStep === "config" && (
                         <div className="flex flex-col gap-6">
                           <div>
-                            <span className="block text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase">
+                            <span className="font-mono block text-[0.68rem] tracking-[0.16em] text-dim uppercase">
                               Quantité
                             </span>
                             <div className="mt-3 flex items-center gap-4">
@@ -515,14 +522,14 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 }
                                 disabled={form.quantity <= 1}
                                 aria-label="Retirer une unité"
-                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white/70 transition-colors hover:border-white/30 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none disabled:opacity-30"
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-line text-dim transition-colors hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none disabled:opacity-30"
                               >
                                 <Minus className="h-4 w-4" />
                               </button>
 
                               <span
                                 aria-live="polite"
-                                className="min-w-[3ch] text-center text-2xl font-medium tracking-tight text-white"
+                                className="min-w-[3ch] text-center text-2xl font-medium tracking-tight text-ink"
                               >
                                 {form.quantity}
                               </span>
@@ -537,19 +544,19 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 }
                                 disabled={form.quantity >= MAX_QUANTITY}
                                 aria-label="Ajouter une unité"
-                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-white/70 transition-colors hover:border-white/30 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none disabled:opacity-30"
+                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-line text-dim transition-colors hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none disabled:opacity-30"
                               >
                                 <Plus className="h-4 w-4" />
                               </button>
 
-                              <span className="ml-1 text-[0.85rem] font-light text-white/40">
+                              <span className="ml-1 text-[0.85rem] font-light text-dimmer">
                                 × {euros(PRICES.purchaseUnit)}
                               </span>
                             </div>
                           </div>
 
                           <fieldset>
-                            <legend className="text-[0.68rem] font-medium tracking-[0.16em] text-white/45 uppercase">
+                            <legend className="font-mono text-[0.68rem] tracking-[0.16em] text-dim uppercase">
                               Options
                             </legend>
                             <div className="mt-3 flex flex-col gap-2.5">
@@ -562,24 +569,24 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                     key={option.id}
                                     className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors duration-300 ${
                                       checked
-                                        ? "border-cyan-300/40 bg-cyan-400/[0.07]"
-                                        : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                                        ? "border-accent/40 bg-accent/[0.07]"
+                                        : "border-line bg-white/[0.02] hover:border-line-strong"
                                     }`}
                                   >
                                     <input
                                       type="checkbox"
                                       checked={checked}
                                       onChange={() => toggleOption(option.id)}
-                                      className="h-4 w-4 accent-cyan-400"
+                                      className="h-4 w-4 accent-[var(--accent)]"
                                     />
-                                    <span className="text-[0.9rem] font-light text-white/80">
+                                    <span className="text-[0.9rem] font-light text-ink">
                                       {option.label}
                                     </span>
                                   </label>
                                 );
                               })}
                             </div>
-                            <p className="mt-3 text-[0.78rem] font-light text-white/35">
+                            <p className="mt-3 text-[0.78rem] font-light text-dimmer">
                               Les options sont enregistrées avec votre commande
                               et chiffrées séparément : elles ne modifient pas
                               le montant réglé aujourd&apos;hui.
@@ -714,7 +721,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                       {/* ── Étape Paiement ──────────────────────────── */}
                       {currentStep === "paiement" && (
                         <div className="flex flex-col gap-6">
-                          <dl className="flex flex-col gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5">
+                          <dl className="flex flex-col gap-3 rounded-2xl border border-line bg-white/[0.02] p-5">
                             {[
                               plan === "leasing"
                                 ? {
@@ -749,17 +756,17 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                                 key={row.label}
                                 className="flex items-baseline justify-between gap-6"
                               >
-                                <dt className="shrink-0 text-[0.68rem] font-light tracking-[0.14em] text-white/35 uppercase">
+                                <dt className="font-mono shrink-0 text-[0.68rem] tracking-[0.14em] text-dimmer uppercase">
                                   {row.label}
                                 </dt>
-                                <dd className="truncate text-right text-[0.88rem] font-light text-white/80">
+                                <dd className="truncate text-right text-[0.88rem] font-light text-ink">
                                   {row.value}
                                 </dd>
                               </div>
                             ))}
                           </dl>
 
-                          <div className="flex flex-col gap-3 border-t border-white/[0.07] pt-5">
+                          <div className="flex flex-col gap-3 border-t border-line pt-5">
                             {plan === "leasing" ? (
                               <>
                                 <Amount
@@ -778,11 +785,11 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                               />
                             )}
 
-                            <div className="mt-1 flex items-baseline justify-between border-t border-white/[0.07] pt-4">
-                              <span className="text-[0.88rem] font-light text-white/60">
+                            <div className="mt-1 flex items-baseline justify-between border-t border-line pt-4">
+                              <span className="text-[0.88rem] font-light text-dim">
                                 À régler maintenant
                               </span>
-                              <span className="text-xl font-medium tracking-tight text-white">
+                              <span className="text-xl font-medium tracking-tight text-ink">
                                 {euros(
                                   plan === "leasing"
                                     ? rentalTotal
@@ -793,24 +800,24 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                           </div>
 
                           {plan === "achat" && (
-                            <div className="flex items-start gap-3 rounded-xl border border-cyan-300/20 bg-cyan-400/[0.05] px-4 py-3.5">
+                            <div className="flex items-start gap-3 rounded-xl border border-accent/40 bg-accent/[0.05] px-4 py-3.5">
                               <CreditCard
-                                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300"
+                                className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                                 strokeWidth={1.5}
                               />
-                              <p className="text-[0.8rem] leading-relaxed font-light text-cyan-50/70">
+                              <p className="text-[0.8rem] leading-relaxed font-light text-accent">
                                 {INSTALLMENTS_NOTE}
                               </p>
                             </div>
                           )}
 
                           {plan === "leasing" && (
-                            <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3.5">
+                            <div className="flex items-start gap-3 rounded-xl border border-line bg-white/[0.02] px-4 py-3.5">
                               <CreditCard
-                                className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/70"
+                                className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                                 strokeWidth={1.5}
                               />
-                              <p className="text-[0.8rem] leading-relaxed font-light text-white/45">
+                              <p className="text-[0.8rem] leading-relaxed font-light text-dim">
                                 Une empreinte de votre carte est conservée pour
                                 la caution de garantie. Aucun montant n&apos;est
                                 débité à ce titre aujourd&apos;hui.
@@ -818,10 +825,39 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                             </div>
                           )}
 
-                          <p className="text-[0.78rem] leading-relaxed font-light text-white/35">
-                            Le paiement est traité par Stripe : aucune
-                            coordonnée bancaire ne transite par ce site.
-                          </p>
+                          {/*
+                            Achat : le paiement se joue ici même.
+
+                            Le Payment Element remplace la redirection vers le
+                            tunnel hébergé. Il rend un `<div>` et non un
+                            `<form>` — nous sommes déjà à l'intérieur du
+                            formulaire par étapes, et deux `<form>` imbriqués
+                            sont du HTML invalide.
+
+                            Carte et Apple Pay se règlent sans quitter la page.
+                            Klarna et PayPal emmènent le client sur leur
+                            domaine puis le renvoient sur
+                            `/reservation/confirmee`, qui vérifie l'état réel
+                            auprès de Stripe avant d'afficher quoi que ce soit.
+                          */}
+                          {plan === "achat" ? (
+                            <PaymentForm
+                              quantity={form.quantity}
+                              contact={{
+                                email: form.email,
+                                firstName: form.firstName,
+                                lastName: form.lastName,
+                                phone: form.phone,
+                                address: form.address,
+                                options: form.options,
+                              }}
+                            />
+                          ) : (
+                            <p className="text-[0.78rem] leading-relaxed font-light text-dimmer">
+                              Le paiement est traité par Stripe : aucune
+                              coordonnée bancaire ne transite par ce site.
+                            </p>
+                          )}
                         </div>
                       )}
                     </motion.div>
@@ -842,7 +878,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                     <button
                       type="button"
                       onClick={goBack}
-                      className="group inline-flex items-center gap-2 rounded-full border border-white/12 px-5 py-3 text-[0.82rem] font-medium text-white/70 transition-colors duration-300 hover:border-white/30 hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none"
+                      className="group inline-flex items-center gap-2 rounded-full border border-line-strong px-5 py-3 text-[0.82rem] font-medium text-dim transition-colors duration-300 hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
                     >
                       <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-0.5" />
                       Retour
@@ -854,8 +890,9 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                   <button
                     type="submit"
                     disabled={submitting}
+                    hidden={plan === "achat" && currentStep === "paiement"}
                     data-autofocus={currentStep === "paiement" ? "" : undefined}
-                    className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500 px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-[#04070D] shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C10] focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-void shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? (
                       <>
@@ -875,7 +912,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
 
                 {/* Option d'achat : mention exigée sous le bouton de paiement. */}
                 {plan === "leasing" && currentStep === "paiement" && (
-                  <p className="mt-5 text-center text-[0.8rem] leading-relaxed font-light text-cyan-100/60">
+                  <p className="mt-5 text-center text-[0.8rem] leading-relaxed font-light text-accent">
                     Option d&apos;achat : 100 % de vos loyers versés sont
                     déduits si vous décidez d&apos;acheter ATMOS ONE (
                     {euros(PRICES.purchaseUnit)}).

@@ -100,4 +100,4 @@ L'accès à une technologie d'hypoxie de précision ne nécessite plus de mobili
 
 Avec **ATMOS ONE**, accédez à des protocoles de simulation d'altitude programmables, sécurisés et transportables pour optimiser votre récupération et vos performances depuis chez vous.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).

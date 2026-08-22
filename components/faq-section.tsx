@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
-import { BATCH_NAME, BATCH_SCARCITY, INSTALLMENTS_NOTE } from "@/lib/offering";
+import { DROP_NAME, DROP_SCARCITY, INSTALLMENTS_NOTE } from "@/lib/offering";
 import { EASE, container, rise } from "@/lib/motion";
 import type { FaqEntry } from "@/lib/structured-data";
 
@@ -78,8 +78,8 @@ export const FAQ: FaqEntry[] = [
   {
     question: "Comment se passe la précommande ?",
     answer: [
-      `En quatre temps. Vous vous inscrivez d'abord sur la liste prioritaire, sans engagement et sans paiement. Vous recevez ensuite un accès exclusif à l'ouverture du ${BATCH_NAME}, dont les stocks sont très limités. Le paiement sécurisé — au comptant ou fractionné — n'intervient qu'à cette ouverture. La fabrication et l'expédition directe suivent.`,
-      `L'édition de lancement est une série fermée : ${BATCH_SCARCITY.toLowerCase()}. Passé ce volume, les commandes basculent sur la série suivante.`,
+      `En quatre temps. Vous vous inscrivez d'abord sur la liste prioritaire, sans engagement et sans paiement. Vous recevez ensuite un accès exclusif à l'ouverture du ${DROP_NAME}, dont les stocks sont très limités. Le paiement sécurisé — au comptant ou fractionné — n'intervient qu'à cette ouverture. La fabrication et l'expédition directe suivent.`,
+      `L'édition de lancement est une série fermée : ${DROP_SCARCITY.toLowerCase()}. Passé ce volume, les commandes basculent sur la série suivante.`,
       `${INSTALLMENTS_NOTE}. Le paiement est traité par Stripe : aucune coordonnée bancaire ne transite par ce site.`,
     ],
   },
@@ -103,7 +103,7 @@ export function FaqSection() {
       >
         <motion.span
           variants={rise}
-          className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase"
+          className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase"
         >
           Questions fréquentes
         </motion.span>
@@ -113,10 +113,10 @@ export function FaqSection() {
           id="faq-titre"
           className="mt-5 text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl"
         >
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Ce qu&apos;on nous demande
           </span>{" "}
-          <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <span className="text-accent">
             le plus souvent.
           </span>
         </motion.h2>
@@ -138,8 +138,8 @@ export function FaqSection() {
               variants={rise}
               className={`overflow-hidden rounded-[1.5rem] border transition-colors duration-500 ${
                 isOpen
-                  ? "border-cyan-300/25 bg-white/[0.04]"
-                  : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                  ? "border-accent/40 bg-white/[0.04]"
+                  : "border-line bg-white/[0.02] hover:border-line-strong"
               }`}
             >
               <h3>
@@ -149,11 +149,11 @@ export function FaqSection() {
                   aria-expanded={isOpen}
                   aria-controls={`faq-reponse-${index}`}
                   id={`faq-question-${index}`}
-                  className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none sm:px-7 sm:py-6"
+                  className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none sm:px-7 sm:py-6"
                 >
                   <span
                     className={`text-[0.98rem] font-medium tracking-tight text-pretty transition-colors duration-300 sm:text-[1.05rem] ${
-                      isOpen ? "text-white" : "text-white/80"
+                      isOpen ? "text-ink" : "text-ink"
                     }`}
                   >
                     {item.question}
@@ -165,8 +165,8 @@ export function FaqSection() {
                     transition={{ duration: 0.35, ease: EASE }}
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 ${
                       isOpen
-                        ? "border-cyan-300/40 text-cyan-200"
-                        : "border-white/12 text-white/40"
+                        ? "border-accent/40 text-accent"
+                        : "border-line-strong text-dimmer"
                     }`}
                   >
                     <Plus className="h-4 w-4" strokeWidth={1.6} />
@@ -202,7 +202,7 @@ export function FaqSection() {
                   {item.answer.map((paragraph) => (
                     <p
                       key={paragraph}
-                      className="max-w-2xl text-[0.92rem] leading-relaxed font-light text-white/50 text-pretty"
+                      className="max-w-2xl text-[0.92rem] leading-relaxed font-light text-dim text-pretty"
                     >
                       {paragraph}
                     </p>

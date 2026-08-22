@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 import { container, rise } from "@/lib/motion";
-import { BATCH_NAME } from "@/lib/offering";
+import { DROP_NAME } from "@/lib/offering";
 
 /**
  * Le second appareil de la gamme.
@@ -51,7 +51,7 @@ export function NextProductSection() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.3 }}
-        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.01] px-8 py-14 backdrop-blur-xl sm:px-12 sm:py-16 lg:px-16"
+        className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.05] to-white/[0.01] px-8 py-14 backdrop-blur-xl sm:px-12 sm:py-16 lg:px-16"
       >
         <div
           aria-hidden
@@ -61,7 +61,7 @@ export function NextProductSection() {
         <div className="relative">
           <motion.span
             variants={rise}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1 text-[0.6rem] font-medium tracking-[0.24em] text-white/50 uppercase"
+            className="font-mono inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1 text-[0.6rem] tracking-[0.24em] text-dim uppercase"
           >
             <Sparkles
               className="h-3 w-3 text-indigo-300/80"
@@ -75,17 +75,17 @@ export function NextProductSection() {
             id="gamme-titre"
             className="mt-7 max-w-3xl text-[1.85rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-5xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               ATMOS ONE n&apos;est pas un appareil isolé.
             </span>{" "}
-            <span className="bg-gradient-to-r from-indigo-200 to-blue-300 bg-clip-text text-transparent">
+            <span className="text-accent">
               ATMOS Chamber suivra.
             </span>
           </motion.h2>
 
           <motion.p
             variants={rise}
-            className="mt-7 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty"
+            className="mt-7 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty"
           >
             {
               "Le second appareil de la gamme sera un caisson hyperbare. L'altitude raréfie l'oxygène pour déclencher l'adaptation ; la pression fait le chemin inverse. Deux directions opposées, un même cycle d'entraînement."
@@ -94,14 +94,14 @@ export function NextProductSection() {
 
           <motion.dl
             variants={container}
-            className="mt-12 grid max-w-4xl gap-8 border-t border-white/[0.07] pt-10 sm:grid-cols-3 sm:gap-10"
+            className="mt-12 grid max-w-4xl gap-8 border-t border-line pt-10 sm:grid-cols-3 sm:gap-10"
           >
             {PILLARS.map(({ label, detail }) => (
               <motion.div key={label} variants={rise}>
-                <dt className="text-[0.62rem] font-medium tracking-[0.2em] text-white/45 uppercase">
+                <dt className="text-[0.62rem] font-medium tracking-[0.2em] text-dim uppercase">
                   {label}
                 </dt>
-                <dd className="mt-3 text-[0.88rem] leading-relaxed font-light text-white/50 text-pretty">
+                <dd className="mt-3 text-[0.88rem] leading-relaxed font-light text-dim text-pretty">
                   {detail}
                 </dd>
               </motion.div>
@@ -110,9 +110,9 @@ export function NextProductSection() {
 
           <motion.p
             variants={rise}
-            className="mt-10 max-w-2xl text-[0.8rem] leading-relaxed font-light text-white/30 text-pretty"
+            className="mt-10 max-w-2xl text-[0.8rem] leading-relaxed font-light text-dimmer text-pretty"
           >
-            {`Ni date, ni précommande pour l'instant. Les inscrits du ${BATCH_NAME} seront prévenus les premiers.`}
+            {`Ni date, ni précommande pour l'instant. Les inscrits du ${DROP_NAME} seront prévenus les premiers.`}
           </motion.p>
         </div>
       </motion.div>
