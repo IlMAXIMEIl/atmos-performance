@@ -22,18 +22,22 @@ export const LEASING_OPEN = false;
  * le mode Stripe est celui qu'on croit, et que l'entité qui encaisse est bien
  * immatriculée.
  *
- * Rouvert **en clés de test**, le temps de valider de bout en bout
- * l'enregistrement des commandes en base. Dans ce mode, aucun argent ne peut
- * bouger : Stripe n'accepte que ses cartes de test et n'émet aucun débit.
+ * **Refermé, validation acquise.** La chaîne complète a été éprouvée en clés
+ * de test le 22 août 2026 : paiement, vérification de l'intention côté
+ * serveur, écriture en base par les deux chemins, page de confirmation.
  *
- * La tentative précédente avait eu lieu en clés de production, où Stripe
- * refuse justement la carte de test — le tunnel restait ouvert à de vrais
- * débits de 1 890 € sans qu'aucun test ne puisse aboutir.
+ * Quatre défauts ont été trouvés et corrigés à cette occasion — le
+ * `client_secret` absent de l'URL de retour, `DATABASE_URL` illisible par
+ * l'analyseur d'URL, `localhost` résolu en IPv6 que MySQL refuse, et l'URL du
+ * webhook réduite à la racine du domaine. Les trois premiers ne peuvent plus
+ * se reproduire ; le quatrième est de la configuration, et il est désormais
+ * sans conséquence puisque la page de confirmation écrit aussi.
  *
- * À refermer une fois la validation acquise, et **avant** tout retour aux
- * clés de production.
+ * Avant de rouvrir : remettre les clés de production, vérifier que le point
+ * de terminaison du webhook vise bien `/api/webhooks/stripe` dans ce mode-là,
+ * et s'assurer que l'entité qui encaisse est immatriculée.
  */
-export const ORDERS_OPEN = true;
+export const ORDERS_OPEN = false;
 
 /**
  * Série de lancement en cours.
