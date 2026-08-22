@@ -142,7 +142,7 @@ export function ScienceSection({ heading = true }: { heading?: boolean }) {
             {/* Halo discret au survol */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_50%_0%,rgba(56,189,248,0.14),transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_50%_0%,rgba(59,158,255,0.14),transparent_70%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
             />
 
             <div className="relative">

@@ -27,6 +27,12 @@ const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
  * accorder au reste de la page, et les valeurs sont donc les jetons de
  * `globals.css` recopiés en clair — un `var(--ink)` n'aurait aucun sens de
  * l'autre côté de la frontière.
+ *
+ * C'est la seule duplication tolérée du nuancier. Elle a un prix : toucher
+ * `--accent`, `--ink`, `--dim`, `--dimmer`, `--elev`, `--line` ou `--danger`
+ * dans `globals.css` laisse ce bloc en arrière, et le formulaire de carte
+ * dérive du reste de la page sans que rien ne le signale. Les six premières
+ * valeurs ci-dessous sont ces jetons, dans cet ordre.
  */
 const APPEARANCE: Appearance = {
   theme: "night",
@@ -267,7 +273,7 @@ function CheckoutFields({
       {message && (
         <p
           role="alert"
-          className="flex items-start gap-2.5 rounded-lg border border-[#ff6b6b]/30 bg-[#ff6b6b]/[0.07] px-4 py-3 text-[0.85rem] leading-relaxed text-[#ffb4b4]"
+          className="flex items-start gap-2.5 rounded-lg border border-danger/30 bg-danger/[0.07] px-4 py-3 text-[0.85rem] leading-relaxed text-danger-soft"
         >
           <AlertCircle className="mt-0.5 h-4 w-4 flex-none" strokeWidth={1.8} />
           {message}
@@ -330,7 +336,7 @@ function Notice({ children }: { children: React.ReactNode }) {
       role="alert"
       className="flex items-start gap-2.5 rounded-xl border border-line bg-deep px-5 py-4 text-[0.9rem] leading-relaxed text-dim"
     >
-      <AlertCircle className="mt-0.5 h-4 w-4 flex-none text-[#ff6b6b]" strokeWidth={1.8} />
+      <AlertCircle className="mt-0.5 h-4 w-4 flex-none text-danger" strokeWidth={1.8} />
       {children}
     </p>
   );

@@ -107,7 +107,7 @@ export default async function GlossaryTermPage({ params }: Props) {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.12),transparent_70%)]"
       />
 
       <SiteHeader maxWidth="max-w-2xl" />
@@ -160,7 +160,7 @@ export default async function GlossaryTermPage({ params }: Props) {
         <aside className="relative mt-16 overflow-hidden rounded-xl border border-accent/40 bg-gradient-to-b from-accent/[0.06] to-white/[0.015] p-7 backdrop-blur-xl sm:p-9">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.16),transparent_70%)]"
+            className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.16),transparent_70%)]"
           />
 
           <div className="relative">

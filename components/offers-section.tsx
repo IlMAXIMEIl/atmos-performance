@@ -36,9 +36,13 @@ import {
   INCLUDED_ITEMS,
   INSTALLMENTS_NOTE,
   LEASING_DEPOSIT_NOTE,
+  LEASING_MONTHLY_EUR,
   LEASING_OPEN,
+  LEASING_SHIPPING_EUR,
   ORDERS_OPEN,
+  PURCHASE_PRICE_EUR,
   WAITLIST_CTA,
+  formatEuros,
 } from "@/lib/offering";
 import { PaymentFailedNotice } from "@/components/offers/payment-failed-notice";
 import { PreorderSteps } from "@/components/offers/preorder-steps";
@@ -76,7 +80,7 @@ const PLANS: Plan[] = [
     id: "achat",
     label: "Achat",
     badge: `Édition de lancement · ${DROP_NAME}`,
-    price: "1 890 €",
+    price: formatEuros(PURCHASE_PRICE_EUR),
     terms: "TTC · comptant ou paiement fractionné",
     pitch:
       "L'appareil vous appartient dès la livraison. Aucune échéance, aucune condition de restitution.",
@@ -108,16 +112,15 @@ const PLANS: Plan[] = [
     id: "leasing",
     label: "Location",
     badge: LEASING_OPEN ? "1 mois minimum" : "Bientôt disponible",
-    price: "350 €",
-    terms: "par mois · 39 € d'expédition",
+    price: formatEuros(LEASING_MONTHLY_EUR),
+    terms: `par mois · ${formatEuros(LEASING_SHIPPING_EUR)} d'expédition`,
     pitch:
       "Le même appareil, entretenu par nos soins, mois par mois. Vous arrêtez quand vous voulez passé le premier mois.",
     highlights: [
       {
         icon: KeyRound,
         label: "Loyers déduits à l'achat",
-        detail:
-          "100 % des loyers versés viennent en déduction des 1 890 € si vous décidez d'acheter.",
+        detail: `100 % des loyers versés viennent en déduction des ${formatEuros(PURCHASE_PRICE_EUR)} si vous décidez d'acheter.`,
       },
       {
         icon: Wrench,
@@ -348,7 +351,7 @@ export function OffersSection() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.16),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.16),transparent_70%)]"
         />
 
         <div

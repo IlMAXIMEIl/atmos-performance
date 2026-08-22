@@ -33,8 +33,18 @@ export const metadata: Metadata = {
   // Sert de base aux URL relatives des balises OpenGraph.
   metadataBase: new URL(SITE_URL),
   title: "ATMOS ONE — Générateur d'altitude hypoxique",
+  /*
+    Aucune mention de fractionnement ici.
+
+    Cette phrase annonçait « paiement en 3x ou 4x » : le 4x n'existe pas —
+    `INSTALLMENTS_NOTE` ne promet qu'un 3x Klarna — et la mention tombait de
+    toute façon au-delà des ~160 caractères que les moteurs affichent. Elle
+    n'était donc pas lue, mais elle était indexée : un engagement tarifaire
+    invérifiable, sans contrepartie. Ce qui reste tient dans le budget utile
+    et ne parle que du produit.
+  */
   description:
-    "ATMOS ONE simule jusqu'à 6 500 mètres d'altitude chez vous, de 20,9 % à 9 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Édition de lancement en série limitée, paiement en 3x ou 4x.",
+    "ATMOS ONE simule jusqu'à 6 500 mètres d'altitude chez vous, de 20,9 % à 9 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Édition de lancement en série limitée.",
   alternates: { canonical: SITE_URL },
   openGraph: {
     type: "website",

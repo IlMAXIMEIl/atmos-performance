@@ -21,7 +21,7 @@ export function PaymentFailedNotice() {
   return (
     <p
       role="alert"
-      className="mb-10 flex items-start gap-3 rounded-xl border border-[#ff6b6b]/30 bg-[#ff6b6b]/[0.07] px-5 py-4 text-[0.9rem] leading-relaxed text-[#ffb4b4]"
+      className="mb-10 flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/[0.07] px-5 py-4 text-[0.9rem] leading-relaxed text-danger-soft"
     >
       <AlertCircle className="mt-0.5 h-4 w-4 flex-none" strokeWidth={1.8} />
       <span>

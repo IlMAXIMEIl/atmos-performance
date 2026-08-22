@@ -44,7 +44,7 @@ export default function BlogIndexPage() {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.12),transparent_70%)]"
       />
 
       <SiteHeader maxWidth="max-w-4xl" />

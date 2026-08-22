@@ -55,7 +55,7 @@ export function NextProductSection() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-[radial-gradient(ellipse_at_50%_100%,rgba(129,140,248,0.16),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-[radial-gradient(ellipse_at_50%_100%,rgb(255_233_199/0.1),transparent_70%)]"
         />
 
         <div className="relative">
@@ -64,7 +64,7 @@ export function NextProductSection() {
             className="font-mono inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1 text-[0.6rem] tracking-[0.24em] text-dim uppercase"
           >
             <Sparkles
-              className="h-3 w-3 text-indigo-300/80"
+              className="h-3 w-3 text-warm/80"
               strokeWidth={1.5}
             />
             La gamme

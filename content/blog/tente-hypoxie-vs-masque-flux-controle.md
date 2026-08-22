@@ -95,7 +95,7 @@ Non. Le port d'un masque durant le sommeil profond n'est pas recommandé sans su
 En termes de stimulation mitochondriale, de production de VEGF et d'amélioration du pouvoir tampon musculaire, oui. L'intensité de l'hypoxie étant plus profonde au masque (jusqu'à 10 % d'$O_2$), elle déclenche des cascades enzymatiques équivalentes à une exposition plus longue mais beaucoup plus faible en tente.
 
 ### L'utilisation du masque est-elle étouffante ?
-Non. Les générateurs modernes délivrent un flux d'air continu supérieur au débit ventilatoire humain (pas de résistance inspiratoire). Vous respirez naturellement sans sensation d'asphyxie.
+Non, à condition que le circuit soit correctement dimensionné. Un générateur produit un flux continu quand la respiration, elle, se fait par à-coups : le pic inspiratoire atteint environ trois fois la ventilation minute, et aucun débit continu ne le suit. C'est le **ballon réservoir** intercalé entre le générateur et le masque qui répond au pic — il se vide à la vitesse de l'inspiration, se remplit pendant l'expiration. Avec lui, aucune résistance inspiratoire ; sans lui, la sensation de « tirer » sur le masque apparaît dès que l'effort monte.
 
 ---
 
@@ -105,4 +105,4 @@ Développé pour éliminer les contraintes logistiques et thermiques des tentes 
 
 Bénéficiez de séances d'altitude programmables, d'une évacuation parfaite du $CO_2$ et d'un confort d'utilisation sans compromis.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.
+**[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x disponible.

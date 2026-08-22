@@ -108,4 +108,4 @@ Sur marathon ou Ironman, chaque pourcent d'économie d'énergie fait la différe
 
 Avec **ATMOS ONE**, bénéficiez de protocoles d'altitude normobare calibrés au pourcent près pour structurer vos blocs d'affûtage en toute sérénité.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.
+**[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x disponible.

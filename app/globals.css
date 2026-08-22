@@ -9,8 +9,18 @@
 
    Les jetons ci-dessous sont la source unique des couleurs de la refonte.
    Ils sont *ajoutés* au thème Tailwind, jamais substitués aux couleurs par
-   défaut : les pages non encore reprises (blog, glossaire, outils…)
-   continuent d'utiliser `cyan-*` / `sky-*` sans rien changer.
+   défaut.
+
+   La reprise est terminée : plus une seule classe `cyan-*` / `sky-*` /
+   `text-white/xx` dans `app/` ni `components/`. Le contrôle est un grep, et
+   il doit rester vide.
+
+   Mais une classe n'est pas la seule façon d'écrire une couleur. Le bleu
+   `sky-400` avait survécu sous sa forme brute — `rgba(56,189,248,…)` — dans
+   dix-huit fichiers de valeurs arbitraires, invisible au grep des classes :
+   chaque halo d'ambiance du site était peint dans un bleu qui n'était pas
+   celui de la marque. **L'accent en composantes s'écrit `59,158,255`, et
+   aucun autre triplet bleu n'a de raison d'exister ici.**
    ══════════════════════════════════════════════════════════════════════ */
 :root {
   /* Fonds, du plus profond au plus élevé */
@@ -29,6 +39,42 @@
   --accent-soft: rgb(59 158 255 / 0.14);
   /* Contrepoint chaud, réservé aux signaux de récupération */
   --warm: #ffe9c7;
+
+  /* Bandes de protocole.
+
+     Ces trois teintes ne décorent pas : elles indexent l'axe d'altitude de
+     la section Protocoles, où chaque segment reprend la couleur de sa
+     bande. Les effacer au profit de l'accent unique rendrait l'axe illisible
+     — trois segments bleus identiques ne disent plus rien.
+
+     Elles étaient écrites en `indigo-*` / `violet-*`, c'est-à-dire dans la
+     palette Tailwind d'origine que la refonte a justement remplacée : une
+     couleur porteuse de sens vivait sous un nom qui n'en portait aucun. Les
+     valeurs sont reprises à l'identique — seul le nom change, et les
+     retoucher ne demande plus qu'une ligne ici.
+
+     Trois rôles par bande, parce que le contraste sur fond sombre l'exige :
+     `-core` remplit (segment d'axe, pastille), `-ink` écrit (titre, icône —
+     une teinte plus claire, sans quoi le texte s'éteint sur le `void`), et
+     `-glow` porte le halo de carte, alpha comprise, pour qu'aucune valeur
+     arbitraire n'ait à réinventer la couleur. */
+  --band-lhtl: var(--accent); /* Sommeil · 2 100 – 2 600 m */
+  --band-lhtl-ink: var(--accent);
+  --band-lhtl-glow: rgb(59 158 255 / 0.16);
+
+  --band-iht: #818cf8; /* Entraînement · 2 500 – 3 500 m */
+  --band-iht-ink: #c7d2fe;
+  --band-iht-glow: rgb(129 140 248 / 0.16);
+
+  --band-ihe: #a78bfa; /* Exposition · 3 500 – 5 000 m */
+  --band-ihe-ink: #ddd6fe;
+  --band-ihe-glow: rgb(167 139 250 / 0.16);
+
+  /* Alerte. Le rouge des échecs de paiement, jusqu'ici recopié en dur dans
+     le formulaire Stripe et dans le message de retour — deux endroits qui
+     doivent dire la même chose et ne se lisent jamais ensemble. */
+  --danger: #ff6b6b;
+  --danger-soft: #ffb4b4;
 
   /* Filets */
   --line: rgb(233 241 251 / 0.11);
@@ -52,6 +98,14 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-warm: var(--warm);
+  --color-band-lhtl: var(--band-lhtl);
+  --color-band-lhtl-ink: var(--band-lhtl-ink);
+  --color-band-iht: var(--band-iht);
+  --color-band-iht-ink: var(--band-iht-ink);
+  --color-band-ihe: var(--band-ihe);
+  --color-band-ihe-ink: var(--band-ihe-ink);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
 

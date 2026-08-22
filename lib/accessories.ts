@@ -37,6 +37,7 @@ export const ACCESSORIES: Accessory[] = [
     points: [
       "Séances sous masque : entraînement (IHT) et exposition au repos (IHE)",
       "Valves séparant l'air inspiré de l'air expiré",
+      "Ballon réservoir : il encaisse les pics inspiratoires de l'effort, que le débit continu du générateur ne peut pas suivre",
       "Plusieurs tailles de jupe, l'étanchéité dépendant du visage",
     ],
     imageAlt:

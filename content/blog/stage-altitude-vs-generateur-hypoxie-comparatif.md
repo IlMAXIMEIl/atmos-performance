@@ -85,7 +85,7 @@ Le protocole *Live High, Train Low* (vivre en altitude, s'entraîner en plaine) 
 Oui. L'utilisation de tentes à hypoxie et de générateurs d'altitude artificielle est parfaitement conforme au Code Mondial Antidopage. L'AMA autorise ces technologies qui stimulent les adaptations physiologiques naturelles de l'organisme.
 
 ### Peut-on s'entraîner directement avec le générateur ?
-Oui. Les générateurs modernes permettent à la fois des protocoles passifs au repos (IHE) et des séances actives sur home-trainer ou tapis de course grâce à des systèmes de masque respiratoire à débit continu sans résistance inspiratoire.
+Oui. Les générateurs modernes couvrent les protocoles passifs au repos (IHE) comme les séances actives sur home-trainer ou tapis. Pour l'effort, c'est le **ballon réservoir** du circuit respiratoire qui rend la chose confortable : il absorbe les pics inspiratoires que le débit continu du compresseur ne peut pas suivre.
 
 ### Combien de cycles peut-on réaliser par an ?
 Contrairement aux stages en montagne souvent limités à un ou deux par an pour des raisons de coût et de calendrier, un générateur permet de réaliser 3 à 4 blocs ciblés dans l'année (fondation hivernale, pic de forme printanier, affûtage pré-compétition).
@@ -96,4 +96,4 @@ Contrairement aux stages en montagne souvent limités à un ou deux par an pour 
 
 Développé pour allier précision des flux d'oxygène et simplicité d'utilisation à domicile, **ATMOS ONE** vous permet de calibrer vos protocoles d'altitude sur-mesure tout au long de l'année.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Drop n°1 : 25 unités seulement, avec paiement en 3x ou 4x à l'ouverture des commandes.
+**[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou inscrivez-vous sur la liste prioritaire du Drop n°1 : 25 unités seulement, avec paiement en 3x à l'ouverture des commandes.

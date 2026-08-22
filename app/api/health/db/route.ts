@@ -31,10 +31,18 @@ export async function GET(request: Request) {
     );
   }
 
-  const provided =
-    request.headers.get("x-diagnostic-token") ??
-    new URL(request.url).searchParams.get("token") ??
-    "";
+  /*
+    En-tête uniquement, plus de `?token=`.
+
+    Un secret placé dans une chaîne de requête est recopié dans les journaux
+    d'accès de l'hébergeur, dans ceux de tout proxy traversé, et dans
+    l'historique du navigateur qui l'a ouvert. Il ne s'agit pas d'un secret de
+    grande valeur — la route ne rend qu'un compteur et la configuration de
+    connexion — mais rien n'obligeait à le disperser.
+
+    Appel : curl -H "x-diagnostic-token: <jeton>" https://…/api/health/db
+  */
+  const provided = request.headers.get("x-diagnostic-token") ?? "";
 
   // Comparaison en temps constant : sur une chaîne courte l'écart est
   // difficile à exploiter, mais rien n'oblige à laisser la porte entrouverte.

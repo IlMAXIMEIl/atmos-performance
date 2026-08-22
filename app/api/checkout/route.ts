@@ -1,19 +1,34 @@
 import Stripe from "stripe";
 
-import { DROP_NAME, LEASING_OPEN, ORDERS_OPEN } from "@/lib/offering";
+import {
+  DROP_NAME,
+  LEASING_MONTHLY_EUR,
+  LEASING_OPEN,
+  LEASING_SHIPPING_EUR,
+  ORDERS_OPEN,
+  PURCHASE_PRICE_EUR,
+} from "@/lib/offering";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
- * Barème, en centimes. Défini ici et jamais reçu du client : un montant
- * transmis par le navigateur serait modifiable par l'utilisateur.
+ * Barème, en centimes. **Jamais reçu du client** : un montant transmis par le
+ * navigateur serait modifiable par l'utilisateur, et une console ouverte
+ * suffirait à acheter l'appareil à un euro. Cette règle est intacte — dériver
+ * d'une constante du serveur n'y change rien, `lib/offering.ts` n'est pas plus
+ * accessible au visiteur que ce fichier.
+ *
+ * Ce qui change : les trois montants étaient écrits en clair ici *et* dans la
+ * carte d'offre *et* dans le récapitulatif de la modale. Trois copies dont
+ * celle-ci est la seule qui débite réellement une carte — une divergence y
+ * serait passée inaperçue jusqu'au relevé bancaire du client.
  */
 const PRICES = {
   /** Prix d'achat d'une unité, encaissé à la précommande. */
-  purchaseUnit: 189_000,
+  purchaseUnit: PURCHASE_PRICE_EUR * 100,
   /** Loyer mensuel. */
-  monthlyRent: 35_000,
+  monthlyRent: LEASING_MONTHLY_EUR * 100,
   /** Expédition sécurisée, facturée une fois au départ de la location. */
-  shipping: 3_900,
+  shipping: LEASING_SHIPPING_EUR * 100,
 };
 
 /** Durée verrouillée de la première période de location. */
@@ -77,7 +92,13 @@ function addDays(date: string, days: number) {
   return result.toISOString().slice(0, 10);
 }
 
-function formatEuros(cents: number) {
+/**
+ * Nommée d'après son unité : elle prend des **centimes**, quand
+ * `formatEuros` de `lib/offering.ts` prend des euros. Deux fonctions de même
+ * nom et d'unités différentes finissent toujours par être appelées l'une pour
+ * l'autre — ici, avec un facteur cent sur le montant affiché au client.
+ */
+function formatEurosFromCents(cents: number) {
   return `${(cents / 100).toLocaleString("fr-FR")} €`;
 }
 
@@ -201,7 +222,7 @@ export async function POST(request: Request) {
   if (payload.plan === "leasing") {
     metadata.startDate = payload.startDate;
     metadata.endDate = endDate;
-    metadata.monthlyRent = formatEuros(PRICES.monthlyRent);
+    metadata.monthlyRent = formatEurosFromCents(PRICES.monthlyRent);
 
     lineItems = [
       {
@@ -259,7 +280,7 @@ export async function POST(request: Request) {
           unit_amount: PRICES.purchaseUnit,
           product_data: {
             name: `ATMOS ONE — précommande ${DROP_NAME}`,
-            description: `Précommande d'une unité de l'édition de lancement, à ${formatEuros(PRICES.purchaseUnit)}. Série limitée, fabrication et expédition directe.`,
+            description: `Précommande d'une unité de l'édition de lancement, à ${formatEurosFromCents(PRICES.purchaseUnit)}. Série limitée, fabrication et expédition directe.`,
           },
         },
       },

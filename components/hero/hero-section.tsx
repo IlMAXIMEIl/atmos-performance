@@ -27,19 +27,30 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
  * Ces trois chiffres viennent des constantes du produit, pas du texte : le
  * plafond et les bornes de FiO₂ affichés ici sont exactement ceux que le
  * simulateur applique. Un jour où `MAX_ALTITUDE` bouge, cette ligne bouge.
+ *
+ * **Chaque étiquette décrit la valeur qu'elle porte, et rien d'autre.** La
+ * troisième annonçait un fractionnement — « 3x ou 4x » — sous un relevé
+ * d'unités : deux faits sans rapport collés l'un à l'autre, et un engagement
+ * tarifaire que `INSTALLMENTS_NOTE` ne tient pas (Klarna ne propose pas le 4x
+ * via Stripe). Le moyen de paiement se lit sous le prix, là où il pèse sur la
+ * décision ; en tête de page il ne fait que diluer.
+ *
+ * Le sens de lecture de la FiO₂ suit celui de la machine — 20,9 % vers 9,1 %,
+ * comme le bandeau de pied de hero juste en dessous. Une descente écrite à
+ * l'envers oblige le lecteur à retourner le chiffre lui-même.
  */
 const METRICS = [
   {
     value: `Jusqu'à ${formatNumber(MAX_ALTITUDE)} m`,
-    label: "d'altitude simulée",
+    label: "altitude simulée, réglable au mètre",
   },
   {
-    value: `${formatDecimal(MIN_FIO2)} % à ${formatDecimal(SEA_LEVEL_FIO2)} % O₂`,
-    label: "réglable au mètre près",
+    value: `${formatDecimal(SEA_LEVEL_FIO2)} % → ${formatDecimal(MIN_FIO2)} % O₂`,
+    label: "fraction inspirée, hypoxie normobare",
   },
   {
     value: `${DROP_NAME} · ${DROP_UNITS} unités`,
-    label: "paiement en 3x ou 4x disponible",
+    label: "série de lancement, France",
   },
 ];
 

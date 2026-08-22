@@ -139,7 +139,7 @@ export function WaitlistModal({ open, onClose }: Props) {
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
+              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.18),transparent_70%)]"
             />
 
             <div ref={panelRef} className="relative p-7 sm:p-9">
@@ -263,7 +263,7 @@ export function WaitlistModal({ open, onClose }: Props) {
                     <button
                       type="submit"
                       disabled={state === "envoi"}
-                      className="group relative mt-6 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-void shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                      className="group relative mt-6 inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-void shadow-[0_0_32px_-8px_rgba(59,158,255,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(59,158,255,0.95)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {state === "envoi" ? (
                         <>

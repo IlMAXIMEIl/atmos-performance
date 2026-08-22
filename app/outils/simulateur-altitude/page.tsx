@@ -160,7 +160,7 @@ export default function SimulateurAltitudePage() {
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[40rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.13),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[40rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.13),transparent_70%)]"
       />
 
       {/* ── En-tête ──────────────────────────────────────────────────── */}

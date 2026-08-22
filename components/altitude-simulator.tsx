@@ -51,7 +51,7 @@ import {
   type ProfileId,
 } from "@/lib/altitude";
 import { EASE, container, rise } from "@/lib/motion";
-import { WAITLIST_CTA } from "@/lib/offering";
+import { INSTALLMENTS_NOTE, WAITLIST_CTA } from "@/lib/offering";
 
 const PROFILE_ICONS: Record<ProfileId, LucideIcon> = {
   endurance: Bike,
@@ -102,7 +102,7 @@ const SLIDER_CLASS =
   "[&::-webkit-slider-runnable-track]:h-1.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent " +
   "[&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-line-strong [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-white [&::-webkit-slider-thumb]:to-accent [&::-webkit-slider-thumb]:shadow-[0_0_18px_-2px_var(--accent)] [&::-webkit-slider-thumb]:transition-transform hover:[&::-webkit-slider-thumb]:scale-110 " +
   "[&::-moz-range-track]:h-1.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent " +
-  "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-white/40 [&::-moz-range-thumb]:bg-accent [&::-moz-range-thumb]:shadow-[0_0_18px_-2px_rgba(56,189,248,0.9)] " +
+  "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-white/40 [&::-moz-range-thumb]:bg-accent [&::-moz-range-thumb]:shadow-[0_0_18px_-2px_rgba(59,158,255,0.9)] " +
   "focus-visible:[&::-webkit-slider-thumb]:ring-2 focus-visible:[&::-webkit-slider-thumb]:ring-accent";
 
 /** Arrondi au dixième : une largeur en pourcentage doit rester déterministe. */
@@ -160,14 +160,14 @@ function Option({
       aria-pressed={selected}
       className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${
         selected
-          ? "border-accent/40 bg-accent/[0.07] shadow-[0_0_32px_-12px_rgba(56,189,248,0.7)]"
+          ? "border-accent/40 bg-accent/[0.07] shadow-[0_0_32px_-12px_rgba(59,158,255,0.7)]"
           : "border-line bg-white/[0.02] hover:border-line-strong hover:bg-white/[0.04]"
       }`}
     >
       {selected && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.22),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.22),transparent_70%)]"
         />
       )}
 
@@ -303,7 +303,7 @@ export function AltitudeSimulator() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.12),transparent_70%)]"
         />
 
         <div className="relative flex flex-col gap-10">
@@ -403,7 +403,7 @@ export function AltitudeSimulator() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.18),transparent_70%)]"
         />
 
         <div className="relative p-6 sm:p-9 lg:p-11">
@@ -453,7 +453,7 @@ export function AltitudeSimulator() {
                     }}
                   />
                   <span
-                    className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-white shadow-[0_0_14px_-1px_rgba(56,189,248,0.9)]"
+                    className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/50 bg-white shadow-[0_0_14px_-1px_rgba(59,158,255,0.9)]"
                     style={{
                       left: `${percent(protocol.targetAltitudeMeters, 0, MAX_ALTITUDE)}%`,
                     }}
@@ -613,7 +613,13 @@ export function AltitudeSimulator() {
           </div>
 
           <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
-            {`Votre configuration — ${profileLabel.toLowerCase()}, ${goalLabel.toLowerCase()}, ${levelLabel.toLowerCase()} — est transmise avec votre précommande. Paiement en 3x ou 4x disponible.`}
+            {/*
+              Le moyen de paiement sort de `INSTALLMENTS_NOTE`, jamais d'une
+              phrase retapée : cette ligne annonçait un 4x que Klarna ne
+              propose pas via Stripe, à deux clics d'un tunnel qui ne
+              l'affiche pas.
+            */}
+            {`Votre configuration — ${profileLabel.toLowerCase()}, ${goalLabel.toLowerCase()}, ${levelLabel.toLowerCase()} — est transmise avec votre précommande. ${INSTALLMENTS_NOTE}.`}
           </p>
         </div>
       </motion.div>
@@ -784,7 +790,7 @@ export function AltitudeSimulator() {
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(ellipse_at_50%_100%,rgba(56,189,248,0.1),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-[radial-gradient(ellipse_at_50%_100%,rgba(59,158,255,0.1),transparent_70%)]"
         />
 
         <div className="relative">
@@ -852,7 +858,7 @@ export function AltitudeSimulator() {
             <div className="relative overflow-hidden rounded-[1.5rem] border border-accent/40 bg-accent/[0.05] p-6 sm:p-7">
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
+                className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.18),transparent_70%)]"
               />
 
               <div className="relative">

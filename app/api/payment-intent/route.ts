@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-import { DROP_NAME, ORDERS_OPEN } from "@/lib/offering";
+import { DROP_NAME, ORDERS_OPEN, PURCHASE_PRICE_EUR } from "@/lib/offering";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
@@ -12,7 +12,7 @@ import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
  */
 const PRICES = {
   /** Prix d'achat d'une unité, encaissé en totalité à la précommande. */
-  purchaseUnit: 189_000,
+  purchaseUnit: PURCHASE_PRICE_EUR * 100,
 };
 
 const MAX_QUANTITY = 5;

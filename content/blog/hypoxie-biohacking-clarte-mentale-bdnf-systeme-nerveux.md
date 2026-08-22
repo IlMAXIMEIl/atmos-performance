@@ -105,4 +105,4 @@ Prendre soin de son cerveau et de sa longévité nécessite des outils à la hau
 
 Avec **ATMOS ONE**, bénéficiez de protocoles d'hypoxie de précision pour stimuler votre clarté mentale, réguler votre stress et régénérer vos centrales cellulaires depuis votre domicile.
 
-👉 **[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).
+**[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x disponible).

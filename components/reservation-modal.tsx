@@ -26,7 +26,13 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { DROP_NAME, INSTALLMENTS_NOTE } from "@/lib/offering";
+import {
+  DROP_NAME,
+  INSTALLMENTS_NOTE,
+  LEASING_MONTHLY_EUR,
+  LEASING_SHIPPING_EUR,
+  PURCHASE_PRICE_EUR,
+} from "@/lib/offering";
 import { PaymentForm } from "@/components/checkout/payment-form";
 import { EASE } from "@/lib/motion";
 
@@ -62,9 +68,9 @@ const OPTIONS = [
  * réellement débitées : ces valeurs ne servent qu'au récapitulatif.
  */
 const PRICES = {
-  purchaseUnit: 1890,
-  monthlyRent: 350,
-  shipping: 39,
+  purchaseUnit: PURCHASE_PRICE_EUR,
+  monthlyRent: LEASING_MONTHLY_EUR,
+  shipping: LEASING_SHIPPING_EUR,
 };
 
 const PLAN_CONFIG: Record<
@@ -376,7 +382,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.18),transparent_70%)]"
+              className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_50%_0%,rgba(59,158,255,0.18),transparent_70%)]"
             />
 
             <div className="relative p-7 sm:p-9">
@@ -892,7 +898,7 @@ export function ReservationModal({ open, onClose, plan }: Props) {
                     disabled={submitting}
                     hidden={plan === "achat" && currentStep === "paiement"}
                     data-autofocus={currentStep === "paiement" ? "" : undefined}
-                    className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-void shadow-[0_0_32px_-8px_rgba(56,189,248,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(56,189,248,0.95)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-7 py-3.5 text-[0.85rem] font-semibold tracking-[0.03em] text-void shadow-[0_0_32px_-8px_rgba(59,158,255,0.8)] transition-all duration-300 hover:shadow-[0_0_48px_-6px_rgba(59,158,255,0.95)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-void focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? (
                       <>

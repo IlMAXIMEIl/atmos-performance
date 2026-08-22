@@ -1,3 +1,5 @@
+import { formatNumber } from "@/lib/format";
+
 /**
  * Ouverture commerciale des formules.
  *
@@ -61,6 +63,30 @@ export const DROP_SCARCITY = `Seulement ${DROP_UNITS} unités disponibles pour l
 export const PURCHASE_PRICE_EUR = 1890;
 
 /**
+ * Loyer mensuel et frais d'expédition de la location, en euros.
+ *
+ * Ils n'existaient nulle part : « 350 € » et « 39 € » étaient écrits à la
+ * main dans la carte d'offre *et* dans le récapitulatif de la modale, sans
+ * qu'aucun des deux ne sache que l'autre existait. Le même schéma exactement
+ * que le « paiement en 3x ou 4x » — il n'avait simplement pas encore divergé.
+ */
+export const LEASING_MONTHLY_EUR = 350;
+export const LEASING_SHIPPING_EUR = 39;
+
+/**
+ * « 1 890 € », avec l'espace fine insécable des milliers.
+ *
+ * Le même formateur que les altitudes, pour que les montants et les mètres
+ * s'écrivent de la même façon sur une page qui affiche les deux — et pour la
+ * raison qui a fait écrire `formatNumber` à la main : `toLocaleString` ne
+ * sépare pas les milliers de la même façon d'une version d'ICU à l'autre, et
+ * l'écart serveur / navigateur casse l'hydratation.
+ */
+export function formatEuros(value: number): string {
+  return `${formatNumber(value)} €`;
+}
+
+/**
  * Moyens de paiement annoncés sous le prix.
  *
  * Réservés à l'achat : la location se règle comptant, mois par mois, et
@@ -114,7 +140,7 @@ export const WAITLIST_SUBTITLE = "Ouverture des commandes imminente";
  */
 export const INCLUDED_ITEMS = [
   "Générateur ATMOS ONE",
-  "Masque et circuit respiratoire",
+  "Masque, ballon réservoir et circuit respiratoire",
   "Station de contrôle",
   "Protocoles guidés Live High et Train High",
   "Accompagnement au démarrage",

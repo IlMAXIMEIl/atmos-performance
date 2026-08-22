@@ -103,4 +103,4 @@ La régulation du système nerveux et la qualité de la récupération nocturne 
 
 Le système **ATMOS ONE** délivre un flux d'air hypoxique précisément calibré pour vous permettre de stimuler vos adaptations vagales et transformer votre sommeil depuis chez vous.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).
+**[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x disponible).
