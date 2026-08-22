@@ -124,14 +124,6 @@ export const WAITLIST_TITLE = `Rejoindre la liste d'attente prioritaire du ${DRO
 export const WAITLIST_SUBTITLE = "Ouverture des commandes imminente";
 
 /**
- * Libellé des boutons tant que les commandes sont fermées.
- *
- * Aucun paiement n'est possible aujourd'hui : un bouton « Précommander » sec
- * promettrait une action que le site ne sait pas tenir. Le libellé dit ce
- * qui va réellement se passer au clic. Il redeviendra « Précommander » le
- * jour où `ORDERS_OPEN` passera à `true`.
- */
-/**
  * Ce que comprend la livraison, quelle que soit la formule.
  *
  * Source unique : la section Offres l'affiche, la page « À propos » s'y
@@ -146,8 +138,22 @@ export const INCLUDED_ITEMS = [
   "Accompagnement au démarrage",
 ] as const;
 
-export const WAITLIST_CTA = "Rejoindre la liste d'attente";
-export const WAITLIST_CTA_SHORT = "Liste d'attente";
+/**
+ * Libellé des boutons tant que les commandes sont fermées.
+ *
+ * Aucun paiement n'est possible aujourd'hui : un bouton « Précommander » sec
+ * promettrait une action que le site ne sait pas tenir. Le libellé dit ce qui
+ * va réellement se passer au clic, et nomme la série plutôt que le mécanisme —
+ * « liste d'attente » décrit notre tableur, « être averti du Drop n°1 » décrit
+ * ce que le visiteur y gagne. Il redeviendra « Précommander » le jour où
+ * `ORDERS_OPEN` passera à `true`.
+ *
+ * La version courte existe pour le bouton du header, contraint en largeur sur
+ * mobile. Les deux sortent d'ici : un libellé d'appel à l'action retapé dans
+ * une page finit toujours par contredire les autres.
+ */
+export const WAITLIST_CTA = `Être averti du ${DROP_NAME}`;
+export const WAITLIST_CTA_SHORT = "Être averti";
 
 /**
  * Déroulé de la précommande, tel qu'annoncé au visiteur.

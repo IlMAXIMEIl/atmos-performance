@@ -46,6 +46,7 @@ import {
 } from "@/lib/offering";
 import { PaymentFailedNotice } from "@/components/offers/payment-failed-notice";
 import { PreorderSteps } from "@/components/offers/preorder-steps";
+import { LeadCapture } from "@/components/waitlist/lead-capture";
 import { EASE, container, rise } from "@/lib/motion";
 
 /**
@@ -571,6 +572,20 @@ export function OffersSection() {
           étapes a besoin d'air pour se lire, et le bloc « Après l'achat »
           juste au-dessus garde son cadre — le contraste sépare les deux. */}
       <PreorderSteps />
+
+      {/*
+        La capture, en clair et en dernier.
+
+        Le bouton de la carte d'offre ouvre la même liste, mais dans une modale
+        — il faut vouloir cliquer pour la voir. Ici le visiteur vient de lire le
+        prix, les garanties et les quatre étapes : c'est le point où il décide,
+        et le formulaire doit y être posé, pas caché derrière un geste.
+
+        Le bloc disparaît le jour où `ORDERS_OPEN` passe à `true` : la carte
+        redevient un tunnel de commande, et deux appels à l'action concurrents
+        sur le même écran se voleraient le clic.
+      */}
+      {!ORDERS_OPEN && <LeadCapture source="drop-1" />}
 
       {/*
         Tant que les commandes ne sont pas ouvertes, les boutons d'action
