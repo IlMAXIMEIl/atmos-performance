@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 import { ORDERS_OPEN } from "@/lib/offering";
-import { recordOrder, type Order } from "@/lib/orders";
+import { orderFromIntent, recordOrder, type Order } from "@/lib/orders";
 
 /**
  * Réception des événements Stripe.
@@ -38,43 +38,27 @@ function readMeta(
 /**
  * Ramène les deux formes d'événement à la même commande.
  *
+ * L'intention passe par `orderFromIntent`, partagée avec la page de
+ * confirmation : les deux chemins d'écriture doivent produire exactement la
+ * même ligne, sinon la seconde écriture divergerait de la première sans que
+ * personne ne s'en aperçoive.
+ *
  * Une session porte `amount_total` et `customer_email` ; une intention porte
  * `amount` et `receipt_email`, et son état vaut « paid » par construction —
  * `payment_intent.succeeded` ne se déclenche pas autrement.
  */
-function toOrder(
-  event: Stripe.Event,
-): Order & { plan: string } {
-  const base = {
-    eventId: event.id,
-    receivedAt: new Date().toISOString(),
-  };
-
+function toOrder(event: Stripe.Event): Order {
   if (event.type === "payment_intent.succeeded") {
-    const intent = event.data.object as Stripe.PaymentIntent;
-    return {
-      ...base,
-      sessionId: intent.id,
-      // Le tunnel intégré ne sert que l'achat ; la location garde le tunnel
-      // hébergé, son empreinte bancaire exigeant une session Checkout.
-      plan: readMeta(intent, "plan") || "purchase",
-      paymentStatus: "paid",
-      amountTotal: intent.amount_received || intent.amount,
-      currency: intent.currency,
-      email: intent.receipt_email ?? readMeta(intent, "email"),
-      firstName: readMeta(intent, "firstName"),
-      lastName: readMeta(intent, "lastName"),
-      phone: readMeta(intent, "phone"),
-      address: readMeta(intent, "address"),
-      options: readMeta(intent, "options"),
-      quantity: readMeta(intent, "quantity"),
-    };
+    return orderFromIntent(event.data.object as Stripe.PaymentIntent, event.id);
   }
 
   const session = event.data.object as Stripe.Checkout.Session;
-  const order: Order & { plan: string } = {
-    ...base,
-    sessionId: session.id,
+  const order: Order = {
+    // La référence est celle du paiement, jamais celle de l'événement :
+    // Stripe en émet plusieurs pour une même commande.
+    reference: session.id,
+    eventId: event.id,
+    receivedAt: new Date().toISOString(),
     plan: readMeta(session, "plan"),
     paymentStatus: session.payment_status,
     amountTotal: session.amount_total ?? 0,
@@ -152,7 +136,7 @@ export async function POST(request: Request) {
     // chaque événement en ferait une base de données personnelles parallèle,
     // conservée sans durée ni contrôle d'accès.
     console.warn(
-      `Événement Stripe reçu alors que les commandes sont fermées — non enregistré : ${event.type} ${event.id} (${order.sessionId}, ${order.amountTotal / 100} ${order.currency})`,
+      `Événement Stripe reçu alors que les commandes sont fermées — non enregistré : ${event.type} ${event.id} (${order.reference}, ${order.amountTotal / 100} ${order.currency})`,
     );
     return Response.json({ received: true, handled: false });
   }

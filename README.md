@@ -27,7 +27,8 @@ Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 | `STRIPE_SECRET_KEY` | Tunnel de paiement | à l'ouverture des ventes |
 | `STRIPE_WEBHOOK_SECRET` | Vérification de signature du webhook | à l'ouverture des ventes |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Payment Element du tunnel d'achat intégré | à l'ouverture des ventes |
-| `DATABASE_URL` | Base MySQL où le webhook enregistre les commandes | à l'ouverture des ventes |
+| `DATABASE_URL` | Base MySQL où les commandes sont enregistrées | à l'ouverture des ventes |
+| `DIAGNOSTIC_TOKEN` | Protège `GET /api/health/db` (nombre de commandes) | recommandé |
 | `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 
 Seules les variables préfixées `NEXT_PUBLIC_` sont exposées au navigateur — l'URL du site et la clé **publiable** de Stripe, qui est faite pour ça. Les autres sont des
@@ -82,9 +83,21 @@ traversée de réseau ni démarrage à froid. Le schéma est créé au premier
 enregistrement (`CREATE TABLE IF NOT EXISTS`), il n'y a pas de migration à
 lancer au déploiement.
 
-L'idempotence repose sur une contrainte d'unicité `event_id`, et non sur une
-relecture applicative : entre un `SELECT` et un `INSERT`, deux livraisons
-simultanées du même événement Stripe passeraient toutes les deux.
+**Deux chemins écrivent la commande**, indépendants l'un de l'autre : le
+webhook Stripe, et la page de confirmation qui relit l'intention côté serveur.
+Le webhook seul ne suffit pas — mal configuré, Stripe ne livre rien du tout :
+ni réessai, ni journal, ni ligne. L'inverse est vrai aussi, un client qui ferme
+son onglet ne verra jamais la page de confirmation.
+
+L'idempotence porte sur la **référence du paiement** (`pi_…` ou `cs_…`), pas
+sur l'identifiant de l'événement : les deux chemins doivent converger sur la
+même ligne, et Stripe émet plusieurs événements pour un même paiement. C'est
+la contrainte d'unicité de la base qui tranche, jamais une relecture
+applicative — entre un `SELECT` et un `INSERT`, deux écritures simultanées
+passeraient toutes les deux.
+
+`GET /api/health/db?token=…` répond `{ ok, orders }` : de quoi vérifier en une
+commande que la base répond et que les commandes arrivent.
 
 **Stripe reste la source de vérité.** Cette table en est une copie
 interrogeable ; la perdre ne perd aucune commande.

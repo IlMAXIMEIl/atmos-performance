@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { DROP_NAME } from "@/lib/offering";
+import { orderFromIntent, recordOrder } from "@/lib/orders";
 import { CONTACT_EMAIL, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -69,6 +70,7 @@ async function verifyPayment(
 
       switch (intent.status) {
         case "succeeded":
+          await saveOrder(intent);
           return { outcome: "succeeded", reference };
         // Klarna et les virements peuvent rester quelques minutes en attente
         // de confirmation : ce n'est ni un succès ni un échec.
@@ -103,6 +105,34 @@ async function verifyPayment(
     // être passé.
     console.error("Vérification du paiement impossible", error);
     return { outcome: "unknown", reference: "" };
+  }
+}
+
+/**
+ * Second chemin d'écriture de la commande.
+ *
+ * Le webhook reste le chemin principal — il arrive même si le client ferme
+ * son onglet. Mais s'il est mal configuré, Stripe ne livre **rien** : pas de
+ * réessai, pas de journal, pas de ligne, et une commande payée qui n'existe
+ * nulle part. C'est arrivé, et c'est ce trou que cet appel comble.
+ *
+ * L'écriture est idempotente : la clé unique est la référence du paiement, et
+ * les deux chemins convergent donc sur la même ligne.
+ *
+ * **Un échec ici n'interrompt jamais l'affichage.** Le client a payé, il a
+ * droit à sa confirmation ; la commande, elle, est journalisée en entier par
+ * `recordOrder` avant que l'erreur ne remonte, et le webhook repassera.
+ */
+async function saveOrder(intent: Stripe.PaymentIntent) {
+  try {
+    const result = await recordOrder(orderFromIntent(intent));
+    if (result === "enregistree") {
+      console.log(
+        `Commande enregistrée depuis la page de confirmation — ${intent.id}`,
+      );
+    }
+  } catch (error) {
+    console.error("Enregistrement depuis la confirmation impossible", error);
   }
 }
 

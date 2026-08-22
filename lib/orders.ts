@@ -1,4 +1,5 @@
 import mysql from "mysql2/promise";
+import type Stripe from "stripe";
 
 /**
  * Stockage des commandes, en base MySQL.
@@ -10,30 +11,54 @@ import mysql from "mysql2/promise";
  * sans fournisseur supplémentaire à surveiller. Elle est incluse dans
  * l'hébergement déjà payé.
  *
- * Les offres gratuites d'ailleurs ont toutes le même défaut pour cet usage :
- * elles mettent le projet en veille après quelques jours sans trafic. Un
- * webhook de paiement est précisément ce qui se déclenche rarement et doit
- * répondre à coup sûr — c'est le mauvais endroit pour un réveil à froid.
+ * ## Deux chemins d'écriture, et pourquoi
+ *
+ * `recordOrder` est appelée **deux fois** pour une même commande, depuis deux
+ * endroits qui ne dépendent pas l'un de l'autre :
+ *
+ * 1. le **webhook** Stripe, à la réception de `payment_intent.succeeded` ou
+ *    `checkout.session.completed` ;
+ * 2. la **page de confirmation**, qui relit l'intention côté serveur et
+ *    enregistre ce qu'elle y trouve.
+ *
+ * Le webhook seul ne suffit pas : mal configuré — mauvais secret, mauvais
+ * mode, endpoint absent — Stripe ne livre rien du tout. Pas de réessai, pas
+ * de journal, pas de ligne. La commande est payée et n'existe nulle part.
+ * C'est arrivé, et c'est précisément le trou que ce second chemin comble.
+ *
+ * L'inverse est vrai aussi : un client qui ferme son onglet avant le retour ne
+ * verra jamais la page de confirmation, mais le webhook, lui, arrivera.
+ *
+ * ## L'idempotence porte sur le paiement, pas sur l'événement
+ *
+ * La clé unique est la **référence du paiement** — l'identifiant de
+ * l'intention, ou celui de la session Checkout — et non l'identifiant de
+ * l'événement Stripe. Deux raisons :
+ *
+ * - les deux chemins ci-dessus doivent converger sur la même ligne, or la
+ *   page de confirmation ne voit aucun événement ;
+ * - Stripe émet plusieurs événements distincts pour un même paiement, ce qui
+ *   aurait créé autant de lignes.
+ *
+ * C'est la contrainte d'unicité de la base qui tranche, jamais une relecture
+ * applicative : entre un `SELECT` et un `INSERT`, deux écritures simultanées
+ * passeraient toutes les deux.
  *
  * ## Ce que cette base est, et ce qu'elle n'est pas
  *
  * **Stripe reste la source de vérité.** Chaque paiement y est conservé avec
- * ses métadonnées ; cette table en est une copie interrogeable — pour trier,
- * exporter, recouper — pas l'unique exemplaire. Perdre cette base ne perd
- * aucune commande.
- *
- * ## Filet de sécurité
- *
- * `recordOrder` journalise la commande entière avant de propager une erreur
- * d'écriture. La commande est déjà payée à cet instant : si la base est
- * injoignable, elle reste récupérable dans les journaux, et le 500 renvoyé
- * fait réessayer Stripe.
+ * ses métadonnées ; cette table en est une copie interrogeable. La perdre ne
+ * perd aucune commande.
  */
 
 export type Order = {
-  /** Identifiant de l'événement Stripe : sert de clé d'idempotence. */
+  /**
+   * Référence du paiement : identifiant de l'intention (`pi_…`) ou de la
+   * session Checkout (`cs_…`). **Clé d'idempotence.**
+   */
+  reference: string;
+  /** Événement Stripe à l'origine de l'écriture, quand il y en a un. */
   eventId: string;
-  sessionId: string;
   receivedAt: string;
   plan: string;
   paymentStatus: string;
@@ -53,21 +78,11 @@ export type Order = {
   balanceDue?: string;
 };
 
-/**
- * Le schéma, appliqué une fois par processus.
- *
- * `CREATE TABLE IF NOT EXISTS` plutôt qu'un outil de migration : il y a une
- * table, et l'hébergement ne propose pas d'étape de déploiement où faire
- * tourner des migrations. La contrainte d'unicité sur `event_id` **est** le
- * mécanisme d'idempotence — Stripe relivre le même événement en cas de
- * délai dépassé, et c'est la base qui refuse le doublon, pas une relecture
- * applicative sujette aux courses.
- */
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS orders (
     id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    event_id       VARCHAR(255)    NOT NULL UNIQUE,
-    session_id     VARCHAR(255)    NOT NULL,
+    reference      VARCHAR(255)    NOT NULL UNIQUE,
+    event_id       VARCHAR(255)    NULL,
     received_at    DATETIME        NOT NULL,
     plan           VARCHAR(32)     NOT NULL,
     payment_status VARCHAR(32)     NOT NULL,
@@ -87,6 +102,25 @@ const SCHEMA = `
     INDEX idx_received_at (received_at)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 `;
+
+/**
+ * Rattrapage pour une table créée avant que la clé ne passe de l'événement au
+ * paiement. Chaque instruction est jouée puis ignorée si elle a déjà été
+ * appliquée : MySQL ne connaît pas `ADD COLUMN IF NOT EXISTS`.
+ */
+const MIGRATIONS = [
+  "ALTER TABLE orders ADD COLUMN reference VARCHAR(255) NOT NULL DEFAULT ''",
+  "ALTER TABLE orders ADD UNIQUE INDEX uniq_reference (reference)",
+  "ALTER TABLE orders MODIFY event_id VARCHAR(255) NULL",
+  "ALTER TABLE orders DROP INDEX event_id",
+];
+
+/** Erreurs signifiant « c'était déjà fait » : colonne, index ou clé absente. */
+const ALREADY_APPLIED = new Set([
+  "ER_DUP_FIELDNAME",
+  "ER_DUP_KEYNAME",
+  "ER_CANT_DROP_FIELD_OR_KEY",
+]);
 
 let pool: mysql.Pool | null = null;
 let schemaReady: Promise<void> | null = null;
@@ -110,9 +144,6 @@ function getPool(): mysql.Pool {
 
   pool = mysql.createPool({
     uri: url,
-    // Une commande à la fois, quelques secondes par requête : trois
-    // connexions suffisent largement et restent sous le quota d'un
-    // hébergement mutualisé.
     connectionLimit: 3,
     waitForConnections: true,
     // Mieux vaut échouer vite — et laisser Stripe réessayer — que retenir la
@@ -125,15 +156,25 @@ function getPool(): mysql.Pool {
 }
 
 function ensureSchema(): Promise<void> {
-  schemaReady ??= getPool()
-    .query(SCHEMA)
-    .then(() => undefined)
-    .catch((error) => {
-      // Une création ratée ne doit pas rester mémorisée comme réussie : on
-      // remet le drapeau à zéro pour que la commande suivante réessaie.
-      schemaReady = null;
-      throw error;
-    });
+  schemaReady ??= (async () => {
+    const db = getPool();
+    await db.query(SCHEMA);
+
+    for (const statement of MIGRATIONS) {
+      try {
+        await db.query(statement);
+      } catch (error) {
+        if (!ALREADY_APPLIED.has((error as { code?: string }).code ?? "")) {
+          throw error;
+        }
+      }
+    }
+  })().catch((error) => {
+    // Une préparation ratée ne doit pas rester mémorisée comme réussie : on
+    // remet le drapeau à zéro pour que la commande suivante réessaie.
+    schemaReady = null;
+    throw error;
+  });
 
   return schemaReady;
 }
@@ -141,6 +182,42 @@ function ensureSchema(): Promise<void> {
 /** `2026-08-22T08:10:29.000Z` → `2026-08-22 08:10:29`, ce que MySQL attend. */
 function toMysqlDate(iso: string): string {
   return new Date(iso).toISOString().slice(0, 19).replace("T", " ");
+}
+
+function meta(source: { metadata?: Stripe.Metadata | null }, key: string) {
+  return source.metadata?.[key] ?? "";
+}
+
+/**
+ * Construit la commande à partir d'une intention de paiement.
+ *
+ * Partagée par le webhook et la page de confirmation : les deux chemins
+ * doivent produire exactement la même ligne, sans quoi la seconde écriture
+ * réécrirait la première avec d'autres valeurs — ou pire, divergerait sans
+ * qu'on s'en aperçoive.
+ */
+export function orderFromIntent(
+  intent: Stripe.PaymentIntent,
+  eventId = "",
+): Order {
+  return {
+    reference: intent.id,
+    eventId,
+    receivedAt: new Date().toISOString(),
+    // Le tunnel intégré ne sert que l'achat ; la location garde le tunnel
+    // hébergé, son empreinte bancaire exigeant une session Checkout.
+    plan: meta(intent, "plan") || "achat",
+    paymentStatus: "paid",
+    amountTotal: intent.amount_received || intent.amount,
+    currency: intent.currency,
+    email: intent.receipt_email ?? meta(intent, "email"),
+    firstName: meta(intent, "firstName"),
+    lastName: meta(intent, "lastName"),
+    phone: meta(intent, "phone"),
+    address: meta(intent, "address"),
+    options: meta(intent, "options"),
+    quantity: meta(intent, "quantity"),
+  };
 }
 
 export async function listOrders(): Promise<Order[]> {
@@ -151,8 +228,8 @@ export async function listOrders(): Promise<Order[]> {
   );
 
   return rows.map((row) => ({
-    eventId: row.event_id,
-    sessionId: row.session_id,
+    reference: row.reference,
+    eventId: row.event_id ?? "",
     receivedAt: new Date(row.received_at).toISOString(),
     plan: row.plan,
     paymentStatus: row.payment_status,
@@ -172,11 +249,11 @@ export async function listOrders(): Promise<Order[]> {
 }
 
 /**
- * Enregistre une commande, en ignorant les rejeux.
+ * Enregistre une commande, en ignorant les doublons.
  *
- * Le doublon est détecté par la contrainte d'unicité et non par une lecture
- * préalable : entre un `SELECT` et un `INSERT`, deux livraisons simultanées du
- * même événement passeraient toutes les deux. La base, elle, tranche.
+ * Appelée par le webhook **et** par la page de confirmation, éventuellement en
+ * même temps. C'est la contrainte d'unicité sur `reference` qui départage :
+ * la seconde écriture repart avec « deja-traitee » sans rien écraser.
  */
 export async function recordOrder(
   order: Order,
@@ -186,13 +263,13 @@ export async function recordOrder(
 
     await getPool().execute(
       `INSERT INTO orders (
-         event_id, session_id, received_at, plan, payment_status,
+         reference, event_id, received_at, plan, payment_status,
          amount_total, currency, email, first_name, last_name,
          phone, address, options, start_date, end_date, quantity, balance_due
        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        order.eventId,
-        order.sessionId,
+        order.reference,
+        order.eventId || null,
         toMysqlDate(order.receivedAt),
         order.plan,
         order.paymentStatus,
@@ -219,12 +296,28 @@ export async function recordOrder(
 
     // Base injoignable, quota atteint, schéma refusé : la commande est payée,
     // elle ne doit pas disparaître avec l'erreur. On l'écrit en entier dans
-    // les journaux avant de propager — l'appelant renvoie alors un 500, que
-    // Stripe réessaiera pendant trois jours.
+    // les journaux avant de propager — l'appelant décide alors quoi faire.
     console.error(
       "Écriture en base impossible — commande payée à reprendre à la main :",
       JSON.stringify(order),
     );
     throw error;
   }
+}
+
+/**
+ * Nombre de commandes enregistrées, et rien d'autre.
+ *
+ * Sert au diagnostic : vérifier que `DATABASE_URL` est bonne, que le schéma
+ * est en place et que les écritures arrivent, sans jamais exposer une
+ * coordonnée client.
+ */
+export async function countOrders(): Promise<number> {
+  await ensureSchema();
+
+  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
+    "SELECT COUNT(*) AS total FROM orders",
+  );
+
+  return Number(rows[0]?.total ?? 0);
 }
