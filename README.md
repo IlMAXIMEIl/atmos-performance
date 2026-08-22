@@ -27,7 +27,8 @@ Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 | `STRIPE_SECRET_KEY` | Tunnel de paiement | à l'ouverture des ventes |
 | `STRIPE_WEBHOOK_SECRET` | Vérification de signature du webhook | à l'ouverture des ventes |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Payment Element du tunnel d'achat intégré | à l'ouverture des ventes |
-| `DATABASE_URL` | Base MySQL où les commandes sont enregistrées | à l'ouverture des ventes |
+| `DB_HOST` `DB_USER` `DB_PASSWORD` `DB_NAME` | Base MySQL des commandes — **à préférer** à `DATABASE_URL` : aucun caractère à échapper | à l'ouverture des ventes |
+| `DATABASE_URL` | Même chose en une seule chaîne, si le mot de passe ne contient ni `#` `?` `/` `@` | alternative |
 | `DIAGNOSTIC_TOKEN` | Protège `GET /api/health/db` (nombre de commandes) | recommandé |
 | `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 

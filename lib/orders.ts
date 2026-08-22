@@ -126,6 +126,103 @@ let pool: mysql.Pool | null = null;
 let schemaReady: Promise<void> | null = null;
 
 /**
+ * Découpe une chaîne de connexion **sans passer par l'analyseur d'URL**.
+ *
+ * `new URL()` — qu'utilise l'option `uri` de mysql2 — rejette une chaîne dont
+ * le mot de passe contient `#`, `?`, `/` ou `@`, caractères que les
+ * générateurs d'hébergeurs produisent couramment. L'erreur qui remonte est un
+ * laconique « Invalid URL » qui ne dit pas que le coupable est le mot de
+ * passe, et un mot de passe robuste ne doit pas mettre l'application par
+ * terre.
+ *
+ * Le découpage se fait donc à la main, dans l'ordre qui lève les ambiguïtés :
+ * le **dernier** `@` sépare les identifiants de l'hôte — un `@` dans le mot
+ * de passe reste donc du mot de passe —, puis le **premier** `:` sépare
+ * l'utilisateur du mot de passe, et le premier `/` isole la base.
+ */
+function parseConnectionString(raw: string) {
+  const withoutScheme = raw.replace(/^mysql(2)?:\/\//, "");
+
+  const at = withoutScheme.lastIndexOf("@");
+  if (at === -1) throw new Error("chaîne de connexion sans « @ »");
+
+  const credentials = withoutScheme.slice(0, at);
+  const rest = withoutScheme.slice(at + 1);
+
+  const colon = credentials.indexOf(":");
+  const user = colon === -1 ? credentials : credentials.slice(0, colon);
+  const password = colon === -1 ? "" : credentials.slice(colon + 1);
+
+  const slash = rest.indexOf("/");
+  if (slash === -1) throw new Error("chaîne de connexion sans nom de base");
+
+  const hostPort = rest.slice(0, slash);
+  const database = rest.slice(slash + 1).split("?")[0];
+
+  const portColon = hostPort.lastIndexOf(":");
+  const host = portColon === -1 ? hostPort : hostPort.slice(0, portColon);
+  const port =
+    portColon === -1 ? 3306 : Number(hostPort.slice(portColon + 1)) || 3306;
+
+  // Un mot de passe peut avoir été encodé par précaution : on le décode si
+  // c'est le cas, sans casser celui qui contient un `%` littéral.
+  const decode = (value: string) => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  };
+
+  return {
+    host,
+    port,
+    user: decode(user),
+    password: decode(password),
+    database: decode(database),
+  };
+}
+
+/**
+ * Configuration de la base, par variables discrètes ou chaîne de connexion.
+ *
+ * Les variables discrètes sont **préférées** : elles n'ont aucun caractère à
+ * échapper, donc aucun mot de passe ne peut les casser. `DATABASE_URL` reste
+ * acceptée pour ne rien changer à une installation qui marche.
+ */
+function readConfig() {
+  const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, DATABASE_URL } =
+    process.env;
+
+  if (DB_HOST && DB_USER && DB_NAME) {
+    return {
+      host: DB_HOST,
+      port: Number(DB_PORT) || 3306,
+      user: DB_USER,
+      password: DB_PASSWORD ?? "",
+      database: DB_NAME,
+    };
+  }
+
+  if (!DATABASE_URL) {
+    throw new Error(
+      "Configuration de la base absente : renseigner DB_HOST, DB_USER, " +
+        "DB_PASSWORD et DB_NAME, ou à défaut DATABASE_URL. Voir .env.example.",
+    );
+  }
+
+  try {
+    return parseConnectionString(DATABASE_URL);
+  } catch (error) {
+    throw new Error(
+      `DATABASE_URL illisible (${error instanceof Error ? error.message : "format inattendu"}). ` +
+        "Si le mot de passe contient #, ?, / ou @, préférer les variables " +
+        "DB_HOST / DB_USER / DB_PASSWORD / DB_NAME, qui n'ont rien à échapper.",
+    );
+  }
+}
+
+/**
  * Réserve de connexions, ouverte à la première commande et pas à l'import.
  *
  * Se connecter au chargement du module ferait échouer le build : `next build`
@@ -134,16 +231,8 @@ let schemaReady: Promise<void> | null = null;
 function getPool(): mysql.Pool {
   if (pool) return pool;
 
-  const url = process.env.DATABASE_URL;
-  if (!url) {
-    throw new Error(
-      "DATABASE_URL absente : voir .env.example. Format attendu : " +
-        "mysql://utilisateur:motdepasse@localhost:3306/nom_de_base",
-    );
-  }
-
   pool = mysql.createPool({
-    uri: url,
+    ...readConfig(),
     connectionLimit: 3,
     waitForConnections: true,
     // Mieux vaut échouer vite — et laisser Stripe réessayer — que retenir la
