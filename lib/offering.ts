@@ -22,11 +22,12 @@ export const LEASING_OPEN = false;
  * le mode Stripe est celui qu'on croit, et que l'entité qui encaisse est bien
  * immatriculée.
  *
- * Ouvert ici pour valider de bout en bout l'enregistrement des commandes en
- * base. À refermer si la validation ne se conclut pas le jour même : un
- * tunnel ouvert sans surveillance encaisse sans que personne ne traite.
+ * Refermé après une tentative de validation en clés de production : la carte
+ * de test était refusée par Stripe — « demande faite en mode production » —
+ * et le tunnel restait donc ouvert à de vrais débits sans qu'aucun test ne
+ * puisse aboutir. La validation de bout en bout reprendra en clés de test.
  */
-export const ORDERS_OPEN = true;
+export const ORDERS_OPEN = false;
 
 /**
  * Série de lancement en cours.
@@ -58,13 +59,21 @@ export const PURCHASE_PRICE_EUR = 1890;
  *
  * **N'énumérer ici que ce que Stripe propose réellement.** Cette phrase paraît
  * sur la carte de prix publique et dans la FAQ, dont dérive le balisage
- * `FAQPage` : elle est indexée, et c'est un engagement tarifaire. Deux
- * mentions ont été retirées pour cette raison — le 10x, que Klarna ne propose
- * pas via Stripe, et Alma, qui n'y est pas distribué du tout et demanderait
- * une intégration séparée.
+ * `FAQPage` : elle est indexée, et c'est un engagement tarifaire.
+ *
+ * Trois mentions ont été retirées pour cette raison :
+ *
+ * - le **10x**, que Klarna ne propose pas via Stripe ;
+ * - **Alma**, qui n'y est pas distribué du tout et demanderait une
+ *   intégration séparée ;
+ * - **PayPal**, activé en mode test mais pas en production — le tunnel ne
+ *   l'affichait donc pas, alors que cette phrase l'annonçait juste au-dessus.
+ *   À remettre le jour où il apparaît réellement dans le Payment Element, et
+ *   pas avant : les deux listes de moyens de paiement de Stripe, test et
+ *   production, sont indépendantes.
  */
 export const INSTALLMENTS_NOTE =
-  "Carte bancaire, PayPal, ou paiement en 3x avec Klarna";
+  "Carte bancaire ou paiement en 3x avec Klarna";
 
 /**
  * Contrepartie de la location : pas de fractionnement, mais une empreinte
