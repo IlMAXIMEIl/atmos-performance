@@ -183,7 +183,7 @@ function CheckoutFields({ quantity }: { quantity: number }) {
     setSubmitting(true);
     setMessage(null);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Klarna et PayPal repassent par ici après authentification, et
@@ -204,8 +204,26 @@ function CheckoutFields({ quantity }: { quantity: number }) {
       return;
     }
 
-    // Pas d'erreur et pas de redirection : le paiement est passé sur place.
-    router.push("/reservation/confirmee");
+    /*
+      Pas d'erreur et pas de redirection : le paiement est passé sur place.
+
+      **Il faut reconstruire les paramètres que Stripe aurait ajoutés.** Sur le
+      chemin avec redirection — Klarna, PayPal — Stripe renvoie sur
+      `return_url` en y accrochant `payment_intent` et
+      `payment_intent_client_secret`. Ici, personne ne le fait à notre place :
+      sans eux, `/reservation/confirmee` n'a rien à vérifier auprès de Stripe
+      et affiche « Nous n'avons pas retrouvé ce paiement » — alors même que la
+      carte vient d'être débitée.
+
+      Les deux chemins arrivent donc sur la même URL, avec les mêmes
+      paramètres, et la page n'a pas à savoir d'où vient le visiteur.
+    */
+    const query = new URLSearchParams({
+      payment_intent: paymentIntent.id,
+      payment_intent_client_secret: paymentIntent.client_secret ?? "",
+    });
+
+    router.push(`/reservation/confirmee?${query}`);
   }
 
   return (
