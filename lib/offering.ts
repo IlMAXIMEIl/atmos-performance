@@ -10,13 +10,23 @@ export const LEASING_OPEN = false;
 /**
  * Ouverture de l'encaissement.
  *
- * Tant que la société n'est pas immatriculée, aucun paiement n'est encaissé :
- * les boutons d'action ouvrent la liste prioritaire du Drop n°1 au lieu du
- * tunnel de commande, et le serveur refuse toute session de paiement. Même
- * parti pris que `LEASING_OPEN` : une constante, honorée des deux côtés, pour
- * que la page et l'API ne puissent pas diverger.
+ * À `false`, les boutons d'action ouvrent la liste prioritaire du Drop n°1 au
+ * lieu du tunnel de commande, le serveur refuse toute session de paiement, et
+ * le webhook accuse réception sans rien enregistrer. Même parti pris que
+ * `LEASING_OPEN` : une constante, honorée des deux côtés, pour que la page et
+ * l'API ne puissent pas diverger.
+ *
+ * ⚠ **À `true`, le site encaisse pour de bon.** N'importe quel visiteur peut
+ * régler 1 890 €, et ce que Stripe débite dépend de la clé configurée : une
+ * `sk_live_` prélève réellement une carte. Vérifier avant chaque bascule que
+ * le mode Stripe est celui qu'on croit, et que l'entité qui encaisse est bien
+ * immatriculée.
+ *
+ * Ouvert ici pour valider de bout en bout l'enregistrement des commandes en
+ * base. À refermer si la validation ne se conclut pas le jour même : un
+ * tunnel ouvert sans surveillance encaisse sans que personne ne traite.
  */
-export const ORDERS_OPEN = false;
+export const ORDERS_OPEN = true;
 
 /**
  * Série de lancement en cours.
