@@ -22,12 +22,18 @@ export const LEASING_OPEN = false;
  * le mode Stripe est celui qu'on croit, et que l'entité qui encaisse est bien
  * immatriculée.
  *
- * Refermé après une tentative de validation en clés de production : la carte
- * de test était refusée par Stripe — « demande faite en mode production » —
- * et le tunnel restait donc ouvert à de vrais débits sans qu'aucun test ne
- * puisse aboutir. La validation de bout en bout reprendra en clés de test.
+ * Rouvert **en clés de test**, le temps de valider de bout en bout
+ * l'enregistrement des commandes en base. Dans ce mode, aucun argent ne peut
+ * bouger : Stripe n'accepte que ses cartes de test et n'émet aucun débit.
+ *
+ * La tentative précédente avait eu lieu en clés de production, où Stripe
+ * refuse justement la carte de test — le tunnel restait ouvert à de vrais
+ * débits de 1 890 € sans qu'aucun test ne puisse aboutir.
+ *
+ * À refermer une fois la validation acquise, et **avant** tout retour aux
+ * clés de production.
  */
-export const ORDERS_OPEN = false;
+export const ORDERS_OPEN = true;
 
 /**
  * Série de lancement en cours.
