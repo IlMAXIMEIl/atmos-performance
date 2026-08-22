@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { ACCESSORIES_PATH } from "@/lib/accessories";
 import { getAllGlossaryEntries } from "@/lib/glossary";
 import { getAllPosts } from "@/lib/posts";
 import { TOOLS, TOOLS_PATH } from "@/lib/tools";
@@ -34,6 +35,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     ...tools,
+    {
+      url: `${SITE_URL}${ACCESSORIES_PATH}`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    { url: `${SITE_URL}/la-science`, changeFrequency: "yearly", priority: 0.6 },
     ...articles,
     { url: `${SITE_URL}/glossaire`, changeFrequency: "monthly", priority: 0.7 },
     ...glossary,

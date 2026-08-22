@@ -111,4 +111,4 @@ La maîtrise précise de la fraction inspirée en oxygène ($FiO_2$) est la cond
 
 Le système **ATMOS ONE** a été conçu pour offrir un contrôle millimétré des protocoles d'altitude à domicile, associant confort de ventilation et sécurité opérationnelle.
 
-👉 **[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).
+👉 **[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1, notre édition de lancement limitée à 25 unités (paiement en 3x ou 4x disponible).

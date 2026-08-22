@@ -108,4 +108,4 @@ L'accès à une technologie de régulation respiratoire de précision permet d'a
 
 Le générateur **ATMOS ONE** vous offre un contrôle rigoureux de vos paramètres d'altitude à domicile, pour transformer votre santé métabolique et votre vitalité au quotidien.
 
-👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.
+👉 **[Découvrir les caractéristiques techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.

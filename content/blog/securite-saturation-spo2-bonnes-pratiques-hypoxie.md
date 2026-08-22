@@ -105,4 +105,4 @@ La sécurité d'un protocole repose sur la fiabilité absolue de l'équipement u
 
 Le système **ATMOS ONE** a été développé avec des composants de grade industriel garantissant un débit constant, une fraction d'oxygène stable et une compatibilité directe avec les capteurs biométriques pour une pratique sereine à domicile.
 
-👉 **[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Batch n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.
+👉 **[Découvrir les spécifications techniques d'ATMOS ONE](/)** ou rejoignez la liste prioritaire du Drop n°1 : série limitée à 25 unités pour la France, paiement en 3x ou 4x disponible.

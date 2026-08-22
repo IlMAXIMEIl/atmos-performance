@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { JsonLd } from "@/components/json-ld";
@@ -7,16 +7,25 @@ import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 /**
- * Police unique du site, servie depuis notre domaine par `next/font`.
+ * Polices du site, servies depuis notre domaine par `next/font`.
  *
  * `display: "swap"` et la métrique de repli ajustée sont les valeurs par
  * défaut : le texte reste lisible pendant le chargement et la substitution
- * ne décale pas la mise en page (CLS). Une seule famille est chargée — la
- * variante monospace du gabarit de départ ne servait nulle part et coûtait
- * un préchargement de police sur chaque page.
+ * ne décale pas la mise en page (CLS).
+ *
+ * La chasse fixe était absente jusqu'ici — la variante monospace du gabarit
+ * de départ ne servait nulle part et coûtait un préchargement inutile. Elle
+ * revient parce que la refonte lui donne un rôle : surtitres, relevés
+ * chiffrés et fiches techniques passent tous en `font-mono`. Deux familles,
+ * pas une de plus.
  */
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -48,10 +57,27 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Repli sans JavaScript des révélations au défilement (voir `globals.css`).
+ * Le `!important` est nécessaire : la règle vit dans le même calque que
+ * celle qu'elle annule et arrive avant elle dans le document.
+ */
+const REVEAL_NOSCRIPT_CSS =
+  "[data-reveal]{opacity:1!important}[data-reveal-line]>*{transform:none!important}";
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${geistSans.variable} h-full antialiased`}>
+    <html
+      lang="fr"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
+        {/* Sans JavaScript, les blocs marqués `data-reveal` resteraient
+            invisibles : l'état caché est posé en CSS et c'est GSAP qui le
+            lève. On le lève ici aussi, faute d'exécution. */}
+        <noscript>
+          <style>{REVEAL_NOSCRIPT_CSS}</style>
+        </noscript>
         {/* Entités valables pour tout le site : les schémas de page y renvoient
             par `@id` plutôt que de redécrire la marque à chaque fois. */}
         <JsonLd data={[organizationSchema(), websiteSchema()]} />

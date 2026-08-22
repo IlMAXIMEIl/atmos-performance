@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
-import { PageHeader } from "@/components/page-header";
+import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { BATCH_NAME, BATCH_UNITS, INCLUDED_ITEMS } from "@/lib/offering";
+import { DROP_NAME, DROP_UNITS, INCLUDED_ITEMS } from "@/lib/offering";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { ORGANIZATION_ID, breadcrumbSchema } from "@/lib/structured-data";
 import { TOOLS_PATH } from "@/lib/tools";
@@ -89,7 +89,7 @@ export default function AProposPage() {
   ];
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <JsonLd data={jsonLd} />
 
       <div
@@ -97,12 +97,12 @@ export default function AProposPage() {
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <PageHeader maxWidth="max-w-5xl" />
+      <SiteHeader maxWidth="max-w-5xl" />
 
       <main className="relative z-10 mx-auto w-full max-w-5xl px-6 pb-24 lg:px-10">
         <Link
           href="/"
-          className="group mt-4 inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+          className="group mt-4 inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -113,7 +113,7 @@ export default function AProposPage() {
 
         {/* ── La mission ───────────────────────────────────────────────── */}
         <section aria-labelledby="a-propos-titre">
-          <span className="mt-10 block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
+          <span className="font-mono mt-10 block text-[0.68rem] tracking-[0.28em] text-accent uppercase">
             À propos
           </span>
 
@@ -121,21 +121,21 @@ export default function AProposPage() {
             id="a-propos-titre"
             className="mt-5 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl lg:text-[3.15rem]"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Reproduire l&apos;altitude chez vous.
             </span>{" "}
-            <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               Doser l&apos;exposition comme en laboratoire.
             </span>
           </h1>
 
-          <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg">
+          <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty sm:text-lg">
             {
               "ATMOS PERFORMANCE conçoit ATMOS ONE et les protocoles qui l'accompagnent. Notre exigence tient en une phrase : ne jamais recommander un palier que la littérature ne soutient pas."
             }
           </p>
 
-          <div className="mt-8 flex max-w-3xl flex-col gap-5 text-[0.98rem] leading-relaxed font-light text-white/60 text-pretty">
+          <div className="mt-8 flex max-w-3xl flex-col gap-5 text-[0.98rem] leading-relaxed font-light text-dim text-pretty">
             <p>
               {
                 "L'hypoxie contrôlée est l'un des leviers d'entraînement les mieux documentés de la littérature en physiologie de l'effort. Elle est longtemps restée l'affaire des fédérations et des centres nationaux — non par difficulté technique, mais faute d'un appareil et d'une méthode conçus pour être utilisés seul, chez soi, sans encadrement permanent."
@@ -151,7 +151,7 @@ export default function AProposPage() {
 
         {/* ── L'exigence scientifique ──────────────────────────────────── */}
         <section aria-labelledby="rigueur-titre" className="mt-24 sm:mt-28">
-          <span className="block text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+          <span className="font-mono block text-[0.66rem] tracking-[0.24em] text-dim uppercase">
             L&apos;exigence scientifique
           </span>
 
@@ -159,12 +159,12 @@ export default function AProposPage() {
             id="rigueur-titre"
             className="mt-5 text-[1.65rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl lg:text-4xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Nos recommandations ne sont pas des estimations.
             </span>
           </h2>
 
-          <p className="mt-8 max-w-3xl text-[0.98rem] leading-relaxed font-light text-white/60 text-pretty">
+          <p className="mt-8 max-w-3xl text-[0.98rem] leading-relaxed font-light text-dim text-pretty">
             {
               "Notre simulateur de protocole applique les consensus publiés en physiologie de l'effort — les travaux de Levine et Stray-Gundersen sur le Live High – Train Low, ceux de Grégoire Millet sur l'entraînement intermittent en hypoxie — et refuse toute recommandation qui en sortirait."
             }
@@ -174,7 +174,7 @@ export default function AProposPage() {
             {RIGOUR.map(({ icon: Icon, title, body }) => (
               <article
                 key={title}
-                className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 hover:border-cyan-300/25"
+                className="group relative overflow-hidden rounded-xl border border-line bg-gradient-to-b from-white/[0.06] to-white/[0.015] p-8 backdrop-blur-xl transition-colors duration-500 hover:border-accent/40"
               >
                 <div
                   aria-hidden
@@ -182,15 +182,15 @@ export default function AProposPage() {
                 />
 
                 <div className="relative">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                    <Icon className="h-4 w-4 text-cyan-300" strokeWidth={1.6} />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-line bg-white/[0.03]">
+                    <Icon className="h-4 w-4 text-accent" strokeWidth={1.6} />
                   </span>
 
-                  <h3 className="mt-6 text-[1.05rem] leading-snug font-medium tracking-[-0.02em] text-balance text-white">
+                  <h3 className="mt-6 text-[1.05rem] leading-snug font-medium tracking-[-0.02em] text-balance text-ink">
                     {title}
                   </h3>
 
-                  <p className="mt-3.5 text-[0.86rem] leading-relaxed font-light text-white/50 text-pretty">
+                  <p className="mt-3.5 text-[0.86rem] leading-relaxed font-light text-dim text-pretty">
                     {body}
                   </p>
                 </div>
@@ -198,8 +198,8 @@ export default function AProposPage() {
             ))}
           </div>
 
-          <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 sm:flex sm:items-center sm:justify-between sm:gap-8">
-            <p className="text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty">
+          <div className="mt-8 rounded-xl border border-line bg-white/[0.02] p-8 sm:flex sm:items-center sm:justify-between sm:gap-8">
+            <p className="text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
               {
                 "Le meilleur moyen de nous juger n'est pas de nous lire, mais d'ouvrir l'outil et de regarder ce qu'il vous répond."
               }
@@ -207,7 +207,7 @@ export default function AProposPage() {
 
             <Link
               href={`${TOOLS_PATH}/simulateur-altitude`}
-              className="group mt-6 inline-flex shrink-0 items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3.5 text-[0.82rem] font-medium tracking-[0.04em] text-white/90 backdrop-blur-md transition-all duration-300 hover:border-cyan-300/40 hover:bg-white/[0.08] hover:text-white sm:mt-0"
+              className="group mt-6 inline-flex shrink-0 items-center gap-2.5 rounded-full border border-line-strong bg-white/[0.04] px-6 py-3.5 text-[0.82rem] font-medium tracking-[0.04em] text-ink backdrop-blur-md transition-all duration-300 hover:border-accent/40 hover:bg-white/[0.08] hover:text-ink sm:mt-0"
             >
               Ouvrir le simulateur
               <ArrowRight
@@ -220,7 +220,7 @@ export default function AProposPage() {
 
         {/* ── Après la livraison ───────────────────────────────────────── */}
         <section aria-labelledby="garanties-titre" className="mt-24 sm:mt-28">
-          <span className="block text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+          <span className="font-mono block text-[0.66rem] tracking-[0.24em] text-dim uppercase">
             Après la livraison
           </span>
 
@@ -228,14 +228,14 @@ export default function AProposPage() {
             id="garanties-titre"
             className="mt-5 text-[1.65rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl lg:text-4xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Ce sur quoi vous pouvez compter.
             </span>
           </h2>
 
           <div className="mt-10 grid gap-5 lg:grid-cols-3 lg:gap-6">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
-              <div className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+            <div className="rounded-xl border border-line bg-white/[0.02] p-8">
+              <div className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
                 Livré avec l&apos;appareil
               </div>
 
@@ -243,10 +243,10 @@ export default function AProposPage() {
                 {INCLUDED_ITEMS.map((item) => (
                   <li key={item} className="flex items-start gap-3.5">
                     <Check
-                      className="mt-0.5 h-4 w-4 shrink-0 text-cyan-300/80"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-accent"
                       strokeWidth={2}
                     />
-                    <span className="text-[0.92rem] leading-relaxed font-light text-white/70 text-pretty">
+                    <span className="text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                       {item}
                     </span>
                   </li>
@@ -254,36 +254,36 @@ export default function AProposPage() {
               </ul>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
-              <div className="flex items-center gap-2.5 text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+            <div className="rounded-xl border border-line bg-white/[0.02] p-8">
+              <div className="font-mono flex items-center gap-2.5 text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
                 <PackageCheck className="h-3.5 w-3.5" strokeWidth={1.6} />
                 Transport DDP
               </div>
 
-              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-white/60 text-pretty">
+              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                 {
                   "Droits de douane et taxes d'importation sont réglés au départ. Vous n'avez rien à avancer au transporteur, rien à déclarer, et aucune facture ne suit la livraison."
                 }
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-8">
-              <div className="flex items-center gap-2.5 text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+            <div className="rounded-xl border border-line bg-white/[0.02] p-8">
+              <div className="font-mono flex items-center gap-2.5 text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
                 <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.6} />
                 Garantie et SAV
               </div>
 
-              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-white/60 text-pretty">
+              <p className="mt-7 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                 {
                   "Deux ans de garantie légale sur les défauts de fabrication, pièces et main-d'œuvre. Assistance et diagnostic depuis la France, pièces expédiées de notre stock."
                 }
               </p>
 
-              <p className="mt-5 text-[0.85rem] leading-relaxed font-light text-white/40 text-pretty">
+              <p className="mt-5 text-[0.85rem] leading-relaxed font-light text-dimmer text-pretty">
                 Le détail figure dans nos{" "}
                 <Link
                   href="/cgv"
-                  className="text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+                  className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
                 >
                   conditions générales de vente
                 </Link>
@@ -296,7 +296,7 @@ export default function AProposPage() {
         {/* ── Rejoindre la liste d'attente ─────────────────────────────── */}
         <section
           aria-labelledby="attente-titre"
-          className="relative mt-24 overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-gradient-to-b from-cyan-400/[0.06] to-white/[0.015] p-8 backdrop-blur-xl sm:mt-28 sm:p-12 lg:p-16"
+          className="relative mt-24 overflow-hidden rounded-xl border border-accent/40 bg-gradient-to-b from-accent/[0.06] to-white/[0.015] p-8 backdrop-blur-xl sm:mt-28 sm:p-12 lg:p-16"
         >
           <div
             aria-hidden
@@ -304,26 +304,26 @@ export default function AProposPage() {
           />
 
           <div className="relative mx-auto max-w-2xl text-center">
-            <span className="block text-[0.66rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
-              {`${BATCH_NAME} · ${BATCH_UNITS} unités`}
+            <span className="font-mono block text-[0.66rem] tracking-[0.24em] text-accent uppercase">
+              {`${DROP_NAME} · ${DROP_UNITS} unités`}
             </span>
 
             <h2
               id="attente-titre"
               className="mt-5 text-[1.6rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-3xl"
             >
-              <span className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
+              <span className="text-ink">
                 Soyez prévenu à l&apos;ouverture.
               </span>
             </h2>
 
-            <p className="mt-5 text-[0.95rem] leading-relaxed font-light text-white/55 text-pretty">
+            <p className="mt-5 text-[0.95rem] leading-relaxed font-light text-dim text-pretty">
               {
                 "La première série est limitée et part en priorité aux inscrits. Une adresse email suffit : nous écrivons pour annoncer l'ouverture, pas pour meubler une boîte de réception."
               }
             </p>
 
-            <WaitlistForm source="batch-1" />
+            <WaitlistForm source="drop-1" />
           </div>
         </section>
       </main>

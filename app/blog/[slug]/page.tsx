@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
-import { PageHeader } from "@/components/page-header";
+import { SiteHeader } from "@/components/site-header";
 import { formatPostDate, getAllPosts, getPost } from "@/lib/posts";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
@@ -81,7 +81,7 @@ export default async function BlogPostPage({ params }: Props) {
   ]);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <JsonLd data={[jsonLd, breadcrumb]} />
 
       <div
@@ -89,12 +89,12 @@ export default async function BlogPostPage({ params }: Props) {
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
       />
 
-      <PageHeader maxWidth="max-w-2xl" />
+      <SiteHeader maxWidth="max-w-2xl" />
 
       <main className="relative z-10 mx-auto w-full max-w-2xl px-6 pt-10 pb-20 sm:pt-14 sm:pb-28 lg:px-10">
         <Link
           href="/blog"
-          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -108,31 +108,31 @@ export default async function BlogPostPage({ params }: Props) {
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-cyan-300/25 bg-cyan-400/[0.07] px-3 py-1 text-[0.62rem] font-medium tracking-[0.16em] text-cyan-100/90 uppercase"
+                className="font-mono rounded-full border border-accent/40 bg-accent/[0.07] px-3 py-1 text-[0.62rem] tracking-[0.16em] text-accent uppercase"
               >
                 {tag}
               </span>
             ))}
-            <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-light text-white/30">
+            <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-light text-dimmer">
               <Clock className="h-3 w-3" strokeWidth={1.5} />
               {post.readTime} de lecture
             </span>
           </div>
 
           <h1 className="mt-6 text-[1.9rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-4xl">
-            <span className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
+            <span className="text-ink">
               {post.title}
             </span>
           </h1>
 
           <time
             dateTime={post.publishedAt}
-            className="mt-5 block text-[0.78rem] font-light text-white/35"
+            className="mt-5 block text-[0.78rem] font-light text-dimmer"
           >
             Publié le {formatPostDate(post.publishedAt)}
           </time>
 
-          <p className="mt-8 border-l-2 border-cyan-300/30 pl-5 text-[1rem] leading-relaxed font-light text-white/65 text-pretty">
+          <p className="mt-8 border-l-2 border-accent/40 pl-5 text-[1rem] leading-relaxed font-light text-dim text-pretty">
             {post.description}
           </p>
 
@@ -145,8 +145,8 @@ export default async function BlogPostPage({ params }: Props) {
         </article>
 
         {others.length > 0 && (
-          <aside className="mt-20 border-t border-white/[0.07] pt-10">
-            <h2 className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase">
+          <aside className="mt-20 border-t border-line pt-10">
+            <h2 className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase">
               À lire ensuite
             </h2>
             <div className="mt-6 flex flex-col gap-3">
@@ -154,12 +154,12 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link
                   key={item.slug}
                   href={`/blog/${item.slug}`}
-                  className="group flex items-center justify-between gap-6 rounded-2xl border border-white/[0.07] px-5 py-4 transition-colors duration-300 hover:border-cyan-300/25"
+                  className="group flex items-center justify-between gap-6 rounded-2xl border border-line px-5 py-4 transition-colors duration-300 hover:border-accent/40"
                 >
-                  <span className="text-[0.9rem] font-light text-white/70 text-pretty group-hover:text-white">
+                  <span className="text-[0.9rem] font-light text-dim text-pretty group-hover:text-ink">
                     {item.title}
                   </span>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-cyan-300/60 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>

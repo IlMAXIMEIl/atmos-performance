@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 
 import { AltitudeSimulator } from "@/components/altitude-simulator";
 import { JsonLd } from "@/components/json-ld";
-import { PageHeader } from "@/components/page-header";
+import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
   MAX_ALTITUDE,
@@ -155,7 +155,7 @@ export default function SimulateurAltitudePage() {
   ];
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <JsonLd data={jsonLd} />
 
       <div
@@ -164,14 +164,14 @@ export default function SimulateurAltitudePage() {
       />
 
       {/* ── En-tête ──────────────────────────────────────────────────── */}
-      <PageHeader maxWidth="max-w-6xl" />
+      <SiteHeader maxWidth="max-w-6xl" />
 
       <main className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 lg:px-10">
         {/* ── Chapeau ────────────────────────────────────────────────── */}
         <div className="pt-10 sm:pt-16">
           <Link
             href={TOOLS_PATH}
-            className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+            className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
           >
             <ArrowLeft
               className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -180,20 +180,20 @@ export default function SimulateurAltitudePage() {
             Tous les outils
           </Link>
 
-          <span className="mt-10 block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
+          <span className="font-mono mt-10 block text-[0.68rem] tracking-[0.28em] text-accent uppercase">
             Outil gratuit
           </span>
 
           <h1 className="mt-5 max-w-4xl text-[2rem] leading-[1.08] font-medium tracking-[-0.035em] text-balance sm:text-5xl lg:text-[3.4rem]">
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Simulateur d&apos;altitude
             </span>{" "}
-            <span className="bg-gradient-to-r from-cyan-200 via-sky-300 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               et calculateur d&apos;hypoxie.
             </span>
           </h1>
 
-          <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-white/55 text-pretty sm:text-lg">
+          <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty sm:text-lg">
             {
               "Trois questions suffisent à poser un protocole d'entraînement en hypoxie : le palier d'altitude simulée, la FiO₂ correspondante, la structure des cycles et la plage de saturation à tenir. Le convertisseur et le comparatif de coût suivent."
             }
@@ -206,23 +206,23 @@ export default function SimulateurAltitudePage() {
         </div>
 
         {/* ── Avertissement ──────────────────────────────────────────── */}
-        <aside className="mt-8 rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-          <h2 className="text-[0.66rem] font-medium tracking-[0.24em] text-white/45 uppercase">
+        <aside className="mt-8 rounded-xl border border-line bg-white/[0.02] p-6 sm:p-8">
+          <h2 className="font-mono text-[0.66rem] tracking-[0.24em] text-dim uppercase">
             Ce que cet outil n&apos;est pas
           </h2>
-          <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty">
+          <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
             {
               "Les paramètres affichés sont indicatifs. Ils constituent un point de départ raisonnable, construit sur des repères de littérature et sur les plages d'usage de l'ATMOS ONE — en aucun cas une prescription individuelle, et en aucun cas un avis médical."
             }
           </p>
-          <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty">
+          <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
             {
               "La réponse à l'hypoxie varie fortement d'une personne à l'autre, et chez la même personne d'un jour à l'autre. Un protocole ne se conduit qu'avec un oxymètre de pouls au doigt : c'est la saturation mesurée qui décide du palier, du nombre de cycles et de l'arrêt de la séance. En cas de grossesse, de pathologie cardiaque ou respiratoire, d'anémie ou d'hypertension non contrôlée, un avis médical est requis avant toute exposition."
             }
           </p>
           <Link
             href="/blog/securite-saturation-spo2-bonnes-pratiques-hypoxie"
-            className="group mt-6 inline-flex items-center gap-2 text-[0.85rem] font-medium text-cyan-200/85 transition-colors hover:text-cyan-100"
+            className="group mt-6 inline-flex items-center gap-2 text-[0.85rem] font-medium text-accent transition-colors hover:text-accent"
           >
             Sécurité et SpO₂ : les bonnes pratiques en détail
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -234,7 +234,7 @@ export default function SimulateurAltitudePage() {
           aria-labelledby="table-titre"
           className="mt-20 scroll-mt-24 sm:mt-24"
         >
-          <span className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
+          <span className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase">
             La table
           </span>
 
@@ -242,43 +242,72 @@ export default function SimulateurAltitudePage() {
             id="table-titre"
             className="mt-5 text-[1.6rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-4xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Correspondance altitude simulée
             </span>{" "}
-            <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               et fraction d&apos;oxygène.
             </span>
           </h2>
 
-          <p className="mt-6 max-w-2xl text-[0.95rem] leading-relaxed font-light text-white/55 text-pretty">
+          <p className="mt-6 max-w-2xl text-[0.95rem] leading-relaxed font-light text-dim text-pretty">
             {
               "Les valeurs de référence, du niveau de la mer au plafond de l'ATMOS ONE. Elles suivent l'atmosphère standard : c'est la pression partielle d'oxygène qui est mise en correspondance, pas la pression totale."
             }
           </p>
 
-          <div className="mt-10 overflow-x-auto rounded-[1.5rem] border border-white/10 bg-white/[0.02]">
+          {/*
+            Repliée par défaut.
+
+            Le simulateur au-dessus répond déjà à la question « quelle FiO₂ à
+            telle altitude ? », un palier à la fois : dépliée, la table coûtait
+            un écran entier de défilement entre le réglage et les questions
+            fréquentes, pour une information que le curseur donne mieux.
+
+            Repliée plutôt que supprimée : « correspondance altitude / FiO₂ »
+            est une requête en soi, et `<details>` garde le tableau dans le
+            HTML servi — donc indexable — sans le faire payer à qui ne le
+            cherche pas.
+          */}
+          <details className="group mt-10">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg border border-line px-6 py-4 transition-colors hover:border-line-strong [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-3 font-mono text-[0.72rem] tracking-[0.2em] text-accent uppercase">
+                <span className="h-px w-6 flex-none bg-accent" />
+                Voir la table complète
+              </span>
+
+              <span className="flex shrink-0 items-center gap-2.5 font-mono text-[0.68rem] tracking-[0.14em] text-dimmer uppercase transition-colors group-hover:text-accent">
+                <span className="group-open:hidden">Déplier</span>
+                <span className="hidden group-open:inline">Replier</span>
+                <span className="inline-flex transition-transform duration-300 group-open:rotate-180">
+                  <ChevronDown className="h-4 w-4" strokeWidth={1.6} />
+                </span>
+              </span>
+            </summary>
+
+            <div className="mt-4 overflow-x-auto rounded-lg border border-line bg-white/[0.02]">
             <table className="w-full min-w-[34rem] border-collapse text-left">
               <caption className="sr-only">
                 Équivalence entre l&apos;altitude simulée en mètres et la
                 fraction d&apos;oxygène inspiré en pourcentage
               </caption>
               <thead>
-                <tr className="border-b border-white/10">
+                <tr className="border-b border-line">
                   <th
                     scope="col"
-                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-white/45 uppercase"
+                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-dim uppercase"
                   >
                     Altitude simulée
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-white/45 uppercase"
+                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-dim uppercase"
                   >
                     FiO₂
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-white/45 uppercase"
+                    className="px-6 py-4 text-[0.64rem] font-medium tracking-[0.2em] text-dim uppercase"
                   >
                     Repère
                   </th>
@@ -288,27 +317,28 @@ export default function SimulateurAltitudePage() {
                 {TABLE_ALTITUDES.map((metres) => (
                   <tr
                     key={metres}
-                    className="border-t border-white/[0.06] transition-colors duration-300 hover:bg-white/[0.03]"
+                    className="border-t border-line transition-colors duration-300 hover:bg-white/[0.03]"
                   >
                     <th
                       scope="row"
-                      className="px-6 py-4 text-[0.92rem] font-medium tracking-tight whitespace-nowrap text-white/90 tabular-nums"
+                      className="px-6 py-4 text-[0.92rem] font-medium tracking-tight whitespace-nowrap text-ink tabular-nums"
                     >
                       {formatNumber(metres)} m
                     </th>
-                    <td className="px-6 py-4 text-[0.92rem] font-light whitespace-nowrap text-cyan-200/90 tabular-nums">
+                    <td className="px-6 py-4 text-[0.92rem] font-light whitespace-nowrap text-accent tabular-nums">
                       {formatDecimal(fio2AtAltitude(metres))} %
                     </td>
-                    <td className="px-6 py-4 text-[0.86rem] font-light text-white/45 text-pretty">
+                    <td className="px-6 py-4 text-[0.86rem] font-light text-dim text-pretty">
                       {landmarkFor(metres)}
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+          </details>
 
-          <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-white/35 text-pretty">
+          <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">
             {`L'ATMOS ONE couvre l'intégralité de cette plage, de 20,9 % à 9 % d'oxygène, soit 0 à ${formatNumber(MAX_ALTITUDE)} mètres simulés, réglables au palier près.`}
           </p>
         </section>
@@ -318,7 +348,7 @@ export default function SimulateurAltitudePage() {
           aria-labelledby="faq-titre"
           className="mt-20 scroll-mt-24 sm:mt-24"
         >
-          <span className="block text-[0.68rem] font-medium tracking-[0.28em] text-cyan-300/70 uppercase">
+          <span className="font-mono block text-[0.68rem] tracking-[0.28em] text-accent uppercase">
             Les questions
           </span>
 
@@ -326,10 +356,10 @@ export default function SimulateurAltitudePage() {
             id="faq-titre"
             className="mt-5 text-[1.6rem] leading-[1.15] font-medium tracking-[-0.03em] text-balance sm:text-4xl"
           >
-            <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+            <span className="text-ink">
               Ce qu&apos;il faut savoir
             </span>{" "}
-            <span className="bg-gradient-to-r from-cyan-200 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-accent">
               avant de régler l&apos;appareil.
             </span>
           </h2>
@@ -340,20 +370,20 @@ export default function SimulateurAltitudePage() {
               // indexable et lisible même sans JavaScript.
               <details
                 key={item.question}
-                className="group rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-5 transition-colors duration-300 open:border-cyan-300/25 hover:border-white/20 sm:px-8 sm:py-6"
+                className="group rounded-[1.5rem] border border-line bg-white/[0.02] px-6 py-5 transition-colors duration-300 open:border-accent/40 hover:border-line-strong sm:px-8 sm:py-6"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[0.98rem] font-medium tracking-tight text-balance text-white/90 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[0.98rem] font-medium tracking-tight text-balance text-ink [&::-webkit-details-marker]:hidden">
                   <h3>{item.question}</h3>
                   <ChevronDown
-                    className="h-4 w-4 shrink-0 text-cyan-300/70 group-open:hidden"
+                    className="h-4 w-4 shrink-0 text-accent group-open:hidden"
                     strokeWidth={1.6}
                   />
                   <ChevronUp
-                    className="hidden h-4 w-4 shrink-0 text-cyan-300/70 group-open:block"
+                    className="hidden h-4 w-4 shrink-0 text-accent group-open:block"
                     strokeWidth={1.6}
                   />
                 </summary>
-                <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty">
+                <p className="mt-4 text-[0.92rem] leading-relaxed font-light text-dim text-pretty">
                   {item.answer}
                 </p>
               </details>
@@ -366,7 +396,7 @@ export default function SimulateurAltitudePage() {
           <section aria-labelledby="lectures-titre" className="mt-20 sm:mt-24">
             <h2
               id="lectures-titre"
-              className="text-[0.64rem] font-medium tracking-[0.24em] text-white/40 uppercase"
+              className="font-mono text-[0.64rem] tracking-[0.24em] text-dimmer uppercase"
             >
               Pour aller plus loin
             </h2>
@@ -376,12 +406,12 @@ export default function SimulateurAltitudePage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group flex items-start justify-between gap-5 rounded-2xl border border-white/[0.07] px-5 py-5 transition-colors duration-300 hover:border-cyan-300/25"
+                  className="group flex items-start justify-between gap-5 rounded-2xl border border-line px-5 py-5 transition-colors duration-300 hover:border-accent/40"
                 >
-                  <span className="text-[0.9rem] leading-relaxed font-light text-white/70 text-pretty group-hover:text-white">
+                  <span className="text-[0.9rem] leading-relaxed font-light text-dim text-pretty group-hover:text-ink">
                     {post.title}
                   </span>
-                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-cyan-300/60 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               ))}
             </div>

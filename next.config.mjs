@@ -59,10 +59,19 @@ const SECURITY_HEADERS = [
   /**
    * Le site ne se sert d'aucune de ces API. Le dire coupe court à toute
    * demande d'accès qu'un script tiers compromis pourrait déclencher.
+   *
+   * `payment` fait exception, et c'est **indispensable au Payment Element**.
+   * Le champ de paiement vit dans une iframe servie par `js.stripe.com`, et
+   * Apple Pay comme Google Pay y passent par la Payment Request API. Sans
+   * cette délégation explicite, la directive retombe sur sa valeur par défaut
+   * — `self` — qui exclut l'iframe de Stripe : les portefeuilles
+   * disparaissent du tunnel sans le moindre message d'erreur, et la carte
+   * continue de fonctionner, ce qui rend la panne invisible en recette.
    */
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    value:
+      'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self "https://js.stripe.com")',
   },
 ];
 

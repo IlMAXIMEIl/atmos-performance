@@ -202,7 +202,7 @@ const ARTICLES: Article[] = [
 
 export default function CgvPage() {
   return (
-    <div className="relative min-h-screen w-full bg-[#0B0C10] font-[family-name:var(--font-geist-sans)] text-white selection:bg-cyan-400/25">
+    <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[32rem] bg-[radial-gradient(ellipse_at_50%_0%,rgba(56,189,248,0.12),transparent_70%)]"
@@ -211,7 +211,7 @@ export default function CgvPage() {
       <main className="relative z-10 mx-auto w-full max-w-3xl px-6 py-20 sm:py-28 lg:px-10">
         <Link
           href="/"
-          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-white/50 transition-colors hover:text-white"
+          className="group inline-flex items-center gap-2.5 text-[0.8rem] font-light tracking-[0.06em] text-dim transition-colors hover:text-ink"
         >
           <ArrowLeft
             className="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1"
@@ -221,27 +221,27 @@ export default function CgvPage() {
         </Link>
 
         <h1 className="mt-10 text-[2rem] leading-[1.1] font-medium tracking-[-0.03em] text-balance sm:text-4xl">
-          <span className="bg-gradient-to-b from-white to-white/75 bg-clip-text text-transparent">
+          <span className="text-ink">
             Conditions générales de vente
           </span>
         </h1>
 
-        <p className="mt-6 text-[0.9rem] leading-relaxed font-light text-white/45 text-pretty">
+        <p className="mt-6 text-[0.9rem] leading-relaxed font-light text-dim text-pretty">
           {`Version en vigueur au ${VERSION_DATE}. La version opposable est celle acceptée par l'acheteur au moment de sa commande.`}
         </p>
 
         <div className="mt-14 flex flex-col gap-12">
           {ARTICLES.map((article) => (
             <section key={article.title}>
-              <h2 className="text-[0.68rem] font-medium tracking-[0.24em] text-cyan-300/70 uppercase">
+              <h2 className="font-mono text-[0.68rem] tracking-[0.24em] text-accent uppercase">
                 {article.title}
               </h2>
 
-              <div className="mt-5 flex flex-col gap-3 border-t border-white/[0.07] pt-5">
+              <div className="mt-5 flex flex-col gap-3 border-t border-line pt-5">
                 {article.paragraphs?.map((paragraph) => (
                   <p
                     key={paragraph}
-                    className="text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty"
+                    className="text-[0.92rem] leading-relaxed font-light text-dim text-pretty"
                   >
                     {paragraph}
                   </p>
@@ -252,7 +252,7 @@ export default function CgvPage() {
                     {article.list.map((line) => (
                       <li
                         key={line}
-                        className="text-[0.92rem] leading-relaxed font-light text-white/55 text-pretty"
+                        className="text-[0.92rem] leading-relaxed font-light text-dim text-pretty"
                       >
                         {line}
                       </li>
@@ -261,7 +261,7 @@ export default function CgvPage() {
                 )}
 
                 {article.note && (
-                  <p className="mt-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-[0.82rem] leading-relaxed font-light text-white/40 text-pretty">
+                  <p className="mt-3 rounded-2xl border border-line bg-white/[0.02] p-5 text-[0.82rem] leading-relaxed font-light text-dimmer text-pretty">
                     {article.note}
                   </p>
                 )}
@@ -270,11 +270,11 @@ export default function CgvPage() {
           ))}
         </div>
 
-        <p className="mt-16 border-t border-white/[0.07] pt-8 text-[0.82rem] leading-relaxed font-light text-white/35 text-pretty">
+        <p className="mt-16 border-t border-line pt-8 text-[0.82rem] leading-relaxed font-light text-dimmer text-pretty">
           Voir également nos{" "}
           <Link
             href="/mentions-legales"
-            className="text-white/55 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+            className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
           >
             mentions légales
           </Link>

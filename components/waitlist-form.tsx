@@ -55,9 +55,9 @@ export function WaitlistForm({
 
   if (state === "ok") {
     return (
-      <div className="mt-11 flex items-center justify-center gap-3 rounded-full border border-cyan-300/30 bg-cyan-400/[0.07] px-6 py-4">
-        <Check className="h-4 w-4 shrink-0 text-cyan-300" strokeWidth={2} />
-        <span className="text-[0.88rem] font-light text-cyan-100/90">
+      <div className="mt-11 flex items-center justify-center gap-3 rounded-full border border-accent/40 bg-accent/[0.07] px-6 py-4">
+        <Check className="h-4 w-4 shrink-0 text-accent" strokeWidth={2} />
+        <span className="text-[0.88rem] font-light text-accent">
           C&apos;est noté. Vous serez prévenu à l&apos;ouverture.
         </span>
       </div>
@@ -83,13 +83,13 @@ export function WaitlistForm({
           }}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? "waitlist-erreur" : undefined}
-          className="w-full rounded-full border border-white/12 bg-white/[0.03] px-6 py-4 text-[0.9rem] font-light text-white placeholder:text-white/25 transition-colors duration-300 focus:border-cyan-300/50 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-cyan-300/20"
+          className="w-full rounded-full border border-line-strong bg-white/[0.03] px-6 py-4 text-[0.9rem] font-light text-ink placeholder:text-dimmer transition-colors duration-300 focus:border-accent/40 focus:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-accent"
         />
 
         <button
           type="submit"
           disabled={state === "envoi"}
-          className="group inline-flex shrink-0 items-center justify-center gap-2.5 rounded-full border border-white/15 bg-white/[0.05] px-7 py-4 text-[0.85rem] font-medium tracking-[0.03em] text-white/90 backdrop-blur-md transition-all duration-300 hover:border-cyan-300/40 hover:bg-white/[0.09] hover:text-white focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:outline-none disabled:opacity-60"
+          className="group inline-flex shrink-0 items-center justify-center gap-2.5 rounded-full border border-line-strong bg-white/[0.05] px-7 py-4 text-[0.85rem] font-medium tracking-[0.03em] text-ink backdrop-blur-md transition-all duration-300 hover:border-accent/40 hover:bg-white/[0.09] hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none disabled:opacity-60"
         >
           {state === "envoi" ? (
             <>

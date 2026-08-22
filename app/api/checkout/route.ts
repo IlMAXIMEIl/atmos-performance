@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 
-import { BATCH_NAME, LEASING_OPEN, ORDERS_OPEN } from "@/lib/offering";
+import { DROP_NAME, LEASING_OPEN, ORDERS_OPEN } from "@/lib/offering";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
@@ -228,9 +228,18 @@ export async function POST(request: Request) {
       },
     ];
 
-    // Empreinte bancaire : la carte est conservée pour pouvoir prélever la
-    // caution de garantie hors session. Aucun montant n'est débité à ce titre
-    // au moment du paiement.
+    /*
+      Empreinte bancaire : la carte est conservée pour pouvoir prélever la
+      caution de garantie hors session. Aucun montant n'est débité à ce titre
+      au moment du paiement.
+
+      **Conséquence sur les moyens de paiement proposés.** Dès que
+      `setup_future_usage` est demandé, Stripe restreint la liste aux moyens
+      capables d'une transaction ultérieure à l'initiative du marchand. PayPal
+      en est écarté : la formule Location n'affichera donc que la carte, même
+      une fois PayPal activé au tableau de bord. Ce n'est pas un oubli de
+      configuration, c'est la contrepartie de l'empreinte.
+    */
     extra = {
       customer_creation: "always",
       payment_intent_data: {
@@ -240,7 +249,7 @@ export async function POST(request: Request) {
     };
   } else {
     metadata.quantity = String(payload.quantity);
-    metadata.batch = BATCH_NAME;
+    metadata.drop = DROP_NAME;
 
     lineItems = [
       {
@@ -249,7 +258,7 @@ export async function POST(request: Request) {
           currency: "eur",
           unit_amount: PRICES.purchaseUnit,
           product_data: {
-            name: `ATMOS ONE — précommande ${BATCH_NAME}`,
+            name: `ATMOS ONE — précommande ${DROP_NAME}`,
             description: `Précommande d'une unité de l'édition de lancement, à ${formatEuros(PRICES.purchaseUnit)}. Série limitée, fabrication et expédition directe.`,
           },
         },
@@ -259,8 +268,26 @@ export async function POST(request: Request) {
 
   try {
     const stripe = new Stripe(secretKey);
+
+    /*
+      `payment_method_types` est volontairement absent.
+
+      Sans cette clé, Stripe applique les **moyens de paiement dynamiques** :
+      la session propose ce qui est activé dans le tableau de bord (Réglages >
+      Moyens de paiement), filtré par le pays du compte, la devise et le
+      montant. Ajouter PayPal, Klarna ou un virement se fait donc sans toucher
+      à ce fichier.
+
+      Ne pas la réintroduire pour « forcer la carte » : ce serait figer la
+      liste ici et désactiver silencieusement tout ce qui aura été activé
+      ailleurs.
+    */
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      // La page de paiement suit la langue du site plutôt que celle du
+      // navigateur : un visiteur sur un navigateur anglophone reste en
+      // français, comme le reste du parcours.
+      locale: "fr",
       customer_email: payload.email,
       line_items: lineItems,
       metadata,
