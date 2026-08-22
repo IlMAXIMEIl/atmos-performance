@@ -162,12 +162,18 @@ export function PaymentForm({
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret, appearance: APPEARANCE }}>
-      <CheckoutFields quantity={quantity} />
+      <CheckoutFields quantity={quantity} clientSecret={clientSecret} />
     </Elements>
   );
 }
 
-function CheckoutFields({ quantity }: { quantity: number }) {
+function CheckoutFields({
+  quantity,
+  clientSecret,
+}: {
+  quantity: number;
+  clientSecret: string;
+}) {
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
@@ -218,9 +224,23 @@ function CheckoutFields({ quantity }: { quantity: number }) {
       Les deux chemins arrivent donc sur la même URL, avec les mêmes
       paramètres, et la page n'a pas à savoir d'où vient le visiteur.
     */
+    /*
+      Le secret vient de **notre** état, pas de la réponse de Stripe.
+
+      `confirmPayment` renvoie bien un `paymentIntent`, mais rien ne garantit
+      que son `client_secret` soit peuplé — et s'il ne l'est pas, la requête
+      part avec un secret vide, la page de confirmation refuse la liaison et
+      affiche « Référence introuvable » alors que la carte vient d'être
+      débitée. Or nous détenons déjà ce secret : c'est celui que notre propre
+      API nous a donné pour monter le Payment Element. Aucune raison de
+      dépendre de Stripe pour le relire.
+
+      L'identifiant se déduit du secret lui-même (`pi_xxx_secret_yyy`), ce qui
+      couvre aussi le cas où `paymentIntent` serait absent.
+    */
     const query = new URLSearchParams({
-      payment_intent: paymentIntent.id,
-      payment_intent_client_secret: paymentIntent.client_secret ?? "",
+      payment_intent: paymentIntent?.id ?? clientSecret.split("_secret_")[0],
+      payment_intent_client_secret: clientSecret,
     });
 
     router.push(`/reservation/confirmee?${query}`);
