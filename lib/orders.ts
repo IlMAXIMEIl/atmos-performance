@@ -190,13 +190,39 @@ function parseConnectionString(raw: string) {
  * échapper, donc aucun mot de passe ne peut les casser. `DATABASE_URL` reste
  * acceptée pour ne rien changer à une installation qui marche.
  */
-function readConfig() {
+/**
+ * `localhost` est résolu en IPv6 par Node depuis la version 17.
+ *
+ * MySQL accorde ses droits par hôte, et `::1` n'est pas `localhost` à ses
+ * yeux : un utilisateur créé par l'hébergeur pour `'…'@'localhost'` se voit
+ * refuser l'accès avec un « Access denied … @'::1' » qui ne dit pas un mot de
+ * la résolution de nom. On force donc l'IPv4, qui correspond aux droits
+ * réellement accordés.
+ */
+function forceIPv4(host: string): string {
+  return host === "localhost" ? "127.0.0.1" : host;
+}
+
+/**
+ * Origine de la configuration effectivement retenue.
+ *
+ * Exposée par le diagnostic : sans elle, impossible de savoir si une variable
+ * `DB_*` oubliée fait retomber la connexion sur `DATABASE_URL` — et donc
+ * pourquoi une correction posée dans le panneau semble sans effet.
+ */
+export function configSource(): "DB_*" | "DATABASE_URL" | "aucune" {
+  const { DB_HOST, DB_USER, DB_NAME, DATABASE_URL } = process.env;
+  if (DB_HOST && DB_USER && DB_NAME) return "DB_*";
+  return DATABASE_URL ? "DATABASE_URL" : "aucune";
+}
+
+export function readConfig() {
   const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, DATABASE_URL } =
     process.env;
 
   if (DB_HOST && DB_USER && DB_NAME) {
     return {
-      host: DB_HOST,
+      host: forceIPv4(DB_HOST),
       port: Number(DB_PORT) || 3306,
       user: DB_USER,
       password: DB_PASSWORD ?? "",
@@ -212,7 +238,8 @@ function readConfig() {
   }
 
   try {
-    return parseConnectionString(DATABASE_URL);
+    const parsed = parseConnectionString(DATABASE_URL);
+    return { ...parsed, host: forceIPv4(parsed.host) };
   } catch (error) {
     throw new Error(
       `DATABASE_URL illisible (${error instanceof Error ? error.message : "format inattendu"}). ` +

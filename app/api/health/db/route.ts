@@ -1,4 +1,4 @@
-import { countOrders } from "@/lib/orders";
+import { configSource, countOrders, readConfig } from "@/lib/orders";
 
 /**
  * Diagnostic de la base de commandes.
@@ -42,9 +42,29 @@ export async function GET(request: Request) {
     return Response.json({ error: "Jeton invalide." }, { status: 403 });
   }
 
+  /*
+    La configuration appliquée, mot de passe exclu.
+
+    C'est le renseignement qui manquait : une variable `DB_*` oubliée fait
+    silencieusement retomber la connexion sur `DATABASE_URL`, et une
+    correction posée dans le panneau semble alors sans effet. Savoir quelle
+    source est retenue, et vers quel hôte on compose, évite de chercher là où
+    il n'y a rien.
+  */
+  let config: Record<string, unknown> = { source: configSource() };
+  try {
+    const { host, port, user, database } = readConfig();
+    config = { ...config, host, port, user, database };
+  } catch (error) {
+    config = {
+      ...config,
+      error: error instanceof Error ? error.message : "illisible",
+    };
+  }
+
   try {
     const orders = await countOrders();
-    return Response.json({ ok: true, orders });
+    return Response.json({ ok: true, orders, config });
   } catch (error) {
     console.error("Diagnostic de la base impossible", error);
 
@@ -57,6 +77,7 @@ export async function GET(request: Request) {
         ok: false,
         error: error instanceof Error ? error.message : "Erreur inconnue.",
         code: (error as { code?: string }).code ?? null,
+        config,
       },
       { status: 503 },
     );
