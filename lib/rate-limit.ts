@@ -78,10 +78,23 @@ export function rateLimit(
  * développement.
  */
 export function clientKey(request: Request): string {
-  const realIp = request.headers.get("x-real-ip");
+  return clientKeyFromHeaders(request.headers);
+}
+
+/**
+ * Même identité, à partir des seuls en-têtes.
+ *
+ * Une action serveur ne reçoit pas de `Request` : elle lit `headers()` de
+ * `next/headers`. Le formulaire de connexion de l'administration en a besoin
+ * pour compter ses tentatives comme les routes comptent les leurs — sans
+ * quoi la seule porte protégée par un mot de passe serait aussi la seule
+ * sans limitation de débit.
+ */
+export function clientKeyFromHeaders(headers: Headers): string {
+  const realIp = headers.get("x-real-ip");
   if (realIp) return realIp.trim();
 
-  const forwarded = request.headers.get("x-forwarded-for");
+  const forwarded = headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
 
   return "inconnu";

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { JsonLd } from "@/components/json-ld";
+import { PublicOnly } from "@/components/public-only";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -91,10 +92,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Entités valables pour tout le site : les schémas de page y renvoient
             par `@id` plutôt que de redécrire la marque à chaque fois. */}
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
-        {/* Au-dessus de la navigation, sur toutes les pages : le site est en
-            phase de teasing, l'information vaut pour chaque point d'entrée —
-            un article de blog en vaut un autre. */}
-        <AnnouncementBanner />
+        {/* Au-dessus de la navigation, sur toutes les pages publiques : le
+            site est en phase de teasing, l'information vaut pour chaque point
+            d'entrée — un article de blog en vaut un autre.
+
+            `PublicOnly` l'écarte de `/admin`, où l'on traite des commandes
+            déjà payées et où une invitation à rejoindre la liste d'attente
+            n'aurait aucun sens. */}
+        <PublicOnly>
+          <AnnouncementBanner />
+        </PublicOnly>
         {children}
       </body>
     </html>

@@ -30,6 +30,8 @@ Toutes sont décrites dans [`.env.example`](.env.example). En résumé :
 | `DB_HOST` `DB_USER` `DB_PASSWORD` `DB_NAME` | Base MySQL des commandes — **à préférer** à `DATABASE_URL` : aucun caractère à échapper | à l'ouverture des ventes |
 | `DATABASE_URL` | Même chose en une seule chaîne, si le mot de passe ne contient ni `#` `?` `/` `@` | alternative |
 | `DIAGNOSTIC_TOKEN` | Protège `GET /api/health/db` (nombre de commandes) | recommandé |
+| `ADMIN_PASSWORD` | Mot de passe de l'espace d'administration `/admin` | à l'ouverture des ventes |
+| `ADMIN_SESSION_SECRET` | Signature du cookie de session de `/admin` | à l'ouverture des ventes |
 | `NEXT_PUBLIC_SITE_URL` | Origine publique (URL de retour Stripe, données structurées) | oui en production |
 
 Seules les variables préfixées `NEXT_PUBLIC_` sont exposées au navigateur — l'URL du site et la clé **publiable** de Stripe, qui est faite pour ça. Les autres sont des
@@ -97,8 +99,30 @@ la contrainte d'unicité de la base qui tranche, jamais une relecture
 applicative — entre un `SELECT` et un `INSERT`, deux écritures simultanées
 passeraient toutes les deux.
 
-`GET /api/health/db?token=…` répond `{ ok, orders }` : de quoi vérifier en une
-commande que la base répond et que les commandes arrivent.
+`GET /api/health/db` répond `{ ok, orders }` — jeton en en-tête
+`x-diagnostic-token` — : de quoi vérifier en une commande que la base répond et
+que les commandes arrivent.
 
 **Stripe reste la source de vérité.** Cette table en est une copie
 interrogeable ; la perdre ne perd aucune commande.
+
+## Espace d'administration
+
+`/admin` sert au **traitement** des commandes : liste paginée, recherche,
+filtres, statut, fiche client, actions en lot et export CSV. Il est protégé par
+`ADMIN_PASSWORD` et un cookie de session signé par `ADMIN_SESSION_SECRET` —
+deux variables serveur, un redémarrage suffit à les prendre en compte. Sans
+elles, la page de connexion l'annonce et refuse toute tentative.
+
+Le **tableau de bord financier, c'est Stripe** : chiffre d'affaires,
+remboursements, litiges et exports comptables n'y sont volontairement pas
+dupliqués. Chaque fiche porte un lien direct vers le paiement correspondant.
+
+Le périmètre, les décisions et les pièges rencontrés sont dans
+[`docs/admin-commandes.md`](docs/admin-commandes.md) — à lire avant d'y
+toucher, en particulier le `export const dynamic = "force-dynamic"` sans lequel
+`next build` fige l'espace en statique et le rend inaccessible.
+
+Les colonnes `status`, `tracking_number`, `internal_note` et la table
+`order_events` sont créées par des migrations idempotentes à la première
+requête : il n'y a rien à lancer au déploiement.

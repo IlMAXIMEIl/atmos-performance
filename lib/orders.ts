@@ -1,6 +1,8 @@
 import mysql from "mysql2/promise";
 import type Stripe from "stripe";
 
+import { isOrderStatus, type OrderStatus } from "@/lib/order-status";
+
 /**
  * Stockage des commandes, en base MySQL.
  *
@@ -51,6 +53,21 @@ import type Stripe from "stripe";
  * perd aucune commande.
  */
 
+/**
+ * Statuts de traitement, réexportés depuis `lib/order-status.ts`.
+ *
+ * Ils y vivent à part pour rester importables par un composant client
+ * sans entraîner `mysql2` dans le paquet du navigateur. Réexportés ici
+ * pour que `lib/orders` reste le point d'entrée naturel côté serveur.
+ */
+export {
+  isOrderStatus,
+  ORDER_STATUS_LABELS,
+  ORDER_STATUSES,
+  PLAN_LABELS,
+  type OrderStatus,
+} from "@/lib/order-status";
+
 export type Order = {
   /**
    * Référence du paiement : identifiant de l'intention (`pi_…`) ou de la
@@ -78,6 +95,36 @@ export type Order = {
   balanceDue?: string;
 };
 
+/**
+ * Une commande **relue** en base, traitement compris.
+ *
+ * Distincte d'`Order`, qui décrit ce que les deux chemins d'écriture savent
+ * d'un paiement au moment où il arrive. Le statut, le suivi et la note
+ * n'existent qu'après, et sont posés par l'administration : les faire entrer
+ * dans `Order` obligerait le webhook à inventer une valeur pour des champs
+ * qui ne le regardent pas.
+ */
+export type OrderRecord = Order & {
+  /** Clé technique de la ligne. Sert de cible au journal `order_events`. */
+  id: number;
+  status: OrderStatus;
+  trackingNumber: string;
+  internalNote: string;
+};
+
+/**
+ * Une ligne du journal d'une commande.
+ *
+ * `status` vaut `null` quand l'événement ne change pas d'état — l'ajout d'une
+ * note ou d'un numéro de suivi, par exemple.
+ */
+export type OrderEvent = {
+  id: number;
+  status: OrderStatus | null;
+  note: string;
+  createdAt: string;
+};
+
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS orders (
     id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -98,8 +145,36 @@ const SCHEMA = `
     end_date       VARCHAR(32)     NULL,
     quantity       VARCHAR(8)      NULL,
     balance_due    VARCHAR(32)     NULL,
+    status         VARCHAR(32)     NOT NULL DEFAULT 'recue',
+    tracking_number VARCHAR(128)   NOT NULL DEFAULT '',
+    internal_note  TEXT,
     INDEX idx_email (email),
-    INDEX idx_received_at (received_at)
+    INDEX idx_received_at (received_at),
+    INDEX idx_status (status)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+`;
+
+/**
+ * Journal des commandes : qui a changé quoi, et quand.
+ *
+ * Sans lui, une erreur de manipulation est indétectable — une commande
+ * repassée « reçue » par mégarde ne laisse aucune trace, et rien ne dit si
+ * l'expédition a été saisie avant ou après le colis parti.
+ *
+ * `order_id` porte une clé étrangère en cascade : supprimer une commande
+ * emporte son journal, plutôt que de laisser des lignes orphelines qui
+ * mentiraient sur des commandes qui n'existent plus.
+ */
+const EVENTS_SCHEMA = `
+  CREATE TABLE IF NOT EXISTS order_events (
+    id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    order_id   BIGINT UNSIGNED NOT NULL,
+    status     VARCHAR(32)     NULL,
+    note       TEXT,
+    created_at DATETIME        NOT NULL,
+    INDEX idx_order_id (order_id),
+    CONSTRAINT fk_order_events_order
+      FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 `;
 
@@ -113,6 +188,12 @@ const MIGRATIONS = [
   "ALTER TABLE orders ADD UNIQUE INDEX uniq_reference (reference)",
   "ALTER TABLE orders MODIFY event_id VARCHAR(255) NULL",
   "ALTER TABLE orders DROP INDEX event_id",
+  // Traitement des commandes : ces trois colonnes n'existaient pas tant que
+  // l'espace d'administration n'existait pas.
+  "ALTER TABLE orders ADD COLUMN status VARCHAR(32) NOT NULL DEFAULT 'recue'",
+  "ALTER TABLE orders ADD COLUMN tracking_number VARCHAR(128) NOT NULL DEFAULT ''",
+  "ALTER TABLE orders ADD COLUMN internal_note TEXT",
+  "ALTER TABLE orders ADD INDEX idx_status (status)",
 ];
 
 /** Erreurs signifiant « c'était déjà fait » : colonne, index ou clé absente. */
@@ -285,6 +366,10 @@ function ensureSchema(): Promise<void> {
         }
       }
     }
+
+    // Après les migrations, jamais avant : la clé étrangère vise `orders.id`,
+    // dont la table doit être en place et à jour.
+    await db.query(EVENTS_SCHEMA);
   })().catch((error) => {
     // Une préparation ratée ne doit pas rester mémorisée comme réussie : on
     // remet le drapeau à zéro pour que la commande suivante réessaie.
@@ -336,20 +421,15 @@ export function orderFromIntent(
   };
 }
 
-export async function listOrders(): Promise<Order[]> {
-  await ensureSchema();
-
-  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
-    "SELECT * FROM orders ORDER BY received_at DESC",
-  );
-
-  return rows.map((row) => ({
+function toOrderRecord(row: mysql.RowDataPacket): OrderRecord {
+  return {
+    id: Number(row.id),
     reference: row.reference,
     eventId: row.event_id ?? "",
     receivedAt: new Date(row.received_at).toISOString(),
     plan: row.plan,
     paymentStatus: row.payment_status,
-    amountTotal: row.amount_total,
+    amountTotal: Number(row.amount_total),
     currency: row.currency,
     email: row.email,
     firstName: row.first_name,
@@ -361,7 +441,373 @@ export async function listOrders(): Promise<Order[]> {
     endDate: row.end_date ?? undefined,
     quantity: row.quantity ?? undefined,
     balanceDue: row.balance_due ?? undefined,
+    // Une ligne écrite avant la migration n'a pas de statut : elle vient
+    // d'arriver et n'a pas été traitée, donc « reçue ».
+    status: isOrderStatus(row.status) ? row.status : "recue",
+    trackingNumber: row.tracking_number ?? "",
+    internalNote: row.internal_note ?? "",
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Lecture pour l'espace d'administration
+
+   Pensée pour des milliers de lignes, pas pour vingt-cinq. Aucune fonction
+   ci-dessous ne rapatrie la table entière : la pagination est faite par la
+   base, qui sait le faire, et les filtres descendent dans le `WHERE` plutôt
+   que d'être appliqués en mémoire sur un tableau déjà chargé.
+   ══════════════════════════════════════════════════════════════════════ */
+
+export type OrderSort = "date" | "montant";
+export type SortDirection = "asc" | "desc";
+
+export type OrderQuery = {
+  /** Cherche dans l'email, la référence de paiement, le nom et le prénom. */
+  search?: string;
+  status?: OrderStatus | null;
+  /** `achat` ou `leasing` — les deux formules du tunnel. */
+  plan?: string | null;
+  /** Jours civils inclusifs, au format `AAAA-MM-JJ`. */
+  from?: string | null;
+  to?: string | null;
+  sort?: OrderSort;
+  direction?: SortDirection;
+  page?: number;
+  perPage?: number;
+};
+
+/** Taille de page. Cinquante lignes tiennent à l'écran sans scroll infini. */
+export const ORDERS_PER_PAGE = 50;
+
+/**
+ * Plafond de l'export CSV.
+ *
+ * L'export n'est pas paginé — c'est tout l'intérêt — mais il n'a pas non plus
+ * à pouvoir vider la table dans la mémoire du serveur sur un filtre trop
+ * large. Dix mille lignes couvrent très largement le besoin réel et bornent
+ * la casse.
+ */
+export const EXPORT_LIMIT = 10_000;
+
+/**
+ * Construit la clause `WHERE` commune à la liste, au compte et à l'export.
+ *
+ * Les trois **doivent** filtrer identiquement : un export qui ne rendrait pas
+ * exactement les lignes affichées serait pire qu'une absence d'export.
+ * D'où cette fonction unique, et les paramètres liés — jamais de valeur
+ * concaténée dans le SQL.
+ */
+function buildFilters(query: OrderQuery): { sql: string; values: unknown[] } {
+  const clauses: string[] = [];
+  const values: unknown[] = [];
+
+  const search = query.search?.trim();
+  if (search) {
+    // `LIKE` avec joker des deux côtés : la recherche sert à retrouver « le
+    // Dupont de mardi » à partir d'un fragment, pas à faire de l'analyse.
+    // Les caractères propres à `LIKE` sont échappés, sans quoi un `%` saisi
+    // par erreur rapporterait toute la table.
+    const pattern = `%${search.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+    clauses.push(
+      "(email LIKE ? OR reference LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR CONCAT(first_name, ' ', last_name) LIKE ?)",
+    );
+    values.push(pattern, pattern, pattern, pattern, pattern);
+  }
+
+  if (query.status) {
+    clauses.push("status = ?");
+    values.push(query.status);
+  }
+
+  if (query.plan) {
+    clauses.push("plan = ?");
+    values.push(query.plan);
+  }
+
+  if (query.from) {
+    clauses.push("received_at >= ?");
+    values.push(`${query.from} 00:00:00`);
+  }
+
+  if (query.to) {
+    // Borne haute **inclusive** : `<= '2026-08-22'` exclurait toute la
+    // journée du 22, ce qui est exactement l'inverse de ce qu'on attend d'un
+    // filtre « jusqu'au 22 ».
+    clauses.push("received_at <= ?");
+    values.push(`${query.to} 23:59:59`);
+  }
+
+  return {
+    sql: clauses.length ? `WHERE ${clauses.join(" AND ")}` : "",
+    values,
+  };
+}
+
+/** Colonnes de tri autorisées, par nom public. */
+const SORT_COLUMNS: Record<OrderSort, string> = {
+  date: "received_at",
+  montant: "amount_total",
+};
+
+export type OrdersPage = {
+  orders: OrderRecord[];
+  total: number;
+  page: number;
+  perPage: number;
+  pageCount: number;
+};
+
+/**
+ * Une page de commandes, et le total correspondant aux filtres.
+ *
+ * Le total vient d'un `COUNT(*)` séparé, pas de la longueur du tableau :
+ * c'est lui qui donne le nombre de pages et le libellé « 128 commandes »,
+ * qu'aucune page de cinquante lignes ne peut connaître.
+ */
+export async function searchOrders(query: OrderQuery): Promise<OrdersPage> {
+  await ensureSchema();
+
+  const perPage = Math.min(Math.max(query.perPage ?? ORDERS_PER_PAGE, 1), 200);
+  const requestedPage = Math.max(query.page ?? 1, 1);
+
+  const { sql: where, values } = buildFilters(query);
+  const db = getPool();
+
+  const [countRows] = await db.query<mysql.RowDataPacket[]>(
+    `SELECT COUNT(*) AS total FROM orders ${where}`,
+    values,
+  );
+  const total = Number(countRows[0]?.total ?? 0);
+  const pageCount = Math.max(Math.ceil(total / perPage), 1);
+
+  // Un filtre resserré depuis la page 7 ramènerait sur une page vide : on
+  // ramène la demande dans les bornes plutôt que d'afficher un tableau vide
+  // sous un compteur qui annonce des résultats.
+  const page = Math.min(requestedPage, pageCount);
+
+  const column = SORT_COLUMNS[query.sort ?? "date"] ?? SORT_COLUMNS.date;
+  const direction = query.direction === "asc" ? "ASC" : "DESC";
+
+  const [rows] = await db.query<mysql.RowDataPacket[]>(
+    // `column` et `direction` viennent d'une table de correspondance fermée,
+    // jamais de l'URL : MySQL n'accepte pas de paramètre lié à cet endroit.
+    // Le tri secondaire sur `id` rend l'ordre total — sans lui, deux
+    // commandes du même instant peuvent changer de place d'une page à
+    // l'autre et l'une des deux disparaît de la pagination.
+    `SELECT * FROM orders ${where} ORDER BY ${column} ${direction}, id DESC LIMIT ? OFFSET ?`,
+    [...values, perPage, (page - 1) * perPage],
+  );
+
+  return {
+    orders: rows.map(toOrderRecord),
+    total,
+    page,
+    perPage,
+    pageCount,
+  };
+}
+
+/** Toutes les lignes correspondant aux filtres, pour l'export CSV. */
+export async function listOrdersForExport(
+  query: OrderQuery,
+): Promise<OrderRecord[]> {
+  await ensureSchema();
+
+  const { sql: where, values } = buildFilters(query);
+  const column = SORT_COLUMNS[query.sort ?? "date"] ?? SORT_COLUMNS.date;
+  const direction = query.direction === "asc" ? "ASC" : "DESC";
+
+  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
+    `SELECT * FROM orders ${where} ORDER BY ${column} ${direction}, id DESC LIMIT ?`,
+    [...values, EXPORT_LIMIT],
+  );
+
+  return rows.map(toOrderRecord);
+}
+
+/** Une commande, par sa référence de paiement. `null` si elle n'existe pas. */
+export async function getOrder(reference: string): Promise<OrderRecord | null> {
+  await ensureSchema();
+
+  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
+    "SELECT * FROM orders WHERE reference = ? LIMIT 1",
+    [reference],
+  );
+
+  return rows[0] ? toOrderRecord(rows[0]) : null;
+}
+
+/** Le journal d'une commande, du plus récent au plus ancien. */
+export async function listOrderEvents(
+  orderId: number,
+): Promise<OrderEvent[]> {
+  await ensureSchema();
+
+  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
+    "SELECT id, status, note, created_at FROM order_events WHERE order_id = ? ORDER BY created_at DESC, id DESC",
+    [orderId],
+  );
+
+  return rows.map((row) => ({
+    id: Number(row.id),
+    status: isOrderStatus(row.status) ? row.status : null,
+    note: row.note ?? "",
+    createdAt: new Date(row.created_at).toISOString(),
   }));
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   Écriture depuis l'administration
+
+   Chaque modification laisse une ligne dans `order_events`. C'est la seule
+   façon de répondre à « pourquoi cette commande est-elle repassée en
+   fabrication ? » trois semaines plus tard.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/** Journalise, en réutilisant la connexion de l'appelant s'il en tient une. */
+async function logEvent(
+  runner: mysql.Pool | mysql.PoolConnection,
+  orderId: number,
+  status: OrderStatus | null,
+  note: string,
+) {
+  await runner.execute(
+    "INSERT INTO order_events (order_id, status, note, created_at) VALUES (?, ?, ?, UTC_TIMESTAMP())",
+    [orderId, status, note],
+  );
+}
+
+/**
+ * Change le statut d'une ou plusieurs commandes, et journalise chacune.
+ *
+ * Le lot passe par **une transaction** : une série entière qui part en
+ * fabrication doit basculer en entier ou pas du tout. Un lot à moitié
+ * appliqué, avec un journal à moitié écrit, est le pire des trois états
+ * possibles — on ne saurait plus ce qui a été fait.
+ *
+ * Renvoie le nombre de commandes réellement modifiées : les références
+ * inconnues sont ignorées en silence, et une commande déjà dans le statut
+ * demandé ne compte pas.
+ */
+export async function updateOrderStatus(
+  references: string[],
+  status: OrderStatus,
+  note = "",
+): Promise<number> {
+  if (references.length === 0) return 0;
+
+  await ensureSchema();
+
+  const connection = await getPool().getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const placeholders = references.map(() => "?").join(", ");
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      `SELECT id, status FROM orders WHERE reference IN (${placeholders})`,
+      references,
+    );
+
+    // Seules les commandes qui changent réellement d'état sont touchées :
+    // repasser « expédiée » à « expédiée » n'est pas un événement, et
+    // polluerait le journal d'une ligne sans information.
+    const changing = rows.filter((row) => row.status !== status);
+    if (changing.length === 0) {
+      await connection.commit();
+      return 0;
+    }
+
+    const ids = changing.map((row) => Number(row.id));
+    const idPlaceholders = ids.map(() => "?").join(", ");
+    await connection.execute(
+      `UPDATE orders SET status = ? WHERE id IN (${idPlaceholders})`,
+      [status, ...ids],
+    );
+
+    for (const id of ids) {
+      await logEvent(connection, id, status, note);
+    }
+
+    await connection.commit();
+    return ids.length;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    // Toujours rendue, y compris en erreur : la réserve n'ouvre que trois
+    // connexions, en retenir une suffit à figer l'application entière.
+    connection.release();
+  }
+}
+
+/**
+ * Numéro de suivi et note interne, les deux champs libres de la fiche.
+ *
+ * Ils sont écrits ensemble parce qu'ils sont saisis ensemble, dans le même
+ * formulaire : deux actions distinctes produiraient deux lignes de journal
+ * pour un seul geste de l'utilisateur.
+ */
+export async function updateOrderDetails(
+  reference: string,
+  { trackingNumber, internalNote }: { trackingNumber: string; internalNote: string },
+): Promise<boolean> {
+  await ensureSchema();
+
+  const db = getPool();
+  const [rows] = await db.query<mysql.RowDataPacket[]>(
+    "SELECT id, tracking_number, internal_note FROM orders WHERE reference = ? LIMIT 1",
+    [reference],
+  );
+
+  const row = rows[0];
+  if (!row) return false;
+
+  await db.execute(
+    "UPDATE orders SET tracking_number = ?, internal_note = ? WHERE id = ?",
+    [trackingNumber, internalNote, row.id],
+  );
+
+  const changes: string[] = [];
+  if ((row.tracking_number ?? "") !== trackingNumber) {
+    changes.push(
+      trackingNumber ? `suivi : ${trackingNumber}` : "suivi effacé",
+    );
+  }
+  if ((row.internal_note ?? "") !== internalNote) {
+    changes.push(internalNote ? "note interne modifiée" : "note interne effacée");
+  }
+
+  // Pas de ligne de journal quand rien n'a bougé : un formulaire renvoyé
+  // sans modification n'est pas un événement.
+  if (changes.length > 0) {
+    await logEvent(db, Number(row.id), null, changes.join(" · "));
+  }
+
+  return true;
+}
+
+/** Répartition par statut, pour les compteurs en tête de liste. */
+export async function countOrdersByStatus(): Promise<
+  Record<OrderStatus, number>
+> {
+  await ensureSchema();
+
+  const [rows] = await getPool().query<mysql.RowDataPacket[]>(
+    "SELECT status, COUNT(*) AS total FROM orders GROUP BY status",
+  );
+
+  const counts: Record<OrderStatus, number> = {
+    recue: 0,
+    en_fabrication: 0,
+    expediee: 0,
+    annulee: 0,
+  };
+
+  for (const row of rows) {
+    if (isOrderStatus(row.status)) counts[row.status] = Number(row.total);
+  }
+
+  return counts;
 }
 
 /**
