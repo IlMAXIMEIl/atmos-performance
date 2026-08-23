@@ -2,13 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, Check, Clock, HelpCircle, Mail } from "lucide-react";
-import Stripe from "stripe";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { DROP_NAME } from "@/lib/offering";
-import { orderFromIntent, recordOrder } from "@/lib/orders";
 import { CONTACT_EMAIL, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -32,107 +30,90 @@ function one(value: string | string[] | undefined): string {
 }
 
 /**
- * Vérifie l'état réel du paiement auprès de Stripe.
+ * Demande le verdict à `confirm-payment`, dans Supabase.
  *
- * **`redirect_status` présent dans l'URL n'est jamais consulté.** Stripe
- * l'ajoute au retour de Klarna ou PayPal, mais c'est une chaîne dans la barre
- * d'adresse : n'importe qui peut la remplacer par `succeeded` et obtenir une
- * page de remerciement pour un paiement refusé. Seule la réponse de l'API
- * fait foi.
+ * ## Cette page ne parle plus à Stripe, et n'écrit plus rien
  *
- * Le `client_secret` de l'URL est comparé à celui de l'intention retrouvée.
- * Sans cette liaison, un visiteur qui devine un identifiant `pi_…` verrait
- * l'état du paiement de quelqu'un d'autre.
+ * Elle interrogeait l'API de Stripe, vérifiait le `client_secret`, puis
+ * enregistrait la commande en base. Tout cela vit désormais dans une Edge
+ * Function : la vitrine transmet les paramètres bruts de son URL de retour
+ * et reçoit un verdict, sans détenir la moindre clé Supabase.
+ *
+ * Ce qui n'a pas changé, et qui compte : c'est toujours le **second chemin
+ * d'écriture**, indépendant du webhook. Le webhook seul ne suffit pas — mal
+ * configuré, Stripe ne livre rien du tout, et la commande est payée sans
+ * exister nulle part. La fonction fait converger les deux par idempotence.
+ *
+ * `redirect_status`, que Stripe ajoute dans l'URL au retour de Klarna ou
+ * PayPal, n'est toujours pas consulté : c'est une chaîne dans la barre
+ * d'adresse, remplaçable par n'importe qui. La fonction revérifie auprès de
+ * Stripe, et c'est sa réponse qui fait foi.
+ *
+ * ## Un échec réseau n'accuse jamais d'échec de paiement
+ *
+ * Fonction injoignable, secret mal configuré, délai dépassé : on renvoie
+ * `unknown`. La page dit alors la seule chose vraie — nous n'avons pas
+ * retrouvé ce paiement — plutôt que de renvoyer vers un nouveau règlement
+ * un client qui a déjà payé.
  */
 async function verifyPayment(
   params: Search,
 ): Promise<{ outcome: Outcome | "failed"; reference: string }> {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) return { outcome: "unknown", reference: "" };
+  const url = process.env.CONFIRM_FUNCTION_URL;
+  const secret = process.env.CONFIRM_SHARED_SECRET;
 
-  const intentId = one(params.payment_intent);
-  const clientSecret = one(params.payment_intent_client_secret);
-  const sessionId = one(params.session_id);
-
-  if (!intentId && !sessionId) return { outcome: "unknown", reference: "" };
-
-  try {
-    const stripe = new Stripe(secretKey);
-
-    // Tunnel intégré : le Payment Element renvoie l'intention.
-    if (intentId) {
-      const intent = await stripe.paymentIntents.retrieve(intentId);
-      if (!clientSecret || intent.client_secret !== clientSecret) {
-        return { outcome: "unknown", reference: "" };
-      }
-
-      const reference = intent.id;
-
-      switch (intent.status) {
-        case "succeeded":
-          await saveOrder(intent);
-          return { outcome: "succeeded", reference };
-        // Klarna et les virements peuvent rester quelques minutes en attente
-        // de confirmation : ce n'est ni un succès ni un échec.
-        case "processing":
-        case "requires_action":
-        case "requires_confirmation":
-          return { outcome: "pending", reference };
-        case "requires_payment_method":
-        case "canceled":
-          return { outcome: "failed", reference };
-        default:
-          return { outcome: "unknown", reference: "" };
-      }
-    }
-
-    // Tunnel hébergé : la location y reste, son empreinte de caution
-    // exigeant une session Checkout.
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (session.payment_status === "paid") {
-      return { outcome: "succeeded", reference: session.id };
-    }
-    if (session.status === "expired") {
-      return { outcome: "failed", reference: session.id };
-    }
-    return {
-      outcome: session.payment_status === "unpaid" ? "failed" : "pending",
-      reference: session.id,
-    };
-  } catch (error) {
-    // Identifiant inconnu, clé refusée, Stripe injoignable : on ne remercie
-    // pas, mais on n'accuse pas non plus d'échec — le paiement peut très bien
-    // être passé.
-    console.error("Vérification du paiement impossible", error);
+  if (!url || !secret) {
+    console.error(
+      "CONFIRM_FUNCTION_URL ou CONFIRM_SHARED_SECRET absent : voir .env.example",
+    );
     return { outcome: "unknown", reference: "" };
   }
-}
 
-/**
- * Second chemin d'écriture de la commande.
- *
- * Le webhook reste le chemin principal — il arrive même si le client ferme
- * son onglet. Mais s'il est mal configuré, Stripe ne livre **rien** : pas de
- * réessai, pas de journal, pas de ligne, et une commande payée qui n'existe
- * nulle part. C'est arrivé, et c'est ce trou que cet appel comble.
- *
- * L'écriture est idempotente : la clé unique est la référence du paiement, et
- * les deux chemins convergent donc sur la même ligne.
- *
- * **Un échec ici n'interrompt jamais l'affichage.** Le client a payé, il a
- * droit à sa confirmation ; la commande, elle, est journalisée en entier par
- * `recordOrder` avant que l'erreur ne remonte, et le webhook repassera.
- */
-async function saveOrder(intent: Stripe.PaymentIntent) {
   try {
-    const result = await recordOrder(orderFromIntent(intent));
-    if (result === "enregistree") {
-      console.log(
-        `Commande enregistrée depuis la page de confirmation — ${intent.id}`,
-      );
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-confirm-secret": secret,
+      },
+      body: JSON.stringify({
+        payment_intent: one(params.payment_intent),
+        client_secret: one(params.payment_intent_client_secret),
+        session_id: one(params.session_id),
+      }),
+      // Le client attend devant sa page : mieux vaut un « nous n'avons pas
+      // retrouvé ce paiement » au bout de huit secondes qu'un écran blanc.
+      signal: AbortSignal.timeout(8_000),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      console.error(`confirm-payment a répondu ${response.status}`);
+      return { outcome: "unknown", reference: "" };
     }
+
+    const body = (await response.json()) as {
+      outcome?: string;
+      reference?: string;
+    };
+
+    // Le verdict vient d'un service distant : on ne le recopie pas les yeux
+    // fermés dans un type qui pilote l'affichage et une redirection.
+    const outcome = body.outcome;
+    if (
+      outcome !== "succeeded" &&
+      outcome !== "pending" &&
+      outcome !== "failed" &&
+      outcome !== "unknown"
+    ) {
+      console.error(`Verdict inattendu de confirm-payment : ${outcome}`);
+      return { outcome: "unknown", reference: "" };
+    }
+
+    return { outcome, reference: body.reference ?? "" };
   } catch (error) {
-    console.error("Enregistrement depuis la confirmation impossible", error);
+    console.error("confirm-payment injoignable", error);
+    return { outcome: "unknown", reference: "" };
   }
 }
 

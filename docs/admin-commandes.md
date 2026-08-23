@@ -1,9 +1,25 @@
 # Espace d'administration des commandes
 
-**État : construit et vérifié en local.** Ce document se suffit à lui-même : il
-porte le périmètre, les décisions prises et les pièges rencontrés — pendant la
-conception comme pendant la construction. Le donner tel quel en début de
-conversation doit suffire à reprendre le travail.
+> **État : retiré de ce dépôt.** Cet espace a existé ici, sur MySQL, et il a
+> fonctionné. Le pivot vers Supabase l'a déplacé dans `projet-nexus`, où il
+> est reconstruit sur Postgres avec des comptes nominatifs et le
+> cloisonnement multi-entités de la holding.
+>
+> Le code est dans l'historique, au commit **`e1fe113`**, retiré par le
+> commit suivant. `git show e1fe113` le restitue en entier.
+>
+> **Ce document reste utile**, et c'est pourquoi il n'est pas supprimé : le
+> périmètre, les décisions et surtout les pièges rencontrés valent pour la
+> reconstruction. La section 2 — ce qu'il ne faut PAS construire — n'a rien
+> perdu de sa valeur, et la conversion d'heure de Paris comme la
+> neutralisation des formules dans l'export CSV se transposent telles
+> quelles. Ce qui disparaît est la couche MySQL, pas le raisonnement.
+
+---
+
+Ce document se suffit à lui-même : il porte le périmètre, les décisions
+prises et les pièges rencontrés — pendant la conception comme pendant la
+construction.
 
 ---
 
