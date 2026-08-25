@@ -1,6 +1,13 @@
 import Stripe from "stripe";
 
-import { DROP_NAME, ORDERS_OPEN, PURCHASE_PRICE_EUR } from "@/lib/offering";
+import {
+  DROP_NAME,
+  ORDERS_OPEN,
+  PURCHASE_PRICE_EUR,
+  knownOptionIds,
+  optionIdsMeta,
+  optionLabelsMeta,
+} from "@/lib/offering";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
@@ -99,6 +106,8 @@ export async function POST(request: Request) {
     );
   }
 
+  const chosenIds = knownOptionIds(raw.options);
+
   try {
     const stripe = new Stripe(secretKey);
 
@@ -139,9 +148,22 @@ export async function POST(request: Request) {
         lastName: meta("lastName"),
         phone: meta("phone"),
         address: meta("address"),
-        options: Array.isArray(raw.options)
-          ? raw.options.filter((o) => typeof o === "string").join(", ").slice(0, MAX_META_LENGTH)
-          : meta("options"),
+        /*
+          Les deux formes, comme dans le tunnel hébergé.
+
+          Cette route écrivait jusqu'ici les identifiants bruts dans `options`
+          pendant que `checkout/route.ts` y écrivait les libellés : deux
+          commandes équivalentes produisaient deux métadonnées différentes
+          selon la formule choisie. C'est le même défaut que
+          `_shared/order.ts` corrige côté Nexus — deux chemins d'écriture
+          doivent produire exactement la même ligne — et il se corrige ici
+          par la même méthode : une seule table d'options, dans `lib/offering`.
+
+          `knownOptionIds` filtre au passage ce qui n'existe pas au catalogue,
+          ce que cette route ne faisait pas du tout.
+        */
+        optionIds: optionIdsMeta(chosenIds).slice(0, MAX_META_LENGTH),
+        options: optionLabelsMeta(chosenIds).slice(0, MAX_META_LENGTH),
       },
 
       description: `ATMOS ONE — précommande ${DROP_NAME} (${quantity} unité${quantity > 1 ? "s" : ""})`,

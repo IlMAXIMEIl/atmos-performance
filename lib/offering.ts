@@ -108,6 +108,57 @@ export function formatEuros(value: number): string {
  *   pas avant : les deux listes de moyens de paiement de Stripe, test et
  *   production, sont indépendantes.
  */
+/**
+ * Les options payantes, par **identifiant stable**.
+ *
+ * ## Pourquoi cette table vit ici et pas dans une route
+ *
+ * Les deux tunnels — la session Checkout pour la location, l'intention de
+ * paiement pour l'achat — écrivent tous deux les options choisies dans les
+ * métadonnées Stripe, et le tableau de bord les relit pour savoir quoi sortir
+ * du stock. Trois fichiers, une seule vérité : elle ne peut être qu'ici.
+ *
+ * Elle en portait déjà deux, en fait, et elles ne disaient pas la même chose :
+ * la session écrivait les libellés (« Oxymètre de pouls »), l'intention
+ * écrivait les identifiants bruts. Deux commandes identiques produisaient donc
+ * deux métadonnées différentes selon la formule choisie — le genre d'écart
+ * qu'on ne découvre qu'en cherchant pourquoi une commande sur deux ne
+ * décrémente rien.
+ *
+ * ## La clé est l'identifiant, jamais le libellé
+ *
+ * Un libellé est un texte d'interface : il se retouche, se raccourcit, gagne
+ * une majuscule. Une correspondance posée dessus se casse à ce moment-là, en
+ * silence — la commande passe, s'expédie, et ne sort rien de l'entrepôt.
+ *
+ * Les deux partent donc chez Stripe, chacun pour ce qu'il sait faire :
+ * `optionIds` pour la machine, `options` pour l'œil humain qui lira la fiche
+ * de la commande.
+ */
+export const PAID_OPTIONS: Record<string, string> = {
+  oxymetre: "Oxymètre de pouls",
+  monitoring: "Système de monitoring",
+};
+
+/** Les identifiants reçus qui existent réellement, dans l'ordre du catalogue. */
+export function knownOptionIds(received: unknown): string[] {
+  if (!Array.isArray(received)) return [];
+  const asked = new Set(
+    received.filter((o): o is string => typeof o === "string"),
+  );
+  return Object.keys(PAID_OPTIONS).filter((id) => asked.has(id));
+}
+
+/** Ce qui part chez Stripe pour la machine : « oxymetre,monitoring ». */
+export function optionIdsMeta(ids: string[]): string {
+  return ids.join(",");
+}
+
+/** Ce qui part chez Stripe pour l'œil : « Oxymètre de pouls, … ». */
+export function optionLabelsMeta(ids: string[]): string {
+  return ids.map((id) => PAID_OPTIONS[id]).join(", ") || "aucune";
+}
+
 export const INSTALLMENTS_NOTE =
   "Carte bancaire ou paiement en 3x avec Klarna";
 

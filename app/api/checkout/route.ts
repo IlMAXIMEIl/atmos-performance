@@ -6,7 +6,11 @@ import {
   LEASING_OPEN,
   LEASING_SHIPPING_EUR,
   ORDERS_OPEN,
+  PAID_OPTIONS,
   PURCHASE_PRICE_EUR,
+  knownOptionIds,
+  optionIdsMeta,
+  optionLabelsMeta,
 } from "@/lib/offering";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
@@ -47,12 +51,6 @@ const RATE_LIMIT = { limit: 10, windowMs: 60 * 60 * 1000 };
 
 /** Longueur maximale acceptée par champ (les métadonnées Stripe plafonnent à 500). */
 const MAX_FIELD_LENGTH = 300;
-
-/** Options d'équipement : enregistrées à la commande, chiffrées ensuite. */
-const OPTION_LABELS: Record<string, string> = {
-  oxymetre: "Oxymètre de pouls",
-  monitoring: "Système de monitoring",
-};
 
 const PLAN_IDS = ["achat", "leasing"] as const;
 type PlanId = (typeof PLAN_IDS)[number];
@@ -150,7 +148,7 @@ function validate(payload: Payload) {
     }
   }
 
-  if (payload.options.some((option) => !OPTION_LABELS[option])) {
+  if (payload.options.some((option) => !PAID_OPTIONS[option])) {
     return "Option inconnue.";
   }
 
@@ -203,9 +201,20 @@ export async function POST(request: Request) {
   const endDate =
     payload.plan === "leasing" ? addDays(payload.startDate, RENTAL_DAYS) : "";
 
-  const chosenOptions = payload.options
-    .map((option) => OPTION_LABELS[option])
-    .join(", ");
+  /*
+    Deux écritures pour la même information, et c'est délibéré.
+
+    `optionIds` est la forme stable — « oxymetre,monitoring » — sur laquelle
+    le tableau de bord pose sa correspondance vers les références d'entrepôt.
+    `options` est la forme lisible, celle qui s'affiche sur la fiche de la
+    commande.
+
+    Poser la correspondance sur le libellé, comme c'était le cas, revient à
+    faire dépendre le stock d'un texte d'interface : le renommer casse le
+    rattachement en silence, et les commandes suivantes s'expédient sans rien
+    décrémenter. Voir la migration 0015 côté Nexus.
+  */
+  const chosenIds = knownOptionIds(payload.options);
 
   const metadata: Record<string, string> = {
     plan: payload.plan,
@@ -213,7 +222,8 @@ export async function POST(request: Request) {
     lastName: payload.lastName,
     phone: payload.phone,
     address: payload.address,
-    options: chosenOptions || "aucune",
+    optionIds: optionIdsMeta(chosenIds),
+    options: optionLabelsMeta(chosenIds),
   };
 
   let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];
