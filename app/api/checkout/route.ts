@@ -12,6 +12,7 @@ import {
   optionIdsMeta,
   optionLabelsMeta,
 } from "@/lib/offering";
+import { lireAttribution } from "@/lib/attribution";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
@@ -224,6 +225,13 @@ export async function POST(request: Request) {
     address: payload.address,
     optionIds: optionIdsMeta(chosenIds),
     options: optionLabelsMeta(chosenIds),
+    /*
+      L'origine du visiteur, si une arrivée tracée l'a posée en cookie —
+      le webhook la recopiera sur la commande, et le rapprochement
+      dépense ↔ encaissé se fera côté Nexus. Absente = trafic non tracé,
+      ce qui est une information, pas un défaut.
+    */
+    ...lireAttribution(request.headers.get("cookie")),
   };
 
   let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];

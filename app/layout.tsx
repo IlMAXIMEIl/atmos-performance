@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBanner } from "@/components/announcement-banner";
+import { AttributionCapture } from "@/components/attribution-capture";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -99,6 +101,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             l'espace d'administration : toutes les pages servies ici sont
             désormais publiques. */}
         <AnnouncementBanner />
+        {/* L'origine des arrivées tracées (utm, gclid, fbclid), posée en
+            cookie premier parti pour le rapprochement publicitaire côté
+            Nexus. Sous Suspense : `useSearchParams` l'exige, et ce
+            composant ne rend rien — voir `lib/attribution.ts`. */}
+        <Suspense fallback={null}>
+          <AttributionCapture />
+        </Suspense>
         {children}
       </body>
     </html>

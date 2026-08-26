@@ -8,6 +8,7 @@ import {
   optionIdsMeta,
   optionLabelsMeta,
 } from "@/lib/offering";
+import { lireAttribution } from "@/lib/attribution";
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 /**
@@ -164,6 +165,12 @@ export async function POST(request: Request) {
         */
         optionIds: optionIdsMeta(chosenIds).slice(0, MAX_META_LENGTH),
         options: optionLabelsMeta(chosenIds).slice(0, MAX_META_LENGTH),
+        /*
+          L'origine du visiteur, si une arrivée tracée l'a posée en
+          cookie — même écriture que le tunnel hébergé, pour que le
+          webhook lise la même chose quel que soit le chemin.
+        */
+        ...lireAttribution(request.headers.get("cookie")),
       },
 
       description: `ATMOS ONE — précommande ${DROP_NAME} (${quantity} unité${quantity > 1 ? "s" : ""})`,
