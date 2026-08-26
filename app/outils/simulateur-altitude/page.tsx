@@ -107,12 +107,12 @@ const RELATED_SLUGS = [
   "hypoxie-vo2-max-endurance-performance",
 ];
 
-export default function SimulateurAltitudePage() {
+export default async function SimulateurAltitudePage() {
   // Les articles absents sont simplement ignorés : renommer un slug ne doit pas
   // faire tomber la page de l'outil.
-  const related = RELATED_SLUGS.map((slug) => getPost(slug)).filter(
-    (post) => post !== undefined,
-  );
+  const related = (
+    await Promise.all(RELATED_SLUGS.map((slug) => getPost(slug)))
+  ).filter((post) => post !== undefined);
 
   const jsonLd = [
     {

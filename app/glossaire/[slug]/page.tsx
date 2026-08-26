@@ -73,9 +73,9 @@ export default async function GlossaryTermPage({ params }: Props) {
   const url = `${GLOSSARY_URL}/${entry.slug}`;
   const related = resolveRelated(entry);
   // Renommer un article ne doit pas faire tomber la fiche qui le citait.
-  const articles = entry.articles
-    .map((articleSlug) => getPost(articleSlug))
-    .filter((post) => post !== undefined);
+  const articles = (
+    await Promise.all(entry.articles.map((articleSlug) => getPost(articleSlug)))
+  ).filter((post) => post !== undefined);
 
   const jsonLd = [
     {

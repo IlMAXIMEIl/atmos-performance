@@ -30,8 +30,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogIndexPage() {
-  const posts = getAllPosts();
+// La liste revalide toutes les cinq minutes — et immédiatement quand
+// Nexus signale une publication via /api/blog/revalidation.
+export const revalidate = 300;
+
+export default async function BlogIndexPage() {
+  const posts = await getAllPosts();
 
   return (
     <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">

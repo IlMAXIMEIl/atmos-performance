@@ -6,8 +6,8 @@ import { getAllPosts } from "@/lib/posts";
 import { TOOLS, TOOLS_PATH } from "@/lib/tools";
 import { SITE_URL } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const articles = getAllPosts().map((post) => ({
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const articles = (await getAllPosts()).map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
     lastModified: new Date(post.updatedAt ?? post.publishedAt),
     changeFrequency: "yearly" as const,

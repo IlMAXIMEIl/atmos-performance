@@ -1,24 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 
 import { JsonLd } from "@/components/json-ld";
 import { SiteHeader } from "@/components/site-header";
-import { formatPostDate, getAllPosts, getPost } from "@/lib/posts";
+import { formatPostDate, getAllPosts, getPost, getRedirection } from "@/lib/posts";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
-/** Prérend les articles au build : leur contenu est statique. */
-export function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+/**
+ * Prérend au build les articles connus, et revalide ensuite : un article
+ * publié depuis Nexus après le déploiement se rend à la première visite,
+ * sans reconstruction — c'est le point entier de la bascule.
+ */
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
+
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
 
   if (!post) return { title: "Article introuvable" };
 
@@ -50,11 +57,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
 
-  if (!post) notFound();
+  if (!post) {
+    /*
+      Le slug ne répond plus : peut-être renommé depuis Nexus. Un 301 vaut
+      de l'or ici — sans lui, chaque renommage coûterait à la page tout son
+      acquis de référencement.
+    */
+    const nouveau = await getRedirection(slug);
+    if (nouveau) permanentRedirect(`/blog/${nouveau}`);
+    notFound();
+  }
 
-  const others = getAllPosts().filter((item) => item.slug !== post.slug);
+  const others = (await getAllPosts()).filter((item) => item.slug !== post.slug);
 
   // Schema.org Article : donne aux moteurs l'auteur, les dates et le sujet.
   const jsonLd = {
