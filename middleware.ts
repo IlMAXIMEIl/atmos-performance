@@ -1,6 +1,8 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { SITE_URL } from "@/lib/site";
+import { espaceClientConfigure, supabaseClePubliable, supabaseUrl } from "@/lib/supabase/env";
 
 /**
  * Les redirections d'articles, rendues avant tout rendu.
@@ -66,7 +68,89 @@ async function redirectionPour(slug: string): Promise<string | null> {
   }
 }
 
+/**
+ * Rafraîchissement de la session de l'espace client.
+ *
+ * ## Pourquoi c'est indispensable
+ *
+ * Les jetons Supabase expirent. Un composant serveur ne peut pas écrire le
+ * jeton rafraîchi — le flux de la réponse a déjà commencé — et c'est
+ * pourquoi `lib/supabase/server.ts` avale l'échec d'écriture. Sans ce
+ * passage-ci, cet échec n'est rattrapé nulle part : la session mourrait à la
+ * première expiration, et le client serait déconnecté sans explication.
+ *
+ * ## La redirection est un raccourci, pas une barrière
+ *
+ * Renvoyer un visiteur sans session vers l'écran de connexion évite de
+ * rendre une page pour la jeter. Mais la vérification qui compte est
+ * ailleurs : `clientConnecte()` dans la page et dans chaque action serveur,
+ * puis les politiques RLS dans Postgres. Un `matcher` mal écrit contourne ce
+ * fichier ; il ne contourne pas les deux autres couches.
+ */
+async function sessionEspaceClient(request: NextRequest) {
+  let reponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(supabaseUrl(), supabaseClePubliable(), {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesAPoser) {
+        // La requête d'abord, pour que le rendu en aval voie le jeton neuf.
+        for (const { name, value } of cookiesAPoser) {
+          request.cookies.set(name, value);
+        }
+        reponse = NextResponse.next({ request });
+        for (const { name, value, options } of cookiesAPoser) {
+          reponse.cookies.set(name, value, options);
+        }
+      },
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user && request.nextUrl.pathname !== "/compte/connexion") {
+    const cible = request.nextUrl.clone();
+    cible.pathname = "/compte/connexion";
+    cible.search = "";
+    return NextResponse.redirect(cible);
+  }
+
+  return reponse;
+}
+
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith("/compte")) {
+    /*
+      Espace client non configuré : la vitrine doit continuer de vendre.
+      Plutôt qu'une erreur 500 sur une adresse que personne n'a demandée, on
+      renvoie à l'accueil — le reste du site n'en sait rien.
+    */
+    if (!espaceClientConfigure()) {
+      const accueil = request.nextUrl.clone();
+      accueil.pathname = "/";
+      accueil.search = "";
+      return NextResponse.redirect(accueil);
+    }
+
+    try {
+      return await sessionEspaceClient(request);
+    } catch (error) {
+      console.error(
+        "Espace client — session :",
+        error instanceof Error ? error.message : error,
+      );
+      // On échoue fermé : pas de session établie, donc pas d'accès.
+      const connexion = request.nextUrl.clone();
+      connexion.pathname = "/compte/connexion";
+      connexion.search = "";
+      return NextResponse.redirect(connexion);
+    }
+  }
+
   /*
     Tout est sous garde, y compris le décodage du slug.
 
@@ -91,5 +175,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/blog/:slug",
+  // Deux périmètres disjoints : les articles pour les redirections, l'espace
+  // client pour la session. Tout le reste du site ne passe pas par ici.
+  matcher: ["/blog/:slug", "/compte/:path*"],
 };
