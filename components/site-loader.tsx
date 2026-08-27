@@ -199,7 +199,6 @@ export function SiteLoader() {
       // En pause tant que la page n'est pas regardée : la respiration ne se
       // joue pas pour un onglet d'arrière-plan, elle l'attend.
       const curtain = gsap.timeline({ paused: true, onComplete: finish });
-      const cancelStart = whenPageVisible(() => curtain.play());
 
       curtain
         // La marque et la consigne apparaissent…
@@ -262,6 +261,14 @@ export function SiteLoader() {
           { yPercent: 102, duration: 0.8, ease: "power4.inOut" },
           2.0,
         );
+
+      // La lecture ne s'arme qu'une fois la chaîne construite. À la page
+      // visible, `whenPageVisible` rappelle *sur-le-champ* : armée avant la
+      // chaîne, elle lirait une timeline vide — durée nulle, `onComplete`
+      // immédiat, rideau démonté avant sa première image. C'est exactement
+      // ce que faisait Safari, pendant que le ticker de Chromium masquait
+      // la course par accident de cadence.
+      const cancelStart = whenPageVisible(() => curtain.play());
 
       return () => {
         cancelStart();
