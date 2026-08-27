@@ -26,9 +26,9 @@ const PAGE_PATH = `${TOOLS_PATH}/simulateur-altitude`;
 const PAGE_URL = `${SITE_URL}${PAGE_PATH}`;
 
 const TITLE = "Simulateur d'altitude et calculateur d'hypoxie";
-/** 151 caractères : au-delà de ~160, Google tronque l'extrait affiché. */
+/** 154 caractères : au-delà de ~160, Google tronque l'extrait affiché. */
 const DESCRIPTION =
-  "Simulateur et calculateur d'entraînement en altitude et hypoxie : protocole personnalisé en 3 étapes, conversion FiO₂ ↔ altitude et comparatif de coût.";
+  "Simulateur et calculateur d'entraînement en altitude et hypoxie : protocole personnalisé en 2 questions, conversion FiO₂ ↔ altitude et comparatif de coût.";
 
 export const metadata: Metadata = {
   title: `${TITLE} — ATMOS`,
@@ -127,7 +127,7 @@ export default async function SimulateurAltitudePage() {
       description: DESCRIPTION,
       isAccessibleForFree: true,
       featureList: [
-        "Génération d'un protocole d'hypoxie personnalisé en trois étapes",
+        "Génération d'un protocole d'hypoxie personnalisé en deux questions",
         "Calcul de l'altitude simulée optimale et de la FiO₂ correspondante",
         "Structure de séance : format de cycle, durée, fréquence et durée du bloc",
         "Plage de SpO₂ cible et consignes de sécurité associées",
@@ -195,7 +195,7 @@ export default async function SimulateurAltitudePage() {
 
           <p className="mt-7 max-w-2xl text-base leading-relaxed font-light text-dim text-pretty sm:text-lg">
             {
-              "Trois questions suffisent à poser un protocole d'entraînement en hypoxie : le palier d'altitude simulée, la FiO₂ correspondante, la structure des cycles et la plage de saturation à tenir. Le convertisseur et le comparatif de coût suivent."
+              "Deux questions — l'utilisation de l'appareil, votre niveau — suffisent à poser un protocole d'entraînement en hypoxie : le palier d'altitude simulée, la FiO₂ correspondante, la structure des cycles et la plage de saturation à tenir. Le convertisseur et le comparatif de coût suivent."
             }
           </p>
         </div>

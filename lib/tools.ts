@@ -24,7 +24,7 @@ export const TOOLS: Tool[] = [
     slug: "simulateur-altitude",
     name: "Simulateur d'altitude",
     tagline:
-      "Votre protocole d'hypoxie en trois étapes : palier d'altitude simulée, structure des cycles et plage de SpO₂ à tenir.",
+      "Votre protocole d'hypoxie en deux questions : palier d'altitude simulée, structure des cycles et plage de SpO₂ à tenir.",
     highlights: [
       "Protocole personnalisé",
       "Convertisseur FiO₂ ↔ altitude",

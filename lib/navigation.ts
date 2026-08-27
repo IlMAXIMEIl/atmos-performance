@@ -63,7 +63,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         label: "Le simulateur d'altitude",
         href: "/outils/simulateur-altitude",
-        detail: "Votre protocole en trois questions",
+        detail: "Votre protocole en deux questions",
       },
       {
         label: "La science",

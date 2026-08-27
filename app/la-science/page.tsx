@@ -89,7 +89,7 @@ export default function LaSciencePage() {
 
             <p className="mt-4 max-w-2xl leading-[1.7] text-dim text-pretty">
               {
-                "Trois questions — votre profil, votre objectif, votre niveau d'exposition — et vous repartez avec un palier d'altitude, une durée de séance et une fréquence hebdomadaire à confronter à votre oxymètre."
+                "Deux questions — l'utilisation de l'appareil, votre niveau — et vous repartez avec un palier d'altitude, une durée de séance et une fréquence hebdomadaire à confronter à votre oxymètre."
               }
             </p>
 

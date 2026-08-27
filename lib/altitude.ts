@@ -128,57 +128,36 @@ export function landmarkFor(metres: number): string {
   return "Plafond ATMOS ONE, au-delà du camp 1 de l'Everest";
 }
 
-/* ── Étape 1 : le profil ────────────────────────────────────────────── */
+/* ── Question 1 : l'utilisation ─────────────────────────────────────── */
 
-export const PROFILES = [
+/**
+ * La question qui remplace l'ancien couple profil × objectif.
+ *
+ * Trois manières d'utiliser l'appareil, pas une de plus : chacune correspond
+ * exactement à l'un des trois protocoles de la littérature (LHTL, IHT, IHE).
+ * Le visiteur répond à « qu'allez-vous faire pendant l'exposition ? » — une
+ * question dont il connaît forcément la réponse — plutôt qu'à des catégories
+ * de marketing qu'il faudrait interpréter.
+ */
+export const USAGES = [
   {
-    id: "endurance",
-    label: "Sportif d'endurance",
-    detail: "Course, trail, cyclisme, triathlon, ski de fond.",
+    id: "sommeil",
+    label: "Pendant le sommeil",
+    detail: "Dormir en altitude sous tente. Le protocole de référence en endurance.",
   },
   {
-    id: "biohacking",
-    label: "Biohacking & longévité",
-    detail: "Santé métabolique, densité mitochondriale, âge biologique.",
+    id: "entrainement",
+    label: "À l'effort",
+    detail: "Séances sous masque : home-trainer, tapis ou marche active.",
   },
   {
-    id: "reeducation",
-    label: "Rééducation / kiné",
-    detail: "Reprise encadrée, charge articulaire réduite.",
-  },
-  {
-    id: "sante",
-    label: "Santé générale",
-    detail: "Souffle, tolérance à l'effort, énergie au quotidien.",
+    id: "repos",
+    label: "Au repos",
+    detail: "Cycles courts d'exposition passive, assis ou allongé.",
   },
 ] as const;
 
-/* ── Étape 2 : l'objectif ───────────────────────────────────────────── */
-
-export const GOALS = [
-  {
-    id: "vo2max",
-    label: "Développement VO2 max",
-    detail: "Élever le plafond aérobie par la contrainte hypoxique.",
-  },
-  {
-    id: "affutage",
-    label: "Affûtage pré-compétition",
-    detail: "Aiguiser la réponse ventilatoire avant l'objectif.",
-  },
-  {
-    id: "recuperation",
-    label: "Récupération post-blessure",
-    detail: "Stimuler sans charge mécanique pendant l'indisponibilité.",
-  },
-  {
-    id: "stress",
-    label: "Régulation stress & sommeil",
-    detail: "Travailler le tonus vagal et la qualité des nuits.",
-  },
-] as const;
-
-/* ── Étape 3 : le niveau d'exposition ───────────────────────────────── */
+/* ── Question 2 : le niveau ─────────────────────────────────────────── */
 
 export const LEVELS = [
   {
@@ -198,8 +177,7 @@ export const LEVELS = [
   },
 ] as const;
 
-export type ProfileId = (typeof PROFILES)[number]["id"];
-export type GoalId = (typeof GOALS)[number]["id"];
+export type UsageId = (typeof USAGES)[number]["id"];
 export type LevelId = (typeof LEVELS)[number]["id"];
 
 /* ── Le moteur de recommandation ────────────────────────────────────── */
@@ -211,7 +189,7 @@ export type LevelId = (typeof LEVELS)[number]["id"];
  * identique au bit près, sur le serveur comme dans le navigateur.
  */
 export interface AltitudeRecommendation {
-  protocolType: "LHTL" | "IHT" | "IHE" | "MIXED_LHTL_IHT" | "IHT_REHAB";
+  protocolType: "LHTL" | "IHT" | "IHE";
   protocolTitle: string;
   targetAltitudeMeters: number;
   fio2EquivalentPercent: number;
@@ -233,8 +211,6 @@ export interface AltitudeRecommendation {
  * contrat en dérivent — elles ne peuvent donc pas s'en désaccorder.
  */
 export interface Recommendation extends AltitudeRecommendation {
-  /** Rang de la branche qui a tranché : 1 = blessure … 4 = défaut. */
-  branch: 1 | 2 | 3 | 4;
   /** Ce qu'on fait pendant la phase hypoxique. */
   exposure: "effort" | "repos";
   /**
@@ -290,7 +266,7 @@ const SLEEP_ALTITUDE_CAP = 2600;
 /**
  * Mention légale attachée à toute sortie du moteur.
  *
- * Constante et non champ de branche : la portée est la même pour les 48
+ * Constante et non champ de branche : la portée est la même pour les 9
  * combinaisons, et une formulation unique évite qu'une branche s'en écarte au
  * fil des modifications.
  */
@@ -301,10 +277,9 @@ const DISCLAIMER_LEGAL =
 const MAX_SESSION_MINUTES = 60;
 
 type Branch = {
-  rank: 1 | 2 | 3 | 4;
+  /** L'utilisation qui déclenche cette branche : une branche par usage. */
+  usage: UsageId;
   protocolType: AltitudeRecommendation["protocolType"];
-  /** Le déclencheur. La première branche qui répond « oui » l'emporte. */
-  matches: (profile: ProfileId, goal: GoalId) => boolean;
   protocolTitle: string;
   /** Palier d'exposition au niveau « intermédiaire », en mètres. */
   altitude: number;
@@ -333,48 +308,18 @@ type Branch = {
 };
 
 /**
- * La hiérarchie des cas, en priorité stricte.
+ * Une branche par utilisation, sans hiérarchie ni recouvrement.
  *
- * Les 48 combinaisons de l'interface (4 profils × 4 objectifs × 3 niveaux)
- * traversent cette liste de haut en bas et s'arrêtent à la première branche qui
- * les reconnaît. La dernière accepte tout : aucune combinaison ne peut sortir
- * sans protocole.
- *
- * L'ordre n'est pas cosmétique. La blessure prime sur l'ambition de
- * performance : un coureur d'endurance qui coche « récupération post-blessure »
- * reçoit le protocole de décharge mécanique, jamais le bloc LHTL.
+ * Les 9 combinaisons de l'interface (3 utilisations × 3 niveaux) se résolvent
+ * en une lecture directe : l'utilisation choisit la branche, le niveau déplace
+ * le curseur à l'intérieur de sa plage. Chaque branche est l'un des trois
+ * protocoles de la littérature — LHTL pour le sommeil, IHT pour l'effort,
+ * IHE pour le repos.
  */
 const BRANCHES: readonly Branch[] = [
   {
-    rank: 1,
-    protocolType: "IHT_REHAB",
-    matches: (profile, goal) =>
-      profile === "reeducation" || goal === "recuperation",
-    protocolTitle: "IHT de décharge mécanique",
-    altitude: 2800,
-    band: [2400, 3000],
-    display: "exposition",
-    sleepAltitude: 0,
-    sleepHoursPerDay: 0,
-    exposure: "effort",
-    targetSpo2Range: "84 – 88 %",
-    modality:
-      "Marche, vélo doux ou rameur en aisance respiratoire, sans charge sur la zone lésée",
-    hypoxiaMinutes: 5,
-    normoxiaMinutes: 3,
-    cycles: 5,
-    sessionsPerWeek: 4,
-    weeks: 8,
-    physiologicalRationale:
-      "Le principe est de dissocier charge métabolique et charge mécanique. En hypoxie normobarique à 2 800 m, la désaturation artérielle (SpO₂ 84 – 88 %) impose au système cardio-respiratoire une contrainte équivalente à un effort de haute intensité, alors que la vitesse de déplacement — et donc l'impact articulaire — reste celle d'une marche. La fréquence cardiaque cible est atteinte à puissance mécanique quasi nulle : les adaptations centrales (volume d'éjection systolique, densité capillaire, extraction périphérique d'O₂) sont maintenues pendant que le tissu lésé est déchargé. La stabilisation de HIF-1α sous hypoxie régule par ailleurs à la hausse l'expression du VEGF, facteur d'angiogenèse impliqué dans la perfusion des tissus en réparation.",
-    clinicalSafetyNotes:
-      "Protocole à valider avec le praticien qui suit la blessure : c'est lui qui fixe la charge mécanique autorisée. L'hypoxie remplace l'intensité manquante, elle ne raccourcit pas une consolidation osseuse ni une cicatrisation tendineuse. Interrompre la séance si la SpO₂ descend sous 80 %, ou en cas de céphalée, de nausée ou de vertige. Sommeil en plaine impératif : aucune exposition nocturne pendant la phase de réparation tissulaire, la qualité du sommeil profond conditionne la récupération.",
-  },
-  {
-    rank: 2,
-    protocolType: "MIXED_LHTL_IHT",
-    matches: (profile, goal) =>
-      profile === "endurance" || goal === "vo2max" || goal === "affutage",
+    usage: "sommeil",
+    protocolType: "LHTL",
     protocolTitle: "Live High – Train Low + rappels IHT",
     altitude: 3000,
     band: [2600, 3400],
@@ -396,9 +341,31 @@ const BRANCHES: readonly Branch[] = [
       "Repère de suivi nocturne : la SpO₂ moyenne de la nuit doit se stabiliser entre 88 et 92 %. C'est la fenêtre où le stimulus érythropoïétique est obtenu sans basculer dans l'hypoxie délétère. Sous 85 % de moyenne, réduire immédiatement le palier de sommeil — un oxymètre à enregistrement continu, relu au réveil, suffit à trancher. Le reste de la semaine s'entraîne en plaine à pleine intensité : c'est tout le principe du Train Low, l'altitude sert à dormir et non à brider les séances qualitatives. Surveiller la ferritine avant d'engager le bloc — une érythropoïèse stimulée sans réserve en fer ne produit aucun gain. Descendre le palier nocturne si le sommeil se fragmente ou si la fréquence cardiaque de repos matinale monte de plus de 5 bpm sur trois jours consécutifs. Pour un objectif d'affûtage, arrêter le bloc 5 à 7 jours avant l'échéance.",
   },
   {
-    rank: 3,
+    usage: "entrainement",
+    protocolType: "IHT",
+    protocolTitle: "Entraînement hypoxique intermittent",
+    altitude: 3000,
+    band: [2400, 3400],
+    display: "exposition",
+    sleepAltitude: 0,
+    sleepHoursPerDay: 0,
+    exposure: "effort",
+    targetSpo2Range: "84 – 88 %",
+    modality:
+      "Sous masque, sur home-trainer, tapis ou en marche active, en aisance respiratoire",
+    hypoxiaMinutes: 5,
+    normoxiaMinutes: 3,
+    cycles: 5,
+    sessionsPerWeek: 3,
+    weeks: 6,
+    physiologicalRationale:
+      "Le format IHT alterne des blocs d'effort sous-maximal en hypoxie normobarique et des retours à l'air ambiant. À 3 000 m, la désaturation artérielle (SpO₂ 84 – 88 %) élève la contrainte métabolique d'une allure pourtant modérée : sollicitation ventilatoire, fréquence cardiaque et recrutement du métabolisme glucidique montent d'un cran sans que la charge mécanique ne suive. La stabilisation répétée de HIF-1α régule à la hausse l'expression du VEGF — angiogenèse musculaire, densité capillaire — et l'efficacité mitochondriale, pendant que l'hypoxie modérée augmente la translocation de GLUT-4 et la captation musculaire du glucose. Autant d'adaptations obtenues pour un temps de séance et une charge articulaire bien moindres qu'un travail équivalent en plaine.",
+    clinicalSafetyNotes:
+      "L'allure reste sous-maximale : on doit pouvoir tenir une conversation pendant les blocs d'effort — c'est l'air qui fait le travail, pas la vitesse. Oxymètre au doigt pendant toute la phase hypoxique, interruption de la séance sous 80 % de SpO₂ ou en cas de céphalée, de nausée ou de vertige. Sommeil en plaine sur toute la durée du bloc. En cas de traitement cardiovasculaire, de diabète traité ou de pathologie respiratoire, avis médical avant le premier cycle.",
+  },
+  {
+    usage: "repos",
     protocolType: "IHE",
-    matches: (profile, goal) => profile === "biohacking" || goal === "stress",
     protocolTitle: "Exposition intermittente passive",
     altitude: 4400,
     band: [4000, 4500],
@@ -417,29 +384,6 @@ const BRANCHES: readonly Branch[] = [
       "L'IHE ne cherche pas une adaptation à l'effort mais une réponse hormétique. L'alternance de cycles courts — 5 min d'hypoxie normobarique à 4 200 m, 5 min de réoxygénation en air ambiant — produit une désaturation marquée (SpO₂ 78 – 82 %) suivie d'une remontée rapide. C'est ce gradient répété, et non la profondeur seule, qui stabilise HIF-1α et déclenche la cascade en aval : biogenèse mitochondriale via PGC-1α, expression du VEGF, régulation à la hausse des enzymes antioxydantes. Le corps étant au repos, la demande métabolique reste minimale : la totalité du stimulus est portée par le contenu artériel en O₂. La stimulation itérative des chémorécepteurs carotidiens agit par ailleurs sur la balance sympatho-vagale, ce qui explique le regain de variabilité de fréquence cardiaque et l'amélioration du sommeil profond rapportés après quelques semaines.",
     clinicalSafetyNotes:
       "C'est le palier le plus exigeant du simulateur : la cible de 78 – 82 % ne s'atteint qu'au repos strict, jamais en marchant ni en parlant. Oxymètre au doigt en continu, arrêt immédiat de la phase hypoxique sous 75 % ou en cas de céphalée, d'acouphène ou de confusion. Progression obligatoire par le protocole d'acclimatation ci-dessus, sans le raccourcir. Contre-indiqué en cas de pathologie cardio-respiratoire non stabilisée, de grossesse ou d'hypertension pulmonaire : avis médical préalable.",
-  },
-  {
-    rank: 4,
-    protocolType: "IHT",
-    matches: () => true,
-    protocolTitle: "Conditionnement aérobie modéré",
-    altitude: 2200,
-    band: [1800, 2600],
-    display: "exposition",
-    sleepAltitude: 0,
-    sleepHoursPerDay: 0,
-    exposure: "effort",
-    targetSpo2Range: "91 – 94 %",
-    modality: "Marche sur tapis ou vélo à allure de conversation",
-    hypoxiaMinutes: 5,
-    normoxiaMinutes: 4,
-    cycles: 4,
-    sessionsPerWeek: 3,
-    weeks: 6,
-    physiologicalRationale:
-      "Une exposition modérée conduite à l'effort. À 2 200 m en hypoxie normobarique, la SpO₂ se stabilise autour de 91 – 94 % : assez pour élever la contrainte métabolique d'un cran — coût en O₂ d'une allure donnée, sollicitation ventilatoire, recrutement du métabolisme glucidique — sans quitter la zone d'aisance respiratoire. L'intérêt tient au rendement : l'hypoxie légère augmente la translocation de GLUT-4 et la captation musculaire du glucose, ce qui améliore la sensibilité à l'insuline et le métabolisme de base pour un temps de séance et une charge articulaire deux fois moindres qu'un travail équivalent en plaine. La stabilisation modérée de HIF-1α suffit à entretenir la densité capillaire sans imposer la charge de récupération d'un bloc de performance.",
-    clinicalSafetyNotes:
-      "Aucune charge d'entraînement n'est requise : l'allure reste celle où l'on peut tenir une conversation, c'est l'air qui fait le travail. Oxymètre au doigt pendant toute la phase hypoxique, arrêt sous 85 %. En cas de traitement cardiovasculaire, de diabète traité ou de pathologie respiratoire, demander un avis médical avant le premier cycle.",
   },
 ];
 
@@ -466,23 +410,21 @@ function roundToHundred(metres: number) {
 }
 
 /**
- * Compose la recommandation à partir des trois réponses.
+ * Compose la recommandation à partir des deux réponses.
  *
- * L'enchaînement est toujours le même : la hiérarchie choisit la branche, la
+ * L'enchaînement est toujours le même : l'utilisation choisit la branche, la
  * branche impose sa plage d'altitude, le niveau déplace le curseur à
  * l'intérieur de cette plage, les clamps de sécurité ferment la marche. Jamais
- * l'inverse — c'est ce qui garantit qu'aucune des 48 combinaisons ne produit un
+ * l'inverse — c'est ce qui garantit qu'aucune des 9 combinaisons ne produit un
  * palier hors de son protocole.
  */
 export function buildProtocol(
-  profileId: ProfileId,
-  goalId: GoalId,
+  usageId: UsageId,
   levelId: LevelId,
 ): Recommendation {
-  // La dernière branche accepte tout ; le repli ne sert qu'à satisfaire le type.
+  // Chaque usage a sa branche ; le repli ne sert qu'à satisfaire le type.
   const branch =
-    BRANCHES.find((b) => b.matches(profileId, goalId)) ??
-    BRANCHES[BRANCHES.length - 1];
+    BRANCHES.find((b) => b.usage === usageId) ?? BRANCHES[0];
   const shift = LEVEL_ALTITUDE_SHIFT[levelId];
 
   const band = branch.band;
@@ -490,10 +432,7 @@ export function buildProtocol(
     clamp(branch.altitude + shift.exposure, band[0], band[1]),
   );
 
-  // Blessure détectée : sommeil verrouillé en plaine, le décalage de niveau ne
-  // s'y applique pas. La branche porte déjà 0, ce test rend la règle explicite
-  // et la protège d'une future modification de la table.
-  const sleepBase = branch.rank === 1 ? 0 : branch.sleepAltitude;
+  const sleepBase = branch.sleepAltitude;
   const sleepAltitudeMeters =
     sleepBase === 0
       ? 0
@@ -573,7 +512,6 @@ export function buildProtocol(
     clinicalSafetyNotes: branch.clinicalSafetyNotes,
     disclaimerLegal: DISCLAIMER_LEGAL,
 
-    branch: branch.rank,
     exposure: branch.exposure,
     sleepAltitudeMeters,
     sleepFio2Percent,

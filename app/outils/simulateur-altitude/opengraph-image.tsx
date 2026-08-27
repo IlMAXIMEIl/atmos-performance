@@ -14,7 +14,7 @@ export const contentType = OG_CONTENT_TYPE;
 export default function Image() {
   return ogCard({
     eyebrow: "Simulateur",
-    title: "Votre protocole d'hypoxie, en trois réglages.",
-    footer: "Palier, durée et fréquence selon votre profil et votre objectif",
+    title: "Votre protocole d'hypoxie, en deux réglages.",
+    footer: "Palier, durée et fréquence selon votre utilisation et votre niveau",
   });
 }

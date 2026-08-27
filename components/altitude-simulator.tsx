@@ -5,8 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Armchair,
   Bike,
-  Brain,
   CalendarDays,
   Check,
   Flame,
@@ -18,9 +18,6 @@ import {
   Plane,
   Repeat,
   RotateCcw,
-  ShieldCheck,
-  Stethoscope,
-  Target,
   Timer,
   TrendingUp,
   TriangleAlert,
@@ -32,12 +29,11 @@ import {
 import {
   ATMOS_PRICE,
   CAMP,
-  GOALS,
   LEVELS,
   MAX_ALTITUDE,
   MIN_FIO2,
-  PROFILES,
   SEA_LEVEL_FIO2,
+  USAGES,
   altitudeForFio2,
   buildProtocol,
   estimateSavings,
@@ -46,25 +42,16 @@ import {
   formatDuration,
   formatNumber,
   landmarkFor,
-  type GoalId,
   type LevelId,
-  type ProfileId,
+  type UsageId,
 } from "@/lib/altitude";
 import { EASE, container, rise } from "@/lib/motion";
 import { INSTALLMENTS_NOTE, WAITLIST_CTA } from "@/lib/offering";
 
-const PROFILE_ICONS: Record<ProfileId, LucideIcon> = {
-  endurance: Bike,
-  biohacking: Brain,
-  reeducation: Stethoscope,
-  sante: HeartPulse,
-};
-
-const GOAL_ICONS: Record<GoalId, LucideIcon> = {
-  vo2max: TrendingUp,
-  affutage: Target,
-  recuperation: ShieldCheck,
-  stress: Moon,
+const USAGE_ICONS: Record<UsageId, LucideIcon> = {
+  sommeil: Moon,
+  entrainement: Bike,
+  repos: Armchair,
 };
 
 const LEVEL_ICONS: Record<LevelId, LucideIcon> = {
@@ -76,13 +63,12 @@ const LEVEL_ICONS: Record<LevelId, LucideIcon> = {
 /**
  * Configuration de départ.
  *
- * Le simulateur s'ouvre déjà rempli plutôt que sur trois questions vides : la
+ * Le simulateur s'ouvre déjà rempli plutôt que sur deux questions vides : la
  * fiche de protocole est ainsi présente dès le rendu serveur — donc indexable —
  * et le visiteur n'a qu'à corriger ce qui ne lui correspond pas.
  */
 const DEFAULTS = {
-  profile: "endurance" as ProfileId,
-  goal: "vo2max" as GoalId,
+  usage: "sommeil" as UsageId,
   level: "intermediaire" as LevelId,
   altitude: 3500,
 };
@@ -244,8 +230,7 @@ function Spec({
 }
 
 export function AltitudeSimulator() {
-  const [profile, setProfile] = useState<ProfileId>(DEFAULTS.profile);
-  const [goal, setGoal] = useState<GoalId>(DEFAULTS.goal);
+  const [usage, setUsage] = useState<UsageId>(DEFAULTS.usage);
   const [level, setLevel] = useState<LevelId>(DEFAULTS.level);
 
   // Le convertisseur garde ses deux valeurs en état plutôt que d'en dériver
@@ -255,19 +240,15 @@ export function AltitudeSimulator() {
   const [fio2, setFio2] = useState(() => fio2AtAltitude(DEFAULTS.altitude));
 
   const protocol = useMemo(
-    () => buildProtocol(profile, goal, level),
-    [profile, goal, level],
+    () => buildProtocol(usage, level),
+    [usage, level],
   );
   const savings = useMemo(() => estimateSavings(protocol), [protocol]);
 
-  const profileLabel = PROFILES.find((item) => item.id === profile)!.label;
-  const goalLabel = GOALS.find((item) => item.id === goal)!.label;
+  const usageLabel = USAGES.find((item) => item.id === usage)!.label;
   const levelLabel = LEVELS.find((item) => item.id === level)!.label;
 
-  const isDefault =
-    profile === DEFAULTS.profile &&
-    goal === DEFAULTS.goal &&
-    level === DEFAULTS.level;
+  const isDefault = usage === DEFAULTS.usage && level === DEFAULTS.level;
 
   function pickAltitude(metres: number) {
     setAltitude(metres);
@@ -280,8 +261,7 @@ export function AltitudeSimulator() {
   }
 
   function reset() {
-    setProfile(DEFAULTS.profile);
-    setGoal(DEFAULTS.goal);
+    setUsage(DEFAULTS.usage);
     setLevel(DEFAULTS.level);
   }
 
@@ -289,7 +269,7 @@ export function AltitudeSimulator() {
   // commande une fois ouvert — s'ouvre directement, et les paramètres restent
   // lisibles dans l'URL côté acquisition.
   const reservationHref =
-    `/?reserver=achat&profil=${profile}&objectif=${goal}` +
+    `/?reserver=achat&usage=${usage}` +
     `&niveau=${level}&palier=${protocol.targetAltitudeMeters}#offres`;
 
   return (
@@ -312,7 +292,7 @@ export function AltitudeSimulator() {
             className="flex flex-wrap items-center justify-between gap-4"
           >
             <div className="flex flex-wrap items-center gap-2">
-              {[profileLabel, goalLabel, levelLabel].map((chip) => (
+              {[usageLabel, levelLabel].map((chip) => (
                 <span
                   key={chip}
                   className="rounded-full border border-line bg-white/[0.03] px-3 py-1 text-[0.7rem] font-light text-dim"
@@ -337,16 +317,20 @@ export function AltitudeSimulator() {
             )}
           </motion.div>
 
-          <Step index={1} title="Le profil" question="Qui va s'exposer ?">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {PROFILES.map((item) => (
+          <Step
+            index={1}
+            title="L'utilisation"
+            question="Comment allez-vous utiliser l'appareil ?"
+          >
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {USAGES.map((item) => (
                 <Option
                   key={item.id}
-                  icon={PROFILE_ICONS[item.id]}
+                  icon={USAGE_ICONS[item.id]}
                   label={item.label}
                   detail={item.detail}
-                  selected={profile === item.id}
-                  onSelect={() => setProfile(item.id)}
+                  selected={usage === item.id}
+                  onSelect={() => setUsage(item.id)}
                 />
               ))}
             </div>
@@ -354,26 +338,7 @@ export function AltitudeSimulator() {
 
           <Step
             index={2}
-            title="L'objectif"
-            question="Que cherchez-vous à obtenir ?"
-          >
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {GOALS.map((item) => (
-                <Option
-                  key={item.id}
-                  icon={GOAL_ICONS[item.id]}
-                  label={item.label}
-                  detail={item.detail}
-                  selected={goal === item.id}
-                  onSelect={() => setGoal(item.id)}
-                />
-              ))}
-            </div>
-          </Step>
-
-          <Step
-            index={3}
-            title="Le niveau d'exposition"
+            title="Votre niveau"
             question="Où en êtes-vous avec l'hypoxie ?"
           >
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -619,7 +584,7 @@ export function AltitudeSimulator() {
               propose pas via Stripe, à deux clics d'un tunnel qui ne
               l'affiche pas.
             */}
-            {`Votre configuration — ${profileLabel.toLowerCase()}, ${goalLabel.toLowerCase()}, ${levelLabel.toLowerCase()} — est transmise avec votre précommande. ${INSTALLMENTS_NOTE}.`}
+            {`Votre configuration — ${usageLabel.toLowerCase()}, ${levelLabel.toLowerCase()} — est transmise avec votre précommande. ${INSTALLMENTS_NOTE}.`}
           </p>
         </div>
       </motion.div>
