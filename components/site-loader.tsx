@@ -27,6 +27,11 @@ gsap.registerPlugin(useGSAP);
  *    lancement qui revient à chaque page n'est plus un lancement, c'est un
  *    obstacle. Le script d'amorçage ci-dessous marque la session au premier
  *    passage et refuse de lever le rideau en pleine navigation client.
+ *    Seule exception : arriver avec `#rideau` dans l'adresse rejoue le
+ *    rideau sans condition — session déjà vue et mouvement réduit compris,
+ *    le geste étant explicite. C'est l'outil de vérification et de
+ *    démonstration ; il exige un vrai chargement de page, pas un simple
+ *    ajout du fragment dans la barre d'adresse.
  * 2. **Fermé par défaut.** Le rideau ne s'affiche que si le script décide de
  *    le lever : sans JavaScript, rien ne se lève et rien ne bloque — le même
  *    contrat que les révélations `data-reveal`. En mouvement réduit, il ne se
@@ -55,11 +60,20 @@ const LOADER_DONE_EVENT = "atmos:rideau:leve";
  */
 const BOOT_SCRIPT = `(function () {
   try {
-    var seen = sessionStorage.getItem("${SEEN_KEY}");
-    sessionStorage.setItem("${SEEN_KEY}", "1");
-    if (seen) return;
-    if (document.readyState !== "loading") return;
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var force = location.hash === "#rideau";
+    var seen = null;
+    try {
+      seen = sessionStorage.getItem("${SEEN_KEY}");
+      sessionStorage.setItem("${SEEN_KEY}", "1");
+    } catch (storage) {
+      /* Stockage refusé (navigation privée stricte) : le rideau joue quand
+         même, il reviendra simplement à chaque visite de cette session. */
+    }
+    if (!force) {
+      if (seen) return;
+      if (document.readyState !== "loading") return;
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    }
     var veil = document.getElementById("${LOADER_ID}");
     if (!veil) return;
     veil.setAttribute("data-visible", "");
@@ -79,7 +93,7 @@ const BOOT_SCRIPT = `(function () {
       arm();
     }
   } catch (error) {
-    /* Stockage inaccessible (navigation privée stricte) : pas de rideau. */
+    /* Toute autre défaillance : pas de rideau, jamais de page bloquée. */
   }
 })();`;
 
