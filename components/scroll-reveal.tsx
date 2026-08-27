@@ -49,7 +49,7 @@ export function ScrollRevealController() {
     // Mouvement réduit : on lève l'état caché, sans transition.
     media.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set(unclaimed("[data-reveal]"), { opacity: 1, y: 0 });
-      gsap.set(unclaimed("[data-reveal-line] > *"), { yPercent: 0 });
+      gsap.set(unclaimed("[data-reveal-line] > *"), { y: 0, yPercent: 0 });
     });
 
     media.add("(prefers-reduced-motion: no-preference)", () => {
@@ -74,6 +74,12 @@ export function ScrollRevealController() {
       // Volets masqués : c'est l'enfant qui glisse, le parent ne fait que
       // le rogner. On anime donc les enfants, mais on déclenche sur le
       // parent — sa hauteur est celle de la ligne de texte.
+      //
+      // `y: 0` accompagne obligatoirement `yPercent: 0` : l'état caché posé
+      // en CSS — `translateY(105%)` — arrive à GSAP sous forme de matrice
+      // calculée, donc en pixels, que le tween en pourcentage n'efface pas.
+      // Sans lui, la ligne glisse de 105 % mais garde ses pixels d'origine :
+      // elle reste rognée par son volet et ne s'affiche jamais.
       ScrollTrigger.batch(unclaimed("[data-reveal-line]"), {
         start: START,
         once: true,
@@ -81,6 +87,7 @@ export function ScrollRevealController() {
           gsap.to(
             batch.flatMap((line) => Array.from(line.children)),
             {
+              y: 0,
               yPercent: 0,
               duration: 1.05,
               ease: "power4.out",
