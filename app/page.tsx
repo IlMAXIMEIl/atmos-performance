@@ -1,5 +1,6 @@
 "use client";
 
+import { AltitudeGapSection } from "@/components/altitude-gap-section";
 import { AscensionSection } from "@/components/ascension/ascension-section";
 import { JsonLd } from "@/components/json-ld";
 import { FAQ, FaqSection } from "@/components/faq-section";
@@ -64,6 +65,16 @@ export default function Home() {
 
       <main className="relative z-20">
         <HeroSection />
+
+        {/*
+          L'écart avant la démonstration.
+
+          Le hero a dit ce que fait l'appareil ; cette section dit pourquoi
+          c'est vital — l'élite mondiale possède l'altitude de naissance ou
+          par équipe, le visiteur dort au niveau de la mer. L'envie devient
+          besoin ici, avant que l'ascension ne montre la machine à l'œuvre.
+        */}
+        <AltitudeGapSection />
 
         {/*
           L'ascension avant le produit.
