@@ -8,6 +8,7 @@ import { ArrowRight, Gauge } from "lucide-react";
 
 import { SkyCanvas } from "@/components/hero/sky-canvas";
 import { REVEAL_EASE } from "@/components/scroll-reveal";
+import { afterSiteLoader } from "@/components/site-loader";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import {
@@ -72,11 +73,20 @@ export function HeroSection() {
 
       media.add("(prefers-reduced-motion: reduce)", () => {
         gsap.set("[data-reveal]", { opacity: 1, y: 0 });
-        gsap.set("[data-reveal-line] > *", { yPercent: 0 });
+        // `y: 0` : l'état caché CSS (`translateY(105%)`) est lu en pixels —
+        // voir le commentaire du titre plus bas — et `yPercent: 0` seul
+        // laisserait la ligne rognée.
+        gsap.set("[data-reveal-line] > *", { y: 0, yPercent: 0 });
       });
 
       media.add("(prefers-reduced-motion: no-preference)", () => {
+        // En pause tant que le rideau de première visite couvre la page :
+        // lancé à l'hydratation, l'enchaînement se jouerait derrière lui,
+        // pour personne. `afterSiteLoader` rend la main immédiatement quand
+        // il n'y a pas de rideau à attendre — le cas de toutes les visites
+        // suivantes.
         const intro = gsap.timeline({
+          paused: true,
           defaults: { duration: 0.9, ease: REVEAL_EASE },
         });
 
@@ -90,12 +100,21 @@ export function HeroSection() {
             0.1,
           )
           // Le titre part pendant que le surtitre finit d'arriver.
+          //
+          // `y: 0` n'est pas décoratif : l'état caché posé en CSS —
+          // `translateY(105%)` — arrive à GSAP sous forme de matrice
+          // calculée, donc en pixels, et ces pixels restent empilés sous le
+          // `yPercent` animé. Sans cette remise à zéro, la ligne atterrit à
+          // « 0 % + une hauteur de ligne » : toujours entièrement rognée
+          // par son volet, et le titre ne s'affiche jamais.
           .fromTo(
             "[data-reveal-line] > *",
-            { yPercent: 105 },
+            { y: 0, yPercent: 105 },
             { yPercent: 0, duration: 1.15, ease: "power4.out", stagger: 0.09 },
             0.22,
           );
+
+        const release = afterSiteLoader(() => intro.play());
 
         // Parallaxe : le texte s'enfonce et s'efface, le ciel suit de plus
         // loin. `scrub` accroche l'avancement au défilement lui-même — la
@@ -117,6 +136,10 @@ export function HeroSection() {
             0,
           )
           .to("[data-hero-sky]", { yPercent: 6, ease: "none", duration: 1 }, 0);
+
+        // Détache l'écoute du rideau si la condition de média se retire
+        // avant qu'il ne s'ouvre ; les tweens, eux, relèvent du contexte.
+        return release;
       });
 
       return () => media.revert();

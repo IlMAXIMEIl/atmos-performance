@@ -12,6 +12,7 @@ import { ProtocolsSection } from "@/components/protocols-section";
 import { ScrollRevealController } from "@/components/scroll-reveal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteLoader } from "@/components/site-loader";
 import { TestimonialMarquee } from "@/components/social-proof/testimonial-marquee";
 import { faqPageSchema, productSchema } from "@/lib/structured-data";
 import { SITE_URL } from "@/lib/site";
@@ -29,6 +30,12 @@ export default function Home() {
       possibles — ceux d'aujourd'hui comme ceux des scènes à venir.
     */
     <div className="relative min-h-screen w-full overflow-x-clip bg-void text-ink">
+      {/* Rideau de première visite : une respiration — inspirez, expirez —
+          jouée une seule fois par session, et sur cette page seulement : qui
+          arrive par un article vient lire, pas assister à un lancement. Le
+          hero attend son signal avant de dérouler sa propre entrée. */}
+      <SiteLoader />
+
       {/* Le générateur et les questions fréquentes, tels que cette page les
           présente. `FAQ` est le tableau qui alimente l'accordéon plus bas :
           balisage et affichage sortent de la même source. */}
