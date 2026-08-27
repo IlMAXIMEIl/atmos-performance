@@ -177,16 +177,26 @@ export function HeroSection() {
 
             {/* Volets masqués : chaque ligne est rognée par son parent et
                 glisse depuis le bas. Le texte reste une seule phrase pour
-                les lecteurs d'écran. */}
+                les lecteurs d'écran.
+
+                Le titre ne vante plus le produit, il plante l'écart : ce
+                que le visiteur veut n'est pas « un générateur d'hypoxie »,
+                c'est se battre à armes égales contre une élite qui possède
+                déjà l'altitude — de naissance ou par équipe. L'envie
+                devient besoin dès la première seconde, et la section
+                « À armes égales », un défilement plus bas, apporte la
+                preuve chiffrée. L'ancien titre (« Dominez l'altitude. Sans
+                quitter votre chambre. ») décrivait l'appareil ; celui-ci
+                parle du visiteur. */}
             <h1
               id="hero-titre"
               className="max-w-[26ch] text-[clamp(2.3rem,5.2vw,4.4rem)] leading-[1] font-semibold tracking-[-0.035em] text-ink"
             >
               <span data-reveal-line>
-                <span>{"Dominez l'altitude."}</span>
+                <span>{"L'élite dort en altitude."}</span>
               </span>
               <span data-reveal-line>
-                <span className="text-accent">Sans quitter votre chambre.</span>
+                <span className="text-accent">Maintenant, vous aussi.</span>
               </span>
             </h1>
 
@@ -194,7 +204,7 @@ export function HeroSection() {
               data-reveal
               className="max-w-[34em] text-[clamp(1.05rem,1.5vw,1.25rem)] leading-[1.6] text-dim text-pretty"
             >
-              {`Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à ${formatNumber(MAX_ALTITUDE)} mètres chez vous. Travaillez votre VO2max et préparez vos acclimatations, nuit après nuit ou séance après séance.`}
+              {`Le générateur d'altitude hypoxique ATMOS ONE reproduit jusqu'à ${formatNumber(MAX_ALTITUDE)} mètres chez vous. L'arme de préparation de l'élite mondiale — VO2max, acclimatation — nuit après nuit ou séance après séance.`}
             </p>
 
             <div
