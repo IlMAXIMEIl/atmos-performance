@@ -37,6 +37,10 @@
   /* Accent unique de la refonte — bleu instrument */
   --accent: #3b9eff;
   --accent-soft: rgb(59 158 255 / 0.14);
+  /* Halo du rideau d'accueil : le même bleu, porté à une intensité qui
+     reste visible sur un écran de téléphone à demi éteint — à 0.14,
+     le souffle disparaît hors d'un écran calibré dans la pénombre. */
+  --accent-breath: rgb(59 158 255 / 0.3);
   /* Contrepoint chaud, réservé aux signaux de récupération */
   --warm: #ffe9c7;
 

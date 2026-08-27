@@ -300,10 +300,12 @@ export function SiteLoader() {
         {/* Le souffle : un halo qui s'emplit à l'inspiration et se relâche à
             l'expiration. Centré par `inset-0 m-auto`, jamais par une classe
             de translation — GSAP remet la propriété CSS `translate` à `none`
-            quand il anime, et le halo sauterait hors du centre. */}
+            quand il anime, et le halo sauterait hors du centre. L'intensité
+            vient de `--accent-breath` : à `--accent-soft`, le souffle était
+            invisible sur un écran de téléphone — vérifié sur pièce. */}
         <div
           data-loader-halo
-          className="absolute inset-0 m-auto aspect-square w-[min(44rem,120vw)] rounded-full bg-[radial-gradient(circle,var(--accent-soft),transparent_62%)] opacity-0"
+          className="absolute inset-0 m-auto aspect-square w-[min(52rem,140vw)] rounded-full bg-[radial-gradient(circle,var(--accent-breath),transparent_60%)] opacity-0"
         />
 
         {/* L'horizon : il se déploie avec l'inspiration, et c'est sur lui
@@ -314,7 +316,7 @@ export function SiteLoader() {
         <div
           data-loader-horizon
           style={{ transform: "scaleX(0)" }}
-          className="absolute inset-x-0 top-1/2 mx-auto h-px w-[min(34rem,74vw)] bg-gradient-to-r from-transparent via-accent to-transparent"
+          className="absolute inset-x-0 top-1/2 mx-auto h-[2px] w-[min(36rem,78vw)] rounded-full bg-gradient-to-r from-transparent via-accent to-transparent"
         />
 
         {/* La marque au-dessus de l'horizon. Le retrait gauche compense
@@ -323,7 +325,7 @@ export function SiteLoader() {
         <div className="absolute inset-x-0 bottom-1/2 flex flex-col items-center px-6 pb-8">
           <p
             data-loader-fade
-            className="pl-[0.42em] font-mono text-[clamp(1.05rem,2.4vw,1.4rem)] tracking-[0.42em] text-ink uppercase opacity-0"
+            className="pl-[0.5em] font-mono text-[clamp(1.5rem,4.5vw,2.2rem)] tracking-[0.5em] text-ink uppercase opacity-0"
           >
             Atmos
           </p>
@@ -333,7 +335,7 @@ export function SiteLoader() {
             au même endroit et permutés en fondu au sommet de l'inspiration. */}
         <p
           data-loader-fade
-          className="absolute inset-x-0 top-1/2 pt-7 text-center font-mono text-[0.66rem] tracking-[0.24em] uppercase opacity-0"
+          className="absolute inset-x-0 top-1/2 pt-7 text-center font-mono text-[clamp(0.72rem,1.8vw,0.82rem)] tracking-[0.32em] uppercase opacity-0"
         >
           <span className="relative inline-block">
             <span data-loader-word="inspirez" className="text-accent">
