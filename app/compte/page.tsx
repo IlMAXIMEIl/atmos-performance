@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BookOpen, LogOut, Moon } from "lucide-react";
+import { BookOpen, LogOut, Moon, Package } from "lucide-react";
 
 import { seDeconnecter } from "@/app/compte/connexion/actions";
 import { Tracker } from "@/app/compte/tracker";
@@ -73,15 +73,24 @@ export default async function ComptePage() {
             </h1>
           </div>
 
-          <form action={seDeconnecter}>
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 text-[0.76rem] font-light text-dimmer transition-colors hover:text-ink"
+          <div className="flex items-center gap-5">
+            <Link
+              href="/compte/commandes"
+              className="inline-flex items-center gap-2 text-[0.76rem] font-light text-dim transition-colors hover:text-ink"
             >
-              <LogOut className="h-3.5 w-3.5" strokeWidth={1.6} />
-              Se déconnecter
-            </button>
-          </form>
+              <Package className="h-3.5 w-3.5" strokeWidth={1.6} />
+              Mes commandes
+            </Link>
+            <form action={seDeconnecter}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 text-[0.76rem] font-light text-dimmer transition-colors hover:text-ink"
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={1.6} />
+                Se déconnecter
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* ── Le tracker, en premier : c'est ce pour quoi on vient ────── */}

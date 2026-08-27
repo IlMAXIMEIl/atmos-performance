@@ -193,6 +193,33 @@ export default async function ReservationConfirmeePage({
           </section>
         )}
 
+        {/*
+          L'invitation à l'espace client vient après le paiement, jamais
+          avant : le tunnel reste sans compte, c'est un principe du plan. Le
+          rattachement est automatique — la fenêtre `mes_commandes` matche
+          l'email vérifié du compte avec celui que Stripe vient
+          d'enregistrer — donc aucune promesse hasardeuse ici : se connecter
+          suffit.
+        */}
+        <aside className="mt-14 rounded-2xl border border-accent/30 bg-accent/[0.05] p-6 sm:p-7">
+          <Eyebrow as="h2">Votre espace</Eyebrow>
+          <p className="mt-4 max-w-[36em] text-[0.92rem] leading-relaxed text-dim text-pretty">
+            {
+              "Suivez votre commande et, dès réception de l'appareil, vos nuits d'exposition : connectez-vous avec l'adresse email de votre commande — un code à six chiffres, pas de mot de passe."
+            }
+          </p>
+          <Link
+            href="/compte/connexion"
+            className="group mt-5 inline-flex items-center gap-2.5 text-[0.9rem] font-semibold text-accent"
+          >
+            Activer mon espace
+            <ArrowRight
+              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+              strokeWidth={1.8}
+            />
+          </Link>
+        </aside>
+
         <div className="mt-14 flex flex-col gap-3 border-t border-line pt-10 sm:flex-row">
           <Link
             href={view.primary.href}
