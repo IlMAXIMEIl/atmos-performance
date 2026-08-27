@@ -46,7 +46,13 @@ gsap.registerPlugin(useGSAP);
 /** Clé de session : posée dès le premier passage, rideau levé ou non. */
 const SEEN_KEY = "atmos:rideau";
 
-const LOADER_ID = "atmos-loader";
+/**
+ * Surtout pas « loader » dans l'identifiant : les listes cosmétiques des
+ * bloqueurs de contenu (AdGuard, Wipr…) masquent d'office les recouvrements
+ * plein écran dont l'id contient ce mot — l'animation tournait alors en
+ * silence derrière une page parfaitement visible, sur Safari Mac et iOS.
+ */
+const LOADER_ID = "atmos-souffle";
 
 /** Signal d'ouverture, écouté par le hero via `afterSiteLoader`. */
 const LOADER_DONE_EVENT = "atmos:rideau:leve";
