@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { MAX_ALTITUDE, formatNumber } from "@/lib/altitude";
 
@@ -23,6 +25,27 @@ import { MAX_ALTITUDE, formatNumber } from "@/lib/altitude";
  * ≈ 2 800 m, le centre d'altitude de Sierra Nevada ≈ 2 320 m — la même
  * plage que les protocoles défendus plus bas, ce qui n'est pas un hasard.
  */
+/**
+ * Le visuel de la section, préparé avant d'exister.
+ *
+ * Le cadre occupe déjà sa place, son format et son texte de remplacement :
+ * le jour où la bonne image arrive, poser le fichier dans `public/` et
+ * renseigner `src` suffit — la page ne bouge pas. Deux images légitimes
+ * peuvent vivre ici, dans cet ordre de préférence :
+ *
+ * 1. **L'ambassadeur sous contrat** (piste Aleksandr Sorokin évoquée le
+ *    27 août 2026) — uniquement avec un contrat d'image signé, jamais
+ *    avant : sans lui, le visage d'un athlète identifiable est un
+ *    endossement mensonger et un risque juridique réel.
+ * 2. En attendant : une photographie **libre de droits avec autorisation
+ *    de modèle** (athlète anonyme, aube, montagne), cohérente avec la
+ *    nuit d'altitude du site.
+ */
+const GAP_VISUAL: { src: string | null; alt: string } = {
+  src: null,
+  alt: "Coureur de fond à l'aube sur une crête d'altitude, le souffle visible dans l'air froid.",
+};
+
 const PLACES = [
   {
     value: "Iten, Kenya · 2 400 m",
@@ -52,8 +75,9 @@ export function AltitudeGapSection() {
       aria-labelledby="armes-egales-titre"
       className="relative z-20 mx-auto w-full max-w-[1240px] scroll-mt-24 px-6 py-24 sm:py-32 lg:px-10"
     >
-      <div className="max-w-3xl">
-        <Eyebrow data-reveal>À armes égales</Eyebrow>
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-16">
+        <div className="max-w-3xl">
+          <Eyebrow data-reveal>À armes égales</Eyebrow>
 
         {/* Volets masqués : la deuxième ligne, courte et en accent, porte
             le coup. Le texte reste une seule phrase pour les lecteurs
@@ -87,6 +111,43 @@ export function AltitudeGapSection() {
             "Vous, vous vous entraînez aussi sérieusement qu'eux. Puis vous dormez à 200 mètres. Cet écart-là ne se comble pas à l'entraînement — il se creuse la nuit."
           }
         </p>
+        </div>
+
+        {/* Le portrait de la section — voir `GAP_VISUAL` : cadre en place,
+            format arrêté, texte de remplacement rédigé. Masqué sur mobile
+            tant qu'il est vide : un cadre en attente vaut sur un écran
+            large, pas en travers du fil de lecture d'un téléphone. */}
+        <figure
+          data-reveal
+          className={`relative overflow-hidden rounded-xl border bg-deep ${
+            GAP_VISUAL.src
+              ? "border-line"
+              : "hidden border-dashed border-line-strong lg:block"
+          } aspect-[4/5] self-start`}
+        >
+          {GAP_VISUAL.src ? (
+            <Image
+              src={GAP_VISUAL.src}
+              alt={GAP_VISUAL.alt}
+              fill
+              sizes="(min-width: 1024px) 22rem, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <span
+              aria-hidden
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,var(--accent-soft),transparent_70%)]"
+              />
+              <span className="relative font-mono text-[0.62rem] tracking-[0.2em] text-dimmer uppercase">
+                Visuel à venir
+              </span>
+            </span>
+          )}
+        </figure>
       </div>
 
       {/* Les relevés : trois lieux qui possèdent l'arme, puis la chambre du
