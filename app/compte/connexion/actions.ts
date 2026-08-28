@@ -31,8 +31,6 @@ export type EtatCompte = {
   attenteEmail?: boolean;
 };
 
-const RIEN: EtatCompte = { message: null };
-
 /** L'adresse de retour des liens envoyés par email (confirmation, reset). */
 function urlDeRetour(chemin: string): string {
   return `${SITE_URL}${chemin}`;
