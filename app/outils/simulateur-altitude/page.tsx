@@ -6,6 +6,7 @@ import { AltitudeSimulator } from "@/components/altitude-simulator";
 import { JsonLd } from "@/components/json-ld";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { TrackerInvitation } from "@/components/tracker-invitation";
 import {
   MAX_ALTITUDE,
   fio2AtAltitude,
@@ -198,6 +199,13 @@ export default async function SimulateurAltitudePage() {
               "Deux questions — l'utilisation de l'appareil, votre niveau — suffisent à poser un protocole d'entraînement en hypoxie : le palier d'altitude simulée, la FiO₂ correspondante, la structure des cycles et la plage de saturation à tenir. Le convertisseur et le comparatif de coût suivent."
             }
           </p>
+        </div>
+
+        {/* Le pont depuis le QR gravé sur le générateur : n'apparaît que
+            pour les visiteurs venus de l'appareil, et côté navigateur
+            uniquement — la page reste prérendue. */}
+        <div className="mt-10">
+          <TrackerInvitation />
         </div>
 
         {/* ── L'outil ────────────────────────────────────────────────── */}

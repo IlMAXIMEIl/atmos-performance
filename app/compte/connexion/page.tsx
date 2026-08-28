@@ -23,11 +23,17 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ConnexionPage() {
+export default async function ConnexionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ lien?: string }>;
+}) {
   if (!espaceClientConfigure()) redirect("/");
 
   // Déjà connecté : on ne fait pas repasser par la case connexion.
   if (await clientConnecte()) redirect("/compte");
+
+  const { lien } = await searchParams;
 
   return (
     <div className="relative min-h-screen w-full bg-void font-[family-name:var(--font-geist-sans)] text-ink selection:bg-accent/25">
@@ -61,11 +67,12 @@ export default async function ConnexionPage() {
 
         <p className="mt-5 text-[0.95rem] leading-relaxed font-light text-dim text-pretty">
           Un bouton le soir, un bouton au réveil. Vos heures d&apos;exposition
-          s&apos;accumulent et vous savez où vous en êtes de votre protocole.
+          s&apos;accumulent, vos commandes se rattachent, et vous savez où
+          vous en êtes de votre protocole.
         </p>
 
         <div className="mt-10 rounded-2xl border border-line bg-white/[0.02] p-6 backdrop-blur-xl sm:p-7">
-          <ConnexionForm />
+          <ConnexionForm lienExpire={lien === "expire"} />
         </div>
       </main>
 

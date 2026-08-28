@@ -3,106 +3,198 @@
 import { redirect } from "next/navigation";
 
 import { creerClient } from "@/lib/supabase/server";
+import { SITE_URL } from "@/lib/site";
 
 /**
- * Connexion par code à usage unique.
+ * L'entrée du compte, à la classique : créer un compte, se connecter,
+ * mot de passe oublié.
  *
- * ## Pas de mot de passe, et ce n'est pas un raccourci
+ * ## Pourquoi le mot de passe a remplacé le code à usage unique
  *
- * Un mot de passe de plus, c'est un mot de passe réutilisé de plus, un
- * écran « mot de passe oublié » à construire et une base de secrets à
- * protéger. Le code envoyé par email prouve la même chose — la maîtrise de
- * l'adresse — sans rien de tout cela. C'est aussi l'adresse que Stripe
- * connaît déjà, ce qui rendra le rattachement des commandes naturel en
- * phase 2.1.
+ * La première version envoyait un code par email à chaque connexion. Maxime
+ * a tranché le 28 août 2026 : le parcours attendu est celui de tous les
+ * sites — on crée son compte une fois, on se connecte ensuite sans attendre
+ * un email. L'email ne sert plus qu'aux moments qui le justifient : la
+ * confirmation d'inscription et la réinitialisation du mot de passe.
  *
- * ## Deux temps, deux actions
+ * ## Le détail qui change tout : des messages qui ne mentent pas
  *
- * `demanderCode` envoie, `verifierCode` valide. La session n'existe qu'après
- * la seconde : c'est Supabase qui pose les cookies, via le client serveur.
+ * `verifier l'existence d'un compte` reste impossible depuis ces écrans :
+ * l'inscription sur une adresse déjà prise et la réinitialisation d'une
+ * adresse inconnue répondent la même chose que le cas nominal. Un écran de
+ * connexion est un oracle si on le laisse parler.
  */
 
-export type EtatConnexion = {
-  etape: "email" | "code";
-  email: string;
+export type EtatCompte = {
   message: string | null;
+  /** `true` quand l'action s'est bien passée mais attend l'email du client. */
+  attenteEmail?: boolean;
 };
 
-/**
- * Réponse unique, que l'adresse existe ou non.
- *
- * Dire « ce compte n'existe pas » transformerait l'écran en oracle : on
- * pourrait y tester des adresses pour savoir qui est client d'ATMOS. La
- * formulation reste donc la même dans tous les cas.
- */
-const ENVOI_CONFIRME =
-  "Si cette adresse peut recevoir un code, il vient d'être envoyé. Vérifiez votre boîte mail.";
+const RIEN: EtatCompte = { message: null };
 
-export async function demanderCode(
-  _precedent: EtatConnexion,
+/** L'adresse de retour des liens envoyés par email (confirmation, reset). */
+function urlDeRetour(chemin: string): string {
+  return `${SITE_URL}${chemin}`;
+}
+
+function lireIdentifiants(donnees: FormData) {
+  return {
+    email: String(donnees.get("email") ?? "").trim().toLowerCase(),
+    motDePasse: String(donnees.get("mot_de_passe") ?? ""),
+  };
+}
+
+export async function creerCompte(
+  _precedent: EtatCompte,
   donnees: FormData,
-): Promise<EtatConnexion> {
-  const email = String(donnees.get("email") ?? "")
-    .trim()
-    .toLowerCase();
+): Promise<EtatCompte> {
+  const { email, motDePasse } = lireIdentifiants(donnees);
+  const prenom = String(donnees.get("prenom") ?? "").trim();
 
   if (!email.includes("@") || email.length < 5) {
-    return { etape: "email", email, message: "Adresse email invalide." };
+    return { message: "Adresse email invalide." };
+  }
+  if (motDePasse.length < 8) {
+    return { message: "Le mot de passe doit compter au moins 8 caractères." };
   }
 
   const supabase = await creerClient();
-  const { error } = await supabase.auth.signInWithOtp({
+  const { data, error } = await supabase.auth.signUp({
     email,
+    password: motDePasse,
     options: {
       /*
-        `espace: "client"` aiguille le déclencheur `handle_new_user` de la
-        migration 0037 : ce compte crée une fiche client, pas un profil de
-        personnel Nexus. Ce n'est pas une frontière de sécurité — elle est
-        dans le RLS — mais l'aiguillage garde les deux populations propres.
+        `espace: "client"` aiguille le déclencheur `handle_new_user` (0037) :
+        ce compte crée une fiche client, pas un profil du personnel Nexus.
+        Le prénom part dans les métadonnées, le déclencheur le range.
       */
-      data: { espace: "client" },
+      data: { espace: "client", prenom },
+      emailRedirectTo: urlDeRetour("/compte/confirmation"),
     },
   });
 
   if (error) {
-    // Le détail part dans les journaux du serveur ; l'écran reste muet sur
-    // l'existence du compte.
-    console.error("Espace client — envoi du code :", error.message);
-    if (error.status === 429) {
+    console.error("Espace client — inscription :", error.code, error.message);
+    if (error.code === "signup_disabled") {
       return {
-        etape: "email",
-        email,
-        message: "Trop de demandes. Patientez quelques minutes.",
+        message:
+          "Les inscriptions sont momentanément fermées. Réessayez un peu plus tard.",
       };
     }
+    if (error.code === "weak_password") {
+      return { message: "Ce mot de passe est trop faible : allongez-le." };
+    }
+    if (error.status === 429) {
+      return { message: "Trop de tentatives. Patientez quelques minutes." };
+    }
+    return { message: "Impossible de créer le compte. Réessayez." };
   }
 
-  return { etape: "code", email, message: ENVOI_CONFIRME };
+  /*
+    Selon la configuration du projet, l'inscription ouvre la session tout de
+    suite ou attend la confirmation de l'adresse. Les deux chemins existent
+    ici pour que l'écran dise toujours la vérité.
+
+    Cas particulier voulu par Supabase : une adresse déjà inscrite renvoie un
+    utilisateur factice sans erreur — pour ne pas révéler l'existence du
+    compte. Le message « vérifiez votre boîte » reste donc juste : la
+    personne y trouvera soit la confirmation, soit rien, et l'écran n'a
+    rien révélé.
+  */
+  if (data.session) redirect("/compte");
+
+  return {
+    message:
+      "Compte créé — un email de confirmation vient de partir. Cliquez sur le lien qu'il contient, vous serez connecté dans la foulée.",
+    attenteEmail: true,
+  };
 }
 
-export async function verifierCode(
-  _precedent: EtatConnexion,
+export async function seConnecter(
+  _precedent: EtatCompte,
   donnees: FormData,
-): Promise<EtatConnexion> {
-  const email = String(donnees.get("email") ?? "").trim().toLowerCase();
-  const code = String(donnees.get("code") ?? "").replace(/\s/g, "");
+): Promise<EtatCompte> {
+  const { email, motDePasse } = lireIdentifiants(donnees);
 
-  if (code.length < 6) {
-    return { etape: "code", email, message: "Le code compte six chiffres." };
+  if (!email.includes("@") || motDePasse === "") {
+    return { message: "Renseignez votre adresse et votre mot de passe." };
   }
 
   const supabase = await creerClient();
-  const { error } = await supabase.auth.verifyOtp({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
-    token: code,
-    type: "email",
+    password: motDePasse,
   });
 
   if (error) {
+    if (error.code === "email_not_confirmed") {
+      return {
+        message:
+          "Votre adresse n'est pas encore confirmée : ouvrez l'email reçu à l'inscription, ou utilisez « mot de passe oublié » pour en recevoir un nouveau.",
+      };
+    }
+    if (error.status === 429) {
+      return { message: "Trop de tentatives. Patientez quelques minutes." };
+    }
+    // Identifiants faux, compte inexistant : même réponse, l'écran n'est
+    // pas un annuaire.
+    return { message: "Adresse ou mot de passe incorrect." };
+  }
+
+  redirect("/compte");
+}
+
+export async function demanderReinitialisation(
+  _precedent: EtatCompte,
+  donnees: FormData,
+): Promise<EtatCompte> {
+  const email = String(donnees.get("email") ?? "").trim().toLowerCase();
+
+  if (!email.includes("@") || email.length < 5) {
+    return { message: "Adresse email invalide." };
+  }
+
+  const supabase = await creerClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: urlDeRetour("/compte/confirmation?suite=/compte/nouveau-mot-de-passe"),
+  });
+
+  if (error && error.status === 429) {
+    return { message: "Trop de demandes. Patientez quelques minutes." };
+  }
+  if (error) {
+    console.error("Espace client — réinitialisation :", error.message);
+  }
+
+  // Adresse connue ou non : même phrase.
+  return {
+    message:
+      "Si un compte existe à cette adresse, un email de réinitialisation vient de partir.",
+    attenteEmail: true,
+  };
+}
+
+/** Depuis l'écran « nouveau mot de passe », une fois la session récupérée. */
+export async function changerMotDePasse(
+  _precedent: EtatCompte,
+  donnees: FormData,
+): Promise<EtatCompte> {
+  const motDePasse = String(donnees.get("mot_de_passe") ?? "");
+  if (motDePasse.length < 8) {
+    return { message: "Le mot de passe doit compter au moins 8 caractères." };
+  }
+
+  const supabase = await creerClient();
+  const { error } = await supabase.auth.updateUser({ password: motDePasse });
+
+  if (error) {
+    if (error.code === "same_password") {
+      return { message: "C'est déjà votre mot de passe actuel." };
+    }
     return {
-      etape: "code",
-      email,
-      message: "Code incorrect ou expiré. Demandez-en un nouveau.",
+      message:
+        "Le lien de réinitialisation a expiré : redemandez un email depuis l'écran de connexion.",
     };
   }
 

@@ -1,27 +1,30 @@
 "use client";
 
-import { useActionState } from "react";
-import { ArrowRight, Loader2, Mail } from "lucide-react";
+import { useActionState, useState } from "react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import {
-  demanderCode,
-  verifierCode,
-  type EtatConnexion,
+  creerCompte,
+  demanderReinitialisation,
+  seConnecter,
+  type EtatCompte,
 } from "@/app/compte/connexion/actions";
 
 /**
- * L'écran de connexion, en deux temps sur un seul formulaire.
- *
- * L'état renvoyé par l'action porte l'étape : tant qu'il vaut « email », on
- * demande l'adresse ; ensuite le code. Pas de `useState` en parallèle — deux
- * sources pour un même état finissent toujours par diverger.
+ * L'entrée du compte, en trois volets sur un seul écran : se connecter,
+ * créer un compte, mot de passe oublié. Le parcours de tous les sites —
+ * c'est le point : personne ne doit apprendre quoi que ce soit ici.
  */
 
-const DEPART: EtatConnexion = { etape: "email", email: "", message: null };
+type Volet = "connexion" | "creation" | "oubli";
+
+const RIEN: EtatCompte = { message: null };
 
 const CHAMP =
   "w-full rounded-xl border border-line bg-white/[0.03] px-4 py-3 text-[0.95rem] text-ink " +
   "placeholder:text-dimmer focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none";
+
+const LIBELLE = "text-[0.78rem] font-light text-dim";
 
 const BOUTON =
   "group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-accent px-8 py-3.5 " +
@@ -29,107 +32,238 @@ const BOUTON =
   "hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none " +
   "disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0";
 
-export function ConnexionForm() {
-  const [etatEmail, envoyerEmail, envoiEnCours] = useActionState(
-    demanderCode,
-    DEPART,
+const LIEN_DISCRET =
+  "text-[0.78rem] font-light text-dimmer underline-offset-4 transition-colors hover:text-ink hover:underline";
+
+function Message({ etat }: { etat: EtatCompte }) {
+  if (!etat.message) return null;
+  return (
+    <p
+      role="status"
+      className={`text-[0.83rem] leading-relaxed text-pretty ${
+        etat.attenteEmail ? "text-accent" : "text-amber-200/90"
+      }`}
+    >
+      {etat.message}
+    </p>
   );
-  const [etatCode, envoyerCode, verificationEnCours] = useActionState(
-    verifierCode,
-    DEPART,
+}
+
+export function ConnexionForm({ lienExpire }: { lienExpire?: boolean }) {
+  const [volet, setVolet] = useState<Volet>("connexion");
+
+  const [etatConnexion, connecter, connexionEnCours] = useActionState(
+    seConnecter,
+    RIEN,
   );
-
-  // L'étape vient de la dernière action jouée : une vérification ratée doit
-  // laisser le visiteur sur l'écran du code, pas le renvoyer à l'adresse.
-  const surCode = etatCode.etape === "code" || etatEmail.etape === "code";
-  const email = etatCode.email || etatEmail.email;
-  const message = etatCode.message ?? etatEmail.message;
-
-  if (!surCode) {
-    return (
-      <form action={envoyerEmail} className="flex flex-col gap-4">
-        <label htmlFor="email" className="text-[0.8rem] font-light text-dim">
-          Votre adresse email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          required
-          defaultValue={etatEmail.email}
-          placeholder="vous@exemple.fr"
-          className={CHAMP}
-        />
-
-        {message && (
-          <p role="status" className="text-[0.82rem] text-amber-200/90">
-            {message}
-          </p>
-        )}
-
-        <button type="submit" disabled={envoiEnCours} className={BOUTON}>
-          {envoiEnCours ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Mail className="h-4 w-4" strokeWidth={1.8} />
-          )}
-          {envoiEnCours ? "Envoi…" : "Recevoir mon code"}
-        </button>
-
-        <p className="text-[0.78rem] leading-relaxed font-light text-dimmer">
-          Pas de mot de passe : un code à six chiffres, valable quelques
-          minutes. Aucun achat n&apos;est nécessaire pour ouvrir un espace.
-        </p>
-      </form>
-    );
-  }
+  const [etatCreation, creer, creationEnCours] = useActionState(
+    creerCompte,
+    RIEN,
+  );
+  const [etatOubli, reinitialiser, oubliEnCours] = useActionState(
+    demanderReinitialisation,
+    RIEN,
+  );
 
   return (
-    <form action={envoyerCode} className="flex flex-col gap-4">
-      <input type="hidden" name="email" value={email} />
+    <div className="flex flex-col gap-5">
+      {/* La bascule connexion / création — l'oubli est un chemin de sortie,
+          pas un troisième onglet. */}
+      {volet !== "oubli" && (
+        <div
+          role="tablist"
+          aria-label="Connexion ou création de compte"
+          className="grid grid-cols-2 rounded-full border border-line bg-white/[0.02] p-1"
+        >
+          {(
+            [
+              ["connexion", "Se connecter"],
+              ["creation", "Créer un compte"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={volet === id}
+              onClick={() => setVolet(id)}
+              className={`rounded-full py-2.5 text-[0.82rem] font-medium transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none ${
+                volet === id
+                  ? "bg-accent/[0.12] text-accent"
+                  : "text-dim hover:text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      <label htmlFor="code" className="text-[0.8rem] font-light text-dim">
-        Le code envoyé à <span className="text-ink">{email}</span>
-      </label>
-      <input
-        id="code"
-        name="code"
-        type="text"
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        pattern="[0-9]*"
-        maxLength={8}
-        required
-        autoFocus
-        placeholder="000000"
-        className={`${CHAMP} text-center font-mono text-2xl tracking-[0.5em]`}
-      />
-
-      {message && (
-        <p role="status" className="text-[0.82rem] text-amber-200/90">
-          {message}
+      {lienExpire && volet === "connexion" && (
+        <p role="status" className="text-[0.83rem] text-amber-200/90">
+          Ce lien a expiré ou a déjà servi. Connectez-vous, ou demandez un
+          nouveau lien ci-dessous.
         </p>
       )}
 
-      <button type="submit" disabled={verificationEnCours} className={BOUTON}>
-        {verificationEnCours ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : null}
-        {verificationEnCours ? "Vérification…" : "Ouvrir mon espace"}
-        {!verificationEnCours && (
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-        )}
-      </button>
+      {volet === "connexion" && (
+        <form action={connecter} className="flex flex-col gap-4">
+          <div>
+            <label htmlFor="email-connexion" className={LIBELLE}>
+              Adresse email
+            </label>
+            <input
+              id="email-connexion"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="vous@exemple.fr"
+              className={`${CHAMP} mt-1.5`}
+            />
+          </div>
+          <div>
+            <div className="flex items-baseline justify-between gap-3">
+              <label htmlFor="mdp-connexion" className={LIBELLE}>
+                Mot de passe
+              </label>
+              <button
+                type="button"
+                onClick={() => setVolet("oubli")}
+                className={LIEN_DISCRET}
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
+            <input
+              id="mdp-connexion"
+              name="mot_de_passe"
+              type="password"
+              autoComplete="current-password"
+              required
+              className={`${CHAMP} mt-1.5`}
+            />
+          </div>
 
-      <button
-        type="button"
-        onClick={() => window.location.reload()}
-        className="text-[0.78rem] font-light text-dimmer underline-offset-4 transition-colors hover:text-ink hover:underline"
-      >
-        Changer d&apos;adresse
-      </button>
-    </form>
+          <Message etat={etatConnexion} />
+
+          <button type="submit" disabled={connexionEnCours} className={BOUTON}>
+            {connexionEnCours ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : null}
+            {connexionEnCours ? "Connexion…" : "Ouvrir mon espace"}
+            {!connexionEnCours && (
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            )}
+          </button>
+        </form>
+      )}
+
+      {volet === "creation" && (
+        <form action={creer} className="flex flex-col gap-4">
+          <div>
+            <label htmlFor="prenom" className={LIBELLE}>
+              Prénom
+            </label>
+            <input
+              id="prenom"
+              name="prenom"
+              type="text"
+              autoComplete="given-name"
+              placeholder="Camille"
+              className={`${CHAMP} mt-1.5`}
+            />
+          </div>
+          <div>
+            <label htmlFor="email-creation" className={LIBELLE}>
+              Adresse email
+            </label>
+            <input
+              id="email-creation"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="vous@exemple.fr"
+              className={`${CHAMP} mt-1.5`}
+            />
+            <p className="mt-1.5 text-[0.72rem] leading-relaxed font-light text-dimmer">
+              Utilisez l&apos;adresse de vos commandes ATMOS : elles se
+              rattachent toutes seules.
+            </p>
+          </div>
+          <div>
+            <label htmlFor="mdp-creation" className={LIBELLE}>
+              Mot de passe — 8 caractères minimum
+            </label>
+            <input
+              id="mdp-creation"
+              name="mot_de_passe"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
+              required
+              className={`${CHAMP} mt-1.5`}
+            />
+          </div>
+
+          <Message etat={etatCreation} />
+
+          <button type="submit" disabled={creationEnCours} className={BOUTON}>
+            {creationEnCours ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : null}
+            {creationEnCours ? "Création…" : "Créer mon compte"}
+            {!creationEnCours && (
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            )}
+          </button>
+
+          <p className="text-[0.72rem] leading-relaxed font-light text-dimmer text-pretty">
+            Gratuit, sans engagement — aucun achat requis. Vos données de
+            suivi restent les vôtres : consultables, exportables et
+            supprimables à tout moment.
+          </p>
+        </form>
+      )}
+
+      {volet === "oubli" && (
+        <form action={reinitialiser} className="flex flex-col gap-4">
+          <p className="text-[0.85rem] leading-relaxed font-light text-dim">
+            Indiquez votre adresse : vous recevrez un lien pour choisir un
+            nouveau mot de passe.
+          </p>
+          <div>
+            <label htmlFor="email-oubli" className={LIBELLE}>
+              Adresse email
+            </label>
+            <input
+              id="email-oubli"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="vous@exemple.fr"
+              className={`${CHAMP} mt-1.5`}
+            />
+          </div>
+
+          <Message etat={etatOubli} />
+
+          <button type="submit" disabled={oubliEnCours} className={BOUTON}>
+            {oubliEnCours ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {oubliEnCours ? "Envoi…" : "Recevoir le lien"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setVolet("connexion")}
+            className={LIEN_DISCRET}
+          >
+            Retour à la connexion
+          </button>
+        </form>
+      )}
+    </div>
   );
 }
