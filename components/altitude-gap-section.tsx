@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { MAX_ALTITUDE, formatNumber } from "@/lib/altitude";
 
@@ -26,25 +24,43 @@ import { MAX_ALTITUDE, formatNumber } from "@/lib/altitude";
  * plage que les protocoles défendus plus bas, ce qui n'est pas un hasard.
  */
 /**
- * Le visuel de la section, préparé avant d'exister.
+ * Le visuel de la section : un peloton sur une route des hauts plateaux
+ * kényans — le sujet exact du titre, choisi par Maxime le 28 août 2026.
  *
- * Le cadre occupe déjà sa place, son format et son texte de remplacement :
- * le jour où la bonne image arrive, poser le fichier dans `public/` et
- * renseigner `src` suffit — la page ne bouge pas. Deux images légitimes
- * peuvent vivre ici, dans cet ordre de préférence :
+ * Photographie de Justin Lagat (Unsplash, `GKBCHlMSvrg`), licence Unsplash :
+ * usage commercial autorisé, attribution non exigée. C'est un peloton de
+ * course — une scène publique, pas un endossement individuel — mais des
+ * dossards restent lisibles : si un jour l'ambassadeur sous contrat (piste
+ * Sorokin) remplace cette image, seuls les fichiers `public/images/
+ * peloton-rift-valley-*` et ce bloc changent, la page ne bouge pas.
  *
- * 1. **L'ambassadeur sous contrat** (piste Aleksandr Sorokin évoquée le
- *    27 août 2026) — uniquement avec un contrat d'image signé, jamais
- *    avant : sans lui, le visage d'un athlète identifiable est un
- *    endossement mensonger et un risque juridique réel.
- * 2. En attendant : une photographie **libre de droits avec autorisation
- *    de modèle** (athlète anonyme, aube, montagne), cohérente avec la
- *    nuit d'altitude du site.
+ * ## Pourquoi un `<picture>` et pas `next/image`
+ *
+ * Les variantes sont générées une fois (recadrage 4/5, AVIF + JPEG, quatre
+ * largeurs de 480 à 1536 px — de 26 à 285 Ko) et servies en statique. Le
+ * `srcset` laisse le navigateur charger la seule taille utile à son écran
+ * et à sa densité : c'est ce qui adapte réellement le poids à la connexion
+ * du visiteur, sans optimiseur d'images à faire tourner sur l'hébergement
+ * mutualisé ni cache à réchauffer après chaque déploiement.
  */
-const GAP_VISUAL: { src: string | null; alt: string } = {
-  src: null,
-  alt: "Coureur de fond à l'aube sur une crête d'altitude, le souffle visible dans l'air froid.",
+const GAP_VISUAL = {
+  largeurs: [480, 704, 1056, 1536],
+  base: "/images/peloton-rift-valley",
+  alt: "Peloton de coureurs de fond lancé sur une route des hauts plateaux de la Rift Valley, au Kenya, une colline en toile de fond.",
 };
+
+const srcset = (extension: string) =>
+  GAP_VISUAL.largeurs
+    .map((l) => `${GAP_VISUAL.base}-${l}.${extension} ${l}w`)
+    .join(", ");
+
+/*
+  Le cadre fait 22rem (352 px) sur grand écran et la largeur de l'écran
+  moins les marges sur mobile : le navigateur combine cette information au
+  `srcset` pour choisir la variante — un téléphone en 4G prend 26 Ko, un
+  écran Retina large prend la 1056.
+*/
+const GAP_SIZES = "(min-width: 1024px) 22rem, calc(100vw - 3rem)";
 
 const PLACES = [
   {
@@ -113,40 +129,33 @@ export function AltitudeGapSection() {
         </p>
         </div>
 
-        {/* Le portrait de la section — voir `GAP_VISUAL` : cadre en place,
-            format arrêté, texte de remplacement rédigé. Masqué sur mobile
-            tant qu'il est vide : un cadre en attente vaut sur un écran
-            large, pas en travers du fil de lecture d'un téléphone. */}
+        {/* Le portrait de la section — voir `GAP_VISUAL`. La hauteur est
+            portée par `aspect-[4/5]` et les variantes sont recadrées au même
+            ratio : rien ne saute au chargement, l'image tombe dans un cadre
+            qui l'attendait au pixel près. */}
         <figure
           data-reveal
-          className={`relative overflow-hidden rounded-xl border bg-deep ${
-            GAP_VISUAL.src
-              ? "border-line"
-              : "hidden border-dashed border-line-strong lg:block"
-          } aspect-[4/5] self-start`}
+          className="relative aspect-[4/5] self-start overflow-hidden rounded-xl border border-line bg-deep"
         >
-          {GAP_VISUAL.src ? (
-            <Image
-              src={GAP_VISUAL.src}
+          <picture>
+            <source type="image/avif" srcSet={srcset("avif")} sizes={GAP_SIZES} />
+            <img
+              src={`${GAP_VISUAL.base}-1056.jpg`}
+              srcSet={srcset("jpg")}
+              sizes={GAP_SIZES}
               alt={GAP_VISUAL.alt}
-              fill
-              sizes="(min-width: 1024px) 22rem, 100vw"
-              className="object-cover"
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-cover"
             />
-          ) : (
-            <span
-              aria-hidden
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,var(--accent-soft),transparent_70%)]"
-              />
-              <span className="relative font-mono text-[0.62rem] tracking-[0.2em] text-dimmer uppercase">
-                Visuel à venir
-              </span>
-            </span>
-          )}
+          </picture>
+          {/* Le voile du bas assoit l'image dans la nuit du site : la photo
+              est prise en plein jour, le dégradé la raccorde au fond sans la
+              retoucher. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-void/60 to-transparent"
+          />
         </figure>
       </div>
 
