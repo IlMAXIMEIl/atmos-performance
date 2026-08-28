@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, CircleUserRound, Menu, X } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
 import { NAV_GROUPS, PRIMARY_LINKS } from "@/lib/navigation";
@@ -75,6 +75,24 @@ export function SiteHeader({ maxWidth = "max-w-7xl" }: { maxWidth?: string }) {
             className="hidden rounded-full border border-line-strong bg-white/[0.04] px-5 py-2.5 font-mono text-[0.7rem] tracking-[0.14em] text-ink uppercase backdrop-blur-md transition-all duration-300 hover:border-accent/40 hover:bg-white/[0.08] sm:inline-block"
           >
             {WAITLIST_CTA_SHORT}
+          </Link>
+
+          {/*
+            L'accès au compte, toujours visible — pas seulement dans le volet.
+
+            Un seul lien pour les deux états : connecté, `/compte` ouvre le
+            tableau de bord ; sinon le middleware renvoie à la connexion. La
+            barre n'a ainsi pas besoin de connaître la session, et les pages
+            qui la portent restent prérendues.
+          */}
+          <Link
+            href="/compte"
+            onClick={close}
+            aria-label="Mon espace client"
+            title="Mon espace"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-dim transition-colors duration-300 hover:border-line-strong hover:text-ink"
+          >
+            <CircleUserRound className="h-4 w-4" strokeWidth={1.7} />
           </Link>
 
           <button

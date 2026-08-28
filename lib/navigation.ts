@@ -82,6 +82,11 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "La maison",
     links: [
+      {
+        label: "Mon espace",
+        href: "/compte",
+        detail: "Vos nuits, votre dose, vos commandes",
+      },
       { label: "À propos", href: "/a-propos", detail: "Qui construit ATMOS" },
       { label: "Questions fréquentes", href: "/#faq" },
       { label: "Conditions générales de vente", href: "/cgv", short: "CGV" },
