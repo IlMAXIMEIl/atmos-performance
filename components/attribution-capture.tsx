@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { capterAttribution } from "@/lib/attribution";
+import { EVENEMENT_CHOIX } from "@/lib/consentement";
 
 /**
  * L'oreille qui écoute les arrivées tracées. Monté une fois dans le
@@ -22,6 +23,14 @@ export function AttributionCapture() {
 
   useEffect(() => {
     capterAttribution(params.toString(), chemin);
+
+    // Le scénario le plus courant : l'arrivée tracée est aussi la première
+    // visite, donc le bandeau est encore ouvert et la capture ci-dessus n'a
+    // rien posé. Quand l'accord tombe, on rejoue avec les paramètres encore
+    // dans l'URL — sans ça, le clic publicitaire du jour serait perdu.
+    const rejouer = () => capterAttribution(params.toString(), chemin);
+    window.addEventListener(EVENEMENT_CHOIX, rejouer);
+    return () => window.removeEventListener(EVENEMENT_CHOIX, rejouer);
   }, [params, chemin]);
 
   return null;

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Mail, Music2 } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
+import { ouvrirBandeau } from "@/lib/consentement";
 import { FOOTER_GROUPS, LEGAL_LINKS } from "@/lib/navigation";
 import { CONTACT_EMAIL, SOCIAL_URLS } from "@/lib/site";
 
@@ -181,6 +182,15 @@ export function SiteFooter() {
                 {link.short ?? link.label}
               </Link>
             ))}
+            {/* Le retrait du consentement, accessible depuis chaque page :
+                rouvre le bandeau — exigence RGPD, voir lib/consentement.ts. */}
+            <button
+              type="button"
+              onClick={ouvrirBandeau}
+              className="text-[0.78rem] font-light text-dim transition-colors hover:text-ink"
+            >
+              Cookies
+            </button>
           </div>
         </div>
       </div>

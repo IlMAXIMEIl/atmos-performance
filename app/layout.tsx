@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { AttributionCapture } from "@/components/attribution-capture";
+import { CookieBanner } from "@/components/cookie-banner";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -108,6 +109,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <AttributionCapture />
         </Suspense>
+        {/* Le choix cookies conditionne la capture ci-dessus : sans accord,
+            aucun cookie d'attribution ne se pose — voir lib/consentement.ts. */}
+        <CookieBanner />
         {children}
       </body>
     </html>

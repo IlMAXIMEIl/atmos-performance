@@ -31,7 +31,7 @@ export const metadata: Metadata = {
  * remettre à jour à chaque modification de fond, la version opposable étant
  * celle acceptée par l'acheteur au moment de sa commande.
  */
-const VERSION_DATE = "19 août 2026";
+const VERSION_DATE = "28 août 2026";
 
 type Article = {
   title: string;
@@ -46,9 +46,10 @@ type Article = {
  *
  * Deux règles ont gouverné la rédaction :
  *
- * 1. **Aucune donnée d'identité inventée.** Les champs entre crochets doivent
- *    être renseignés avant l'ouverture des ventes — même convention que la page
- *    des mentions légales.
+ * 1. **Aucune donnée d'identité inventée.** L'identité du vendeur vient de
+ *    l'extrait RNE du 20/08/2026 (INPI). Un seul champ reste entre crochets :
+ *    le médiateur de la consommation, à renseigner dès l'adhésion effective —
+ *    elle est obligatoire avant l'ouverture des ventes (art. L.612-1 c. conso).
  * 2. **Aucune clause qui serait réputée non écrite.** Une clause abusive ne
  *    protège pas le vendeur : elle tombe, et elle fragilise le reste du
  *    document. Là où une formulation courante du e-commerce serait inopposable
@@ -72,13 +73,12 @@ const ARTICLES: Article[] = [
   {
     title: "Article 2 — Identification du vendeur",
     list: [
-      "Raison sociale : [À COMPLÉTER]",
-      "Forme juridique et capital social : [À COMPLÉTER]",
-      "Siège social : [À COMPLÉTER]",
-      "SIRET / RCS : [À COMPLÉTER]",
-      "Numéro de TVA intracommunautaire : [À COMPLÉTER]",
+      "Vendeur : Maxime Roussel, entrepreneur individuel, exerçant sous le nom commercial Atmos-performance",
+      "Siège : 17 rue Joseph Lebas, Appt 19, 76140 Le Petit-Quevilly, France",
+      "SIREN : 981 974 470 (RNE) — SIRET : 981 974 470 00024",
+      "TVA non applicable, article 293 B du CGI",
       `Contact : ${CONTACT_EMAIL}`,
-      "Téléphone : [À COMPLÉTER]",
+      "Téléphone : 06 16 96 81 80",
     ],
   },
   {
@@ -92,7 +92,7 @@ const ARTICLES: Article[] = [
   {
     title: "Article 4 — Prix",
     paragraphs: [
-      "Les prix sont indiqués en euros, toutes taxes comprises, hors éventuels frais de livraison précisés avant la validation de la commande.",
+      "Les prix sont indiqués en euros, nets de taxe — TVA non applicable, article 293 B du CGI —, hors éventuels frais de livraison précisés avant la validation de la commande. Le prix affiché est le prix payé : aucune taxe ne s'y ajoute.",
       "Les droits de douane et taxes d'importation afférents à l'acheminement du produit sont pris en charge par le vendeur, l'expédition étant réalisée en régime DDP (Delivered Duty Paid). Aucune somme n'est due par l'acheteur au transporteur à la réception.",
       "Le vendeur se réserve le droit de modifier ses prix à tout moment. Les produits sont facturés sur la base du tarif en vigueur au moment de l'enregistrement de la commande.",
     ],
@@ -133,7 +133,7 @@ const ARTICLES: Article[] = [
       "L'acheteur est invité à conserver l'emballage d'origine, seul conditionnement conçu pour le transport de l'appareil. La responsabilité de l'acheteur peut être engagée à hauteur de la dépréciation du produit résultant de manipulations autres que celles nécessaires pour en établir la nature, les caractéristiques et le bon fonctionnement.",
       "Le remboursement intervient au plus tard quatorze jours à compter de la récupération du produit ou de la fourniture d'une preuve de son expédition, par le même moyen de paiement que celui utilisé lors de la commande.",
     ],
-    note: "Formulaire type de rétractation — À l'attention de [À COMPLÉTER], [adresse], [courriel] : Je vous notifie par la présente ma rétractation du contrat portant sur la vente du bien ci-dessous — Commandé le [date] / reçu le [date] — Nom et adresse du consommateur — Signature (uniquement en cas de notification sur papier) — Date.",
+    note: `Formulaire type de rétractation — À l'attention de Maxime Roussel (Atmos-performance), 17 rue Joseph Lebas, Appt 19, 76140 Le Petit-Quevilly, ${CONTACT_EMAIL} : Je vous notifie par la présente ma rétractation du contrat portant sur la vente du bien ci-dessous — Commandé le [date] / reçu le [date] — Nom et adresse du consommateur — Signature (uniquement en cas de notification sur papier) — Date.`,
   },
   {
     title: "Article 9 — Exceptions au droit de rétractation",
@@ -163,7 +163,7 @@ const ARTICLES: Article[] = [
     paragraphs: [
       "Le service après-vente est assuré depuis la France. Toute demande est adressée à l'adresse de contact ; un diagnostic à distance est réalisé en premier lieu et les pièces de rechange sont expédiées depuis le stock du vendeur.",
       "L'appareil filtre l'air en continu : le remplacement des filtres aux intervalles indiqués dans la notice conditionne son fonctionnement et sa longévité. Le vendeur informe l'acheteur des échéances de remplacement. Le défaut d'entretien n'affecte pas l'existence des garanties légales, mais une panne qui en résulte ne constitue pas un défaut de conformité au sens de l'article 10.",
-      "Disponibilité des pièces détachées indispensables à l'utilisation du produit : [À COMPLÉTER].",
+      "Les pièces d'usure (filtres, circuit respiratoire) sont proposées sur le site aussi longtemps que le produit est commercialisé. Le fabricant n'ayant pas communiqué d'engagement de durée sur la disponibilité des autres pièces détachées, cette information ne peut être fournie ; elle sera publiée ici si elle venait à l'être.",
     ],
   },
   {
@@ -179,14 +179,14 @@ const ARTICLES: Article[] = [
     paragraphs: [
       "Les données collectées lors de la commande sont nécessaires à son traitement, à la facturation, à la livraison et au suivi de la relation client. Elles ne font l'objet d'aucune cession à des tiers à des fins commerciales.",
       "Conformément au règlement général sur la protection des données, l'acheteur dispose d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité, qu'il exerce à l'adresse de contact. Il peut également introduire une réclamation auprès de la Commission nationale de l'informatique et des libertés.",
-      "Responsable de traitement et durées de conservation : [À COMPLÉTER].",
+      "Le responsable du traitement est Maxime Roussel, entrepreneur individuel (Atmos-performance). Les durées de conservation, la liste des sous-traitants et la procédure de suppression des données sont détaillées dans la politique de confidentialité, accessible à l'adresse atmos-performance.com/confidentialite et depuis chaque page du site.",
     ],
   },
   {
     title: "Article 15 — Réclamations, médiation et litiges",
     paragraphs: [
       "Toute réclamation est adressée en premier lieu au vendeur, à l'adresse de contact indiquée à l'article 2.",
-      "Conformément aux articles L.612-1 et suivants du code de la consommation, l'acheteur qui n'obtient pas satisfaction peut recourir gratuitement au médiateur de la consommation dont relève le vendeur : [À COMPLÉTER — dénomination et coordonnées du médiateur]. La saisine du médiateur suppose une réclamation écrite préalable auprès du vendeur.",
+      "Conformément aux articles L.612-1 et suivants du code de la consommation, l'acheteur qui n'obtient pas satisfaction peut recourir gratuitement au médiateur de la consommation dont relève le vendeur : [médiateur en cours de désignation — dénomination et coordonnées publiées ici dès l'adhésion effective, avant l'ouverture des ventes]. La saisine du médiateur suppose une réclamation écrite préalable auprès du vendeur.",
       "La Commission européenne met par ailleurs à disposition une plateforme de règlement en ligne des litiges, accessible aux consommateurs de l'Union européenne.",
       "Les présentes conditions sont soumises au droit français. À défaut de résolution amiable, le litige est porté devant la juridiction compétente conformément aux règles de droit commun ; l'acheteur consommateur conserve la faculté de saisir la juridiction du lieu de son domicile.",
     ],
@@ -277,6 +277,13 @@ export default function CgvPage() {
             className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
           >
             mentions légales
+          </Link>{" "}
+          et notre{" "}
+          <Link
+            href="/confidentialite"
+            className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
+          >
+            politique de confidentialité
           </Link>
           .
         </p>

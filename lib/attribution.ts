@@ -19,9 +19,11 @@
  *
  * Des identifiants de campagne — pas d'identité, pas de parcours, pas
  * d'historique. Le cookie dit « ce visiteur est arrivé par la campagne
- * 777 de Google », il ne dit pas qui il est. C'est aussi pour cela qu'il
- * n'a pas besoin d'un bandeau : il ne sert qu'à rattacher une éventuelle
- * commande à son origine, sans suivre personne nulle part.
+ * 777 de Google », il ne dit pas qui il est. Sa finalité reste pourtant
+ * la mesure publicitaire, hors des exemptions de l'article 82 : il ne se
+ * pose qu'après consentement (`lib/consentement.ts`), et un refus
+ * l'efface. Sans cookie, `lireAttribution` rend un objet vide — la vente
+ * n'en dépend jamais, la commande est simplement « non tracée ».
  *
  * ## La convention qui rend le rapprochement exact
  *
@@ -31,6 +33,8 @@
  * campagne marche aussi — Brevo ne sait faire que ça — mais survit mal
  * aux renommages ; l'identifiant, lui, ne change jamais.
  */
+
+import { lireConsentement } from "@/lib/consentement";
 
 const COOKIE = "atmos_origine";
 
@@ -67,6 +71,10 @@ const CHAMPS: Record<string, string> = {
  */
 export function capterAttribution(search: string, chemin: string): void {
   if (typeof document === "undefined") return;
+
+  // La garde vit ici et non chez l'appelant : quel que soit le chemin qui
+  // mène à cette fonction, aucun cookie ne se pose sans accord.
+  if (lireConsentement() !== "accepte") return;
 
   const params = new URLSearchParams(search);
   const capture: Record<string, string> = {};

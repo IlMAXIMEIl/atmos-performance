@@ -23,28 +23,28 @@ export const metadata: Metadata = {
 };
 
 /**
- * Squelette de page légale : les champs entre crochets doivent être renseignés
- * avant toute mise en ligne. Aucune information d'identité n'est inventée ici.
+ * Identité renseignée depuis l'extrait RNE du 20/08/2026 (INPI). En cas de
+ * changement de forme juridique, d'adresse ou d'hébergeur, cette table est
+ * le seul endroit à mettre à jour.
  */
 const SECTIONS = [
   {
     title: "Éditeur du site",
     lines: [
-      "Raison sociale : [À COMPLÉTER]",
-      "Forme juridique et capital social : [À COMPLÉTER]",
-      "Siège social : [À COMPLÉTER]",
-      "SIRET / RCS : [À COMPLÉTER]",
-      "Numéro de TVA intracommunautaire : [À COMPLÉTER]",
-      "Directeur de la publication : [À COMPLÉTER]",
-      "Contact : contact@atmos-performance.com",
+      "Éditeur : Maxime Roussel, entrepreneur individuel, exerçant sous le nom commercial Atmos-performance",
+      "Siège : 17 rue Joseph Lebas, Appt 19, 76140 Le Petit-Quevilly, France",
+      "SIREN : 981 974 470 (RNE) — SIRET : 981 974 470 00024",
+      "TVA non applicable, article 293 B du CGI",
+      "Directeur de la publication : Maxime Roussel",
+      "Contact : contact@atmos-performance.com — 06 16 96 81 80",
     ],
   },
   {
     title: "Hébergeur",
     lines: [
-      "Dénomination : [À COMPLÉTER]",
-      "Adresse : [À COMPLÉTER]",
-      "Téléphone : [À COMPLÉTER]",
+      "Dénomination : HOSTINGER INTERNATIONAL LTD",
+      "Adresse : 61 Lordou Vironos Street, 6023 Larnaca, Chypre",
+      "Contact : https://www.hostinger.fr/contact — +357 24 030 750",
     ],
   },
   {
@@ -54,11 +54,11 @@ const SECTIONS = [
     ],
   },
   {
-    title: "Données personnelles",
+    title: "Données personnelles et cookies",
     lines: [
-      "Les informations transmises via le formulaire de contact ou de pré-réservation sont utilisées dans le seul cadre du traitement de votre demande.",
-      "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition sur vos données. Ces droits s'exercent à l'adresse contact@atmos-performance.com.",
-      "Responsable de traitement et durée de conservation : [À COMPLÉTER]",
+      "Le responsable du traitement des données collectées sur ce site est Maxime Roussel, entrepreneur individuel (Atmos-performance).",
+      "Les données transmises via les formulaires du site sont utilisées dans le seul cadre du traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et d'opposition, à exercer à l'adresse contact@atmos-performance.com.",
+      "Le détail des traitements, des durées de conservation, des cookies et de la procédure de suppression figure dans la politique de confidentialité, accessible depuis chaque page du site.",
     ],
   },
   {
@@ -115,6 +115,24 @@ export default function MentionsLegalesPage() {
             </section>
           ))}
         </div>
+
+        <p className="mt-16 border-t border-line pt-8 text-[0.82rem] leading-relaxed font-light text-dimmer text-pretty">
+          Voir également nos{" "}
+          <Link
+            href="/cgv"
+            className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
+          >
+            conditions générales de vente
+          </Link>{" "}
+          et notre{" "}
+          <Link
+            href="/confidentialite"
+            className="text-dim underline decoration-white/20 underline-offset-4 transition-colors hover:text-ink"
+          >
+            politique de confidentialité
+          </Link>
+          .
+        </p>
       </main>
     </div>
   );

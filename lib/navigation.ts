@@ -91,6 +91,11 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Questions fréquentes", href: "/#faq" },
       { label: "Conditions générales de vente", href: "/cgv", short: "CGV" },
       { label: "Mentions légales", href: "/mentions-legales" },
+      {
+        label: "Politique de confidentialité",
+        href: "/confidentialite",
+        short: "Confidentialité",
+      },
     ],
   },
 ];
@@ -116,7 +121,7 @@ export const PRIMARY_LINKS: NavLink[] = [
  * pied de page reviendrait à les afficher deux fois à trente pixels d'écart :
  * le pied de page les retire de ses colonnes et les lit d'ici pour sa barre.
  */
-export const LEGAL_HREFS = ["/cgv", "/mentions-legales"];
+export const LEGAL_HREFS = ["/cgv", "/mentions-legales", "/confidentialite"];
 
 /** Le plan, moins ce que la barre légale affiche déjà. */
 export const FOOTER_GROUPS: NavGroup[] = NAV_GROUPS.map((group) => ({

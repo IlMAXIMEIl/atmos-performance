@@ -51,5 +51,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.2,
     },
+    {
+      url: `${SITE_URL}/confidentialite`,
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
+    {
+      url: `${SITE_URL}/suppression-donnees`,
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
   ];
 }
