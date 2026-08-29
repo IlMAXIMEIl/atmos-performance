@@ -12,7 +12,7 @@ import { DROP_NAME } from "@/lib/offering";
  * Sorti de la section Offres pour deux raisons. Il s'y intercalait entre le
  * prix et la FAQ, interrompant le parcours d'achat par un produit qu'on ne
  * peut pas commander. Et surtout, placé **avant** le tarif, il fait son
- * travail : il pose une gamme, de sorte que 1 890 € se lise comme une entrée
+ * travail : il pose une gamme, de sorte que 2 190 € se lise comme une entrée
  * dans une gamme plutôt que comme un achat isolé.
  *
  * Un teaser, pas une fiche : aucune caractéristique technique, aucune date,

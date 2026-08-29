@@ -67,7 +67,7 @@ function dateLongue(iso: string): string {
   return `${date.getDate()} ${MOIS[date.getMonth()]} ${date.getFullYear()}`;
 }
 
-/** 189 000 centimes → « 1 890 € ». Les montants Stripe sont en centimes. */
+/** 219 000 centimes → « 2 190 € ». Les montants Stripe sont en centimes. */
 function montant(centimes: number): string {
   return `${formatNumber(Math.round(centimes / 100))} €`;
 }

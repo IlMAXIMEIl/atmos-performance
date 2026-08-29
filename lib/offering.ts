@@ -19,7 +19,7 @@ export const LEASING_OPEN = false;
  * l'API ne puissent pas diverger.
  *
  * ⚠ **À `true`, le site encaisse pour de bon.** N'importe quel visiteur peut
- * régler 1 890 €, et ce que Stripe débite dépend de la clé configurée : une
+ * régler 2 190 €, et ce que Stripe débite dépend de la clé configurée : une
  * `sk_live_` prélève réellement une carte. Vérifier avant chaque bascule que
  * le mode Stripe est celui qu'on croit, et que l'entité qui encaisse est bien
  * immatriculée.
@@ -53,14 +53,27 @@ export const DROP_UNITS = 25;
 export const DROP_SCARCITY = `Seulement ${DROP_UNITS} unités disponibles pour la France`;
 
 /**
- * Prix d'achat d'une unité, en euros TTC.
+ * Prix d'achat d'une unité, en euros TTC — le tarif de la série en cours.
+ *
+ * Le Drop n°1 se vend au **tarif de première série** : 2 190 €, réservé aux
+ * 25 premières unités. Dès la série 2, ce prix passe au prix de référence
+ * ci-dessous et n'en bouge plus — un seul changement de prix, jamais d'autre.
  *
  * Valeur d'affichage, partagée par le simulateur et les données structurées.
  * Les montants réellement débités restent définis en centimes côté serveur
  * dans `app/api/checkout/route.ts` : un prix venu du navigateur serait
  * modifiable par le visiteur.
  */
-export const PURCHASE_PRICE_EUR = 1890;
+export const PURCHASE_PRICE_EUR = 2190;
+
+/**
+ * Prix de référence, en euros TTC — celui de toutes les séries après la
+ * première, définitif. Annoncé dès aujourd'hui sous le tarif de lancement :
+ * dire au client que le prix montera (et de combien) rend la première série
+ * réellement avantageuse sans compte à rebours artificiel. Au passage à la
+ * série 2, `PURCHASE_PRICE_EUR` prend cette valeur.
+ */
+export const REFERENCE_PRICE_EUR = 2490;
 
 /**
  * Loyer mensuel et frais d'expédition de la location, en euros.
@@ -74,7 +87,7 @@ export const LEASING_MONTHLY_EUR = 350;
 export const LEASING_SHIPPING_EUR = 39;
 
 /**
- * « 1 890 € », avec l'espace fine insécable des milliers.
+ * « 2 190 € », avec l'espace fine insécable des milliers.
  *
  * Le même formateur que les altitudes, pour que les montants et les mètres
  * s'écrivent de la même façon sur une page qui affiche les deux — et pour la
@@ -166,9 +179,13 @@ export const INSTALLMENTS_NOTE =
  * Contrepartie de la location : pas de fractionnement, mais une empreinte
  * bancaire au titre de la caution matérielle. Annoncée sous le loyer, en
  * discret, pour que le locataire ne la découvre pas au moment de payer.
+ *
+ * Le montant est arrêté à 1 500 € : il couvre le remplacement de l'appareil
+ * et sa logistique. C'est une empreinte, jamais un débit — l'annoncer chiffré
+ * rassure davantage qu'un « caution » vague.
  */
 export const LEASING_DEPOSIT_NOTE =
-  "*Une empreinte bancaire sera demandée pour la caution matérielle.";
+  "*Caution par simple empreinte bancaire de 1 500 € — aucun débit.";
 
 /** Titre et accroche du formulaire de capture, partagés modale et section. */
 export const WAITLIST_TITLE = `Rejoindre la liste d'attente prioritaire du ${DROP_NAME}`;

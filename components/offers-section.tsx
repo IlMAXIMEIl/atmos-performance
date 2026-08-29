@@ -41,6 +41,7 @@ import {
   LEASING_SHIPPING_EUR,
   ORDERS_OPEN,
   PURCHASE_PRICE_EUR,
+  REFERENCE_PRICE_EUR,
   WAITLIST_CTA,
   formatEuros,
 } from "@/lib/offering";
@@ -80,9 +81,9 @@ const PLANS: Plan[] = [
   {
     id: "achat",
     label: "Achat",
-    badge: `Édition de lancement · ${DROP_NAME}`,
+    badge: `Tarif de première série · ${DROP_NAME}`,
     price: formatEuros(PURCHASE_PRICE_EUR),
-    terms: "TTC · comptant ou paiement fractionné",
+    terms: `TTC · comptant ou fractionné · prix de référence ${formatEuros(REFERENCE_PRICE_EUR)} dès la série 2`,
     pitch:
       "L'appareil vous appartient dès la livraison. Aucune échéance, aucune condition de restitution.",
     highlights: [
@@ -121,7 +122,7 @@ const PLANS: Plan[] = [
       {
         icon: KeyRound,
         label: "Loyers déduits à l'achat",
-        detail: `100 % des loyers versés viennent en déduction des ${formatEuros(PURCHASE_PRICE_EUR)} si vous décidez d'acheter.`,
+        detail: `100 % des loyers versés viennent en déduction du prix du kit si vous décidez d'acheter — dans la limite de ${formatEuros(REFERENCE_PRICE_EUR)}.`,
       },
       {
         icon: Wrench,
