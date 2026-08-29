@@ -48,7 +48,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         label: "Offres et précommande",
         href: "/#offres",
-        detail: "Édition de lancement",
+        detail: "Tarif de première série",
       },
       {
         label: "La gamme",

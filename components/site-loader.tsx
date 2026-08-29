@@ -79,6 +79,12 @@ const BOOT_SCRIPT = `(function () {
       if (seen) return;
       if (document.readyState !== "loading") return;
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      /* Jamais sur mobile ni sur un atterrissage de campagne : la premiere
+         visite payee (utm_*, gclid, fbclid...) ou tenue en main doit voir le
+         produit, pas le rideau. Le desktop organique garde l'ouverture ;
+         "#rideau" reste le passe-partout de demonstration, mobile compris. */
+      if (matchMedia("(max-width: 767px)").matches) return;
+      if (/[?&](utm_[a-z]+|gclid|fbclid|ttclid|msclkid)=/.test(location.search)) return;
     }
     var veil = document.getElementById("${LOADER_ID}");
     if (!veil) return;

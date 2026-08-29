@@ -84,7 +84,7 @@ const PLAN_CONFIG: Record<
     submitLabel: "Régler le 1er mois",
   },
   achat: {
-    eyebrow: `Édition de lancement · ${DROP_NAME}`,
+    eyebrow: `Tarif de première série · ${DROP_NAME}`,
     title: "Précommander ATMOS ONE",
     steps: ["config", "contact", "paiement"],
     submitLabel: "Payer ma précommande",

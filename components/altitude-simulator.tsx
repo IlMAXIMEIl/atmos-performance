@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   Armchair,
   Bike,
   CalendarDays,
@@ -46,7 +45,8 @@ import {
   type UsageId,
 } from "@/lib/altitude";
 import { EASE, container, rise } from "@/lib/motion";
-import { INSTALLMENTS_NOTE, WAITLIST_CTA } from "@/lib/offering";
+import { DROP_SCARCITY, INSTALLMENTS_NOTE } from "@/lib/offering";
+import { WaitlistForm } from "@/components/waitlist-form";
 
 const USAGE_ICONS: Record<UsageId, LucideIcon> = {
   sommeil: Moon,
@@ -264,13 +264,6 @@ export function AltitudeSimulator() {
     setUsage(DEFAULTS.usage);
     setLevel(DEFAULTS.level);
   }
-
-  // Le CTA emporte la configuration : la liste prioritaire — ou le tunnel de
-  // commande une fois ouvert — s'ouvre directement, et les paramètres restent
-  // lisibles dans l'URL côté acquisition.
-  const reservationHref =
-    `/?reserver=achat&usage=${usage}` +
-    `&niveau=${level}&palier=${protocol.targetAltitudeMeters}#offres`;
 
   return (
     <div className="flex flex-col gap-8">
@@ -558,23 +551,30 @@ export function AltitudeSimulator() {
           </p>
 
           {/* ── Passage à l'acte ─────────────────────────────────────── */}
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-            <Link
-              href={reservationHref}
-              className="group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-accent px-8 py-4 text-sm font-semibold tracking-[0.04em] text-void shadow-[0_10px_40px_-12px_var(--accent)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_46px_-12px_var(--accent)] focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none sm:w-auto"
-            >
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/45 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full" />
-              <span className="relative">{WAITLIST_CTA}</span>
-              <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+          {/*
+            L'email se prend ici, au sommet de l'intention — plus au bout
+            d'un détour par la page d'accueil, qui coûtait deux écrans et un
+            clic. L'accès au simulateur reste libre, c'est un pilier de la
+            maison : le champ vient APRÈS le protocole, jamais avant, et
+            n'est conditionné à rien. Même appel réseau que partout
+            (`WaitlistForm`), liste du Drop n°1.
+          */}
+          <div className="mt-9">
+            <p className="text-[0.95rem] leading-relaxed font-light text-ink text-pretty">
+              {`Votre protocole est prêt. La machine qui l'exécute arrive — ${DROP_SCARCITY.toLowerCase()}.`}
+            </p>
 
-            <Link
-              href="/#produit"
-              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-ink backdrop-blur-md transition-all duration-300 hover:border-line-strong hover:bg-white/[0.07] hover:text-ink sm:w-auto"
-            >
-              <Gauge className="h-4 w-4 text-accent" strokeWidth={1.6} />
-              Découvrir le générateur
-            </Link>
+            <WaitlistForm source="drop-1" />
+
+            <div className="mt-6 flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/#produit"
+                className="inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-line-strong bg-white/[0.03] px-8 py-4 text-sm font-medium tracking-[0.04em] text-ink backdrop-blur-md transition-all duration-300 hover:border-line-strong hover:bg-white/[0.07] hover:text-ink sm:w-auto"
+              >
+                <Gauge className="h-4 w-4 text-accent" strokeWidth={1.6} />
+                Découvrir le générateur
+              </Link>
+            </div>
           </div>
 
           <p className="mt-5 text-[0.78rem] leading-relaxed font-light text-dimmer text-pretty">

@@ -3,6 +3,7 @@
 import { AltitudeGapSection } from "@/components/altitude-gap-section";
 import { AscensionSection } from "@/components/ascension/ascension-section";
 import { JsonLd } from "@/components/json-ld";
+import { MobileStickyCta } from "@/components/mobile-sticky-cta";
 import { FAQ, FaqSection } from "@/components/faq-section";
 import { HeroSection } from "@/components/hero/hero-section";
 import { NextProductSection } from "@/components/next-product-section";
@@ -36,6 +37,11 @@ export default function Home() {
           arrive par un article vient lire, pas assister à un lancement. Le
           hero attend son signal avant de dérouler sa propre entrée. */}
       <SiteLoader />
+
+      {/* Barre d'action mobile : le prix et l'appel sous le pouce, du hero
+          jusqu'à la section Offres — voir les règles de retenue dans le
+          composant. */}
+      <MobileStickyCta />
 
       {/* Le générateur et les questions fréquentes, tels que cette page les
           présente. `FAQ` est le tableau qui alimente l'accordéon plus bas :

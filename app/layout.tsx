@@ -8,6 +8,11 @@ import { CookieBanner } from "@/components/cookie-banner";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import {
+  DROP_UNITS,
+  PURCHASE_PRICE_EUR,
+  formatEuros,
+} from "@/lib/offering";
 
 /**
  * Polices du site, servies depuis notre domaine par `next/font`.
@@ -46,8 +51,7 @@ export const metadata: Metadata = {
     invérifiable, sans contrepartie. Ce qui reste tient dans le budget utile
     et ne parle que du produit.
   */
-  description:
-    "ATMOS ONE simule jusqu'à 6 500 mètres d'altitude chez vous, de 20,9 % à 9 % d'oxygène. VO2max, acclimatation, protocoles Live High et Train High. Édition de lancement en série limitée.",
+  description: `ATMOS ONE simule jusqu'à 6 500 mètres d'altitude chez vous. VO2max, acclimatation, protocoles Live High et Train High. Kit complet à ${formatEuros(PURCHASE_PRICE_EUR)} TTC — première série de ${DROP_UNITS} unités pour la France.`,
   alternates: { canonical: SITE_URL },
   openGraph: {
     type: "website",

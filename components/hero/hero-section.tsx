@@ -18,7 +18,13 @@ import {
   formatDecimal,
   formatNumber,
 } from "@/lib/altitude";
-import { DROP_NAME, DROP_UNITS, WAITLIST_CTA } from "@/lib/offering";
+import {
+  DROP_NAME,
+  DROP_UNITS,
+  PURCHASE_PRICE_EUR,
+  WAITLIST_CTA,
+  formatEuros,
+} from "@/lib/offering";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -172,7 +178,7 @@ export function HeroSection() {
             className="flex w-full flex-col items-start gap-6"
           >
             <Eyebrow data-reveal>
-              {`Édition de lancement — ${DROP_NAME}`}
+              {`Tarif de première série — ${DROP_NAME}`}
             </Eyebrow>
 
             {/* Volets masqués : chaque ligne est rognée par son parent et
@@ -220,6 +226,18 @@ export function HeroSection() {
                 Découvrir le générateur
               </ButtonLink>
             </div>
+
+            {/* Le prix, dès le premier écran. Sur un panier à quatre
+                chiffres, le taire jusqu'à la section Offres — quinze écrans
+                plus bas sur mobile — se lit comme une cachotterie. Une
+                ligne de relevé, pas un argumentaire : le montant sort de
+                `offering.ts`, jamais retapé. */}
+            <p
+              data-reveal
+              className="font-mono text-[0.7rem] tracking-[0.15em] text-dim uppercase"
+            >
+              {`Kit complet — ${formatEuros(PURCHASE_PRICE_EUR)} TTC, tout compris`}
+            </p>
           </div>
         </div>
 
