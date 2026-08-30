@@ -100,12 +100,65 @@ async function readError(response: Response) {
  *
  * @throws si la configuration manque, si Brevo est injoignable ou refuse.
  */
+
+/** Les clés de `lireAttribution` → les attributs Brevo, créés côté compte. */
+const ATTRIBUTION_VERS_BREVO: Record<string, string> = {
+  utmSource: "UTM_SOURCE",
+  utmMedium: "UTM_MEDIUM",
+  utmCampaign: "UTM_CAMPAIGN",
+  utmContent: "UTM_CONTENT",
+  utmTerm: "UTM_TERM",
+  gclid: "GCLID",
+  fbclid: "FBCLID",
+  attributionPage: "ORIGINE_PAGE",
+  attributionLe: "ORIGINE_LE",
+};
+
+/**
+ * Traduit l'attribution en attributs Brevo. Sans elle, l'euro de publicité
+ * restait aveugle : Nexus collecte la dépense par campagne chez les régies,
+ * mais aucun inscrit ne portait la campagne qui l'avait produit — le coût
+ * par inscrit, la seule boussole du plan média, était incalculable.
+ */
+function attributionAttributes(
+  attribution: Record<string, string> | undefined,
+): Record<string, string> {
+  if (!attribution) return {};
+  const out: Record<string, string> = {};
+  for (const [cle, attribut] of Object.entries(ATTRIBUTION_VERS_BREVO)) {
+    const valeur = attribution[cle];
+    if (valeur) out[attribut] = valeur;
+  }
+  return out;
+}
+
 export async function addToWaitlist(
   email: string,
-  { firstName, source }: { firstName?: string; source: WaitlistSource },
+  {
+    firstName,
+    source,
+    attribution,
+  }: {
+    firstName?: string;
+    source: WaitlistSource;
+    /**
+     * L'origine publicitaire, lue du cookie `atmos_origine` par la route —
+     * les mêmes clés que les métadonnées Stripe (`lireAttribution`).
+     * Portée à la création seulement : le PUT de rattachement ci-dessous
+     * ne transmet jamais d'attributs, et cette règle vaut aussi pour
+     * l'origine — un contact revenu par une autre campagne garde celle de
+     * sa première inscription, c'est elle qui l'a produit.
+     */
+    attribution?: Record<string, string>;
+  },
 ): Promise<WaitlistResult> {
   const { apiKey, listId } = readConfig(source);
   const normalised = email.trim().toLowerCase();
+
+  const attributes: Record<string, string> = {
+    ...(firstName ? { FIRSTNAME: firstName } : {}),
+    ...attributionAttributes(attribution),
+  };
 
   const created = await fetch(`${API_ROOT}/contacts`, {
     method: "POST",
@@ -113,7 +166,7 @@ export async function addToWaitlist(
     body: JSON.stringify({
       email: normalised,
       listIds: [listId],
-      ...(firstName ? { attributes: { FIRSTNAME: firstName } } : {}),
+      ...(Object.keys(attributes).length ? { attributes } : {}),
       // Une création ne doit pas pouvoir écraser un contact existant :
       // le cas du doublon est traité explicitement ci-dessous.
       updateEnabled: false,

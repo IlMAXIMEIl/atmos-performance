@@ -84,7 +84,7 @@ const SECTIONS: Section[] = [
     title: "Cookies",
     paragraphs: [
       "Le site distingue deux familles de cookies. Les cookies strictement nécessaires fonctionnent sans consentement, conformément à l'article 82 de la loi Informatique et Libertés : le cookie de session de l'espace client (authentification, déposé par Supabase), les cookies anti-fraude du prestataire de paiement Stripe (présents uniquement dans le tunnel de paiement), et le cookie « atmos_consentement » qui mémorise votre choix pendant six mois.",
-      "Un seul cookie est soumis à votre consentement : « atmos_origine » (90 jours). Posé uniquement si vous acceptez, il note les paramètres de la campagne publicitaire par laquelle vous êtes arrivé (utm, gclid, fbclid) afin de rattacher une éventuelle commande à son origine et de mesurer l'efficacité de nos publicités. Il ne contient aucune donnée d'identité, ne suit pas votre navigation et n'est partagé avec aucune régie publicitaire.",
+      "Un seul cookie est soumis à votre consentement : « atmos_origine » (90 jours). Posé uniquement si vous acceptez, il note les paramètres de la campagne publicitaire par laquelle vous êtes arrivé (utm, gclid, fbclid) afin de rattacher votre inscription à la liste d'attente ou une éventuelle commande à son origine et de mesurer l'efficacité de nos publicités. Il ne contient aucune donnée d'identité, ne suit pas votre navigation et n'est partagé avec aucune régie publicitaire.",
       "Vous pouvez retirer ou donner votre consentement à tout moment :",
     ],
   },

@@ -1,5 +1,6 @@
 import { clientKey, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 import { addToWaitlist, type WaitlistSource } from "@/lib/waitlist";
+import { lireAttribution } from "@/lib/attribution";
 
 const MAX_EMAIL_LENGTH = 200;
 const MAX_NAME_LENGTH = 100;
@@ -147,6 +148,10 @@ export async function POST(request: Request) {
     const result = await addToWaitlist(email, {
       firstName: firstName || undefined,
       source,
+      // L'origine publicitaire du visiteur, si le cookie de consentement l'a
+      // laissée se poser. Même lecture que les tunnels de paiement : le
+      // serveur lit l'en-tête, jamais une valeur envoyée par le formulaire.
+      attribution: lireAttribution(request.headers.get("cookie")),
     });
 
     // Réponse volontairement identique que l'adresse ait été créée ou qu'elle
