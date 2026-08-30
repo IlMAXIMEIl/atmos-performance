@@ -23,7 +23,7 @@ export function CartButton() {
           ? `Ouvrir la sélection — ${count} article${count > 1 ? "s" : ""}`
           : "Ouvrir la sélection"
       }
-      className="relative flex h-10 w-10 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
+      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-line-strong hover:text-ink focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
     >
       <ShoppingBag className="h-4 w-4" strokeWidth={1.7} />
       {count > 0 && (
