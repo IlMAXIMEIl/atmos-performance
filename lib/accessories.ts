@@ -5,9 +5,9 @@
  * advient. Elles sont décrites ici plutôt que dans la page pour que le
  * balisage `ItemList` et l'affichage sortent de la même source.
  *
- * **Aucun prix, aucune disponibilité.** Rien n'est arrêté à ce jour, et
- * annoncer un tarif qui bougera vaut moins que ne rien annoncer. La page dit
- * ce que chaque pièce fait, pas ce qu'elle coûtera.
+ * **Les prix ne vivent pas ici.** Ils sont au catalogue (`lib/catalog.ts`),
+ * porté par les boutons « Ajouter » de la page : cette source décrit les
+ * pièces, l'autre les vend — chacune une seule responsabilité.
  */
 
 export const ACCESSORIES_PATH = "/accessoires";

@@ -7,6 +7,7 @@ import { ArrowUpRight, CircleUserRound, Menu, X } from "lucide-react";
 
 import { EASE } from "@/lib/motion";
 import { NAV_GROUPS, PRIMARY_LINKS } from "@/lib/navigation";
+import { CartButton } from "@/components/cart/cart-button";
 import { DROP_NAME, DROP_UNITS, WAITLIST_CTA_SHORT } from "@/lib/offering";
 
 /**
@@ -94,6 +95,8 @@ export function SiteHeader({ maxWidth = "max-w-7xl" }: { maxWidth?: string }) {
           >
             <CircleUserRound className="h-4 w-4" strokeWidth={1.7} />
           </Link>
+
+          <CartButton />
 
           <button
             ref={trigger}

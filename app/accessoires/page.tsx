@@ -7,9 +7,24 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { ACCESSORIES, ACCESSORIES_PATH } from "@/lib/accessories";
+import { AddToCart } from "@/components/cart/add-to-cart";
 import { WAITLIST_CTA } from "@/lib/offering";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { breadcrumbSchema } from "@/lib/structured-data";
+
+
+/**
+ * Ce que chaque pièce décrite vend, quand elle se vend.
+ *
+ * La page garde son rôle : décrire. Le bouton n'apparaît que si la pièce a
+ * une ligne au catalogue — le masque, livré avec le kit et sans référence
+ * vendue seule à ce jour, n'en a pas, et sa carte reste purement descriptive.
+ */
+const ACCESSORY_SKUS: Record<string, string> = {
+  filtre: "filtres",
+  tente: "tente",
+  oxymetre: "oxymetre",
+};
 
 const PAGE_URL = `${SITE_URL}${ACCESSORIES_PATH}`;
 
@@ -96,11 +111,10 @@ export default function AccessoiresPage() {
         </div>
 
         {/*
-          Ni prix ni disponibilité sur cette page.
-
-          Rien n'est arrêté à ce jour. Annoncer un tarif qui bougera coûte plus
-          cher que ne rien annoncer : la page décrit ce que chaque pièce fait,
-          et renvoie vers la liste prioritaire pour le reste.
+          Les prix viennent du catalogue (`lib/catalog.ts`), jamais retapés
+          ici : le bouton « Ajouter » les porte, la carte décrit. Une pièce
+          sans ligne au catalogue — le masque, livré avec le kit — reste
+          purement descriptive, sans bouton.
         */}
         <ul className="mt-16 flex flex-col gap-6">
           {ACCESSORIES.map((item, index) => (
@@ -152,6 +166,12 @@ export default function AccessoiresPage() {
                       </li>
                     ))}
                   </ul>
+
+                  {ACCESSORY_SKUS[item.slug] && (
+                    <div className="mt-5">
+                      <AddToCart skuId={ACCESSORY_SKUS[item.slug]} />
+                    </div>
+                  )}
                 </div>
               </div>
             </li>

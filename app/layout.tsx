@@ -4,7 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { AttributionCapture } from "@/components/attribution-capture";
+import { CartPanel } from "@/components/cart/cart-panel";
 import { CookieBanner } from "@/components/cookie-banner";
+import { CartProvider } from "@/lib/cart";
 import { JsonLd } from "@/components/json-ld";
 import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
@@ -105,6 +107,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             Le filtre `PublicOnly` qui l'écartait de `/admin` a disparu avec
             l'espace d'administration : toutes les pages servies ici sont
             désormais publiques. */}
+        <CartProvider>
         <AnnouncementBanner />
         {/* L'origine des arrivées tracées (utm, gclid, fbclid), posée en
             cookie premier parti pour le rapprochement publicitaire côté
@@ -117,6 +120,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             aucun cookie d'attribution ne se pose — voir lib/consentement.ts. */}
         <CookieBanner />
         {children}
+        <CartPanel />
+        </CartProvider>
       </body>
     </html>
   );
